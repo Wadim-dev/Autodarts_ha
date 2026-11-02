@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/dark_logo.png">
-    <img src="docs/logo.png" alt="Autodarts for Home Assistant" height="96">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/dark_logo.png">
+    <img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/logo.png" alt="Autodarts for Home Assistant" height="96">
   </picture>
 </p>
 

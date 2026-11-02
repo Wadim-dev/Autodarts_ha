@@ -17,11 +17,12 @@ from typing import Any
 import uuid
 
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from . import x01
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,6 +32,11 @@ MAX_VERLAUF = 50
 STANDARD = {"startwert": 501, "einwurf": "straight", "auswurf": "double", "legs": 1, "sets": 0, "bull_off": False}
 MODI = ("straight", "double", "master")
 STAT_FELDER = ("punkte", "darts", "f9p", "f9d", "versuche", "treffer", "n180", "n140", "n100", "legs", "sets")
+
+
+def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
+    """Translated error for wrong input to an action."""
+    return ServiceValidationError(translation_domain=DOMAIN, translation_key=schluessel, translation_placeholders=platzhalter or None)
 
 
 class Spielleiter:
@@ -220,7 +226,7 @@ class Spielleiter:
         return self._sigma[level]
 
     async def _bot_werfen(self) -> None:
-        await asyncio.sleep(2.0)
+        await _pause(2.0)
         sp = self.spiel
         if not sp or not self._ist_bot_dran():
             return
@@ -245,8 +251,8 @@ class Spielleiter:
             ziel = x01.bot_ziel(st["spieler"][p]["rest"], uebrig, st["spieler"][p]["offen"], e["einwurf"], e["auswurf"])
             self._dart_annehmen(x01.bot_wurf(ziel, sigma, self._zufall), vom_board=False)
             self._neu_rechnen_ohne_bot()
-            await asyncio.sleep(1.2)
-        await asyncio.sleep(1.5)
+            await _pause(1.2)
+        await _pause(1.5)
         self._bot_aufgabe = None
         self._aufnahme_schliessen()
 
@@ -296,9 +302,9 @@ class Spielleiter:
     async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any]) -> None:
         e = {**self.daten["letzte"], **{k: v for k, v in einstellungen.items() if v is not None}}
         if int(e["startwert"]) not in (101, 170, 301, 501, 701, 901):
-            raise HomeAssistantError("Startwert muss 101, 170, 301, 501, 701 oder 901 sein")
+            raise _fehler("invalid_start_value")
         if e["einwurf"] not in MODI or e["auswurf"] not in MODI:
-            raise HomeAssistantError("Ein-/Auswurf: straight, double oder master")
+            raise _fehler("invalid_mode")
         e["legs"] = max(1, min(int(e["legs"]), 21))
         e["sets"] = max(0, min(int(e.get("sets") or 0), 13))
         e["bull_off"] = bool(e.get("bull_off"))
@@ -313,7 +319,7 @@ class Spielleiter:
             elif x in bekannt:
                 spieler.append({"id": x, "name": bekannt[x]["name"]})
         if not spieler:
-            raise HomeAssistantError("Mindestens ein Spieler")
+            raise _fehler("no_player")
         e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
         self.daten["letzte"] = e
         self._bot_stoppen()
@@ -349,7 +355,7 @@ class Spielleiter:
             return
         try:
             await self.board.befehl("/api/reset")
-            await asyncio.sleep(0.3)
+            await _pause(0.3)
             jetzt = await self.board.holen("/api/state", 2)
             self._gesehen = len(jetzt.get("throws") or [])
             self._board_felder = self._board_felder[: self._gesehen]
@@ -364,7 +370,7 @@ class Spielleiter:
     async def weiter(self) -> None:
         sp = self.spiel
         if not sp:
-            raise HomeAssistantError("Kein Spiel")
+            raise _fehler("no_game")
         if sp["phase"] == "bulloff":
             sp["bulloff"].append({"f": "M", "q": "hand"})
             if len(sp["bulloff"]) >= len(self._bo_werfer(sp)):
@@ -378,7 +384,7 @@ class Spielleiter:
     async def rueckgaengig(self) -> None:
         sp = self.spiel
         if not sp:
-            raise HomeAssistantError("Kein Spiel")
+            raise _fehler("no_game")
         self._bot_stoppen()
         self._gesehen = len((self.zustand.data or {}).get("wuerfe") or [])
         if sp["phase"] == "bulloff":
@@ -425,11 +431,11 @@ class Spielleiter:
     async def wurf_aendern(self, aufnahme: int | None, dart: int, feld: str) -> None:
         sp = self.spiel
         if not sp or sp["phase"] not in ("laeuft", "bulloff"):
-            raise HomeAssistantError("Kein laufendes Spiel")
+            raise _fehler("no_game")
         feld = (feld or "").upper().strip()
         feld = {"25": "S25", "50": "D25", "BULL": "D25", "MISS": "M", "0": "M"}.get(feld, feld)
         if feld and not x01.feld_ok(feld):
-            raise HomeAssistantError(f"Unbekanntes Feld {feld}")
+            raise _fehler("unknown_field", field=feld)
         if sp["phase"] == "bulloff":
             if 0 <= dart < len(sp["bulloff"]) and feld:
                 sp["bulloff"][dart] = {"f": feld, "q": "hand"}
@@ -443,7 +449,7 @@ class Spielleiter:
             aufn = self._offene_aufnahme()
         else:
             if aufnahme >= len(sp["aufnahmen"]):
-                raise HomeAssistantError("Diese Aufnahme gibt es nicht")
+                raise _fehler("unknown_visit")
             aufn = sp["aufnahmen"][aufnahme]
         if not feld:
             if dart < len(aufn["d"]):
@@ -461,9 +467,9 @@ class Spielleiter:
     async def spieler_anlegen(self, name: str) -> str:
         name = (name or "").strip()[:20]
         if not name:
-            raise HomeAssistantError("Name fehlt")
+            raise _fehler("name_missing")
         if any(s["name"].lower() == name.lower() for s in self.daten["spieler"]):
-            raise HomeAssistantError(f"„{name}“ gibt es schon")
+            raise _fehler("name_exists", name=name)
         sid = uuid.uuid4().hex[:8]
         self.daten["spieler"].append({"id": sid, "name": name, "seit": dt_util.now().date().isoformat()})
         self._speichern()
@@ -474,7 +480,7 @@ class Spielleiter:
         liste = self.daten["spieler"]
         s = next((s for s in liste if s["id"] == sid), None)
         if not s:
-            raise HomeAssistantError("Spieler nicht gefunden")
+            raise _fehler("player_not_found")
         if loeschen:
             liste.remove(s)
             self.daten["statistik"].pop(sid, None)
@@ -558,6 +564,11 @@ class Spielleiter:
                 "n180": g.get("n180", 0), "n140": g.get("n140", 0), "n100": g.get("n100", 0),
             })
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte")}
+
+
+async def _pause(sekunden: float) -> None:
+    """Wait (own function so tests can skip the bot's pauses)."""
+    await asyncio.sleep(sekunden)
 
 
 def _rund(v: Any) -> Any:

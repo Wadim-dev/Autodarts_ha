@@ -15,6 +15,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     async_add_entities([BoardUpdate(entry.runtime_data)])

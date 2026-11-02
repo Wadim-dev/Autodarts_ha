@@ -20,5 +20,43 @@
     "abort": {
       "already_configured": "Das Board ist schon eingerichtet."
     }
+  },
+  "exceptions": {
+    "not_set_up": {
+      "message": "Autodarts ist nicht eingerichtet."
+    },
+    "board_error": {
+      "message": "Das Board hat {path} mit HTTP-Status {status} beantwortet."
+    },
+    "board_unreachable": {
+      "message": "Das Board ist nicht erreichbar: {error}"
+    },
+    "invalid_start_value": {
+      "message": "Der Startwert muss 101, 170, 301, 501, 701 oder 901 sein."
+    },
+    "invalid_mode": {
+      "message": "Ein- und Auswurf müssen straight, double oder master sein."
+    },
+    "no_player": {
+      "message": "Mindestens einen Spieler auswählen."
+    },
+    "no_game": {
+      "message": "Es läuft kein Spiel."
+    },
+    "unknown_field": {
+      "message": "Unbekanntes Feld „{field}“. Zum Beispiel T20, D16, S5, S25, D25 oder M verwenden."
+    },
+    "unknown_visit": {
+      "message": "Diese Aufnahme gibt es nicht."
+    },
+    "name_missing": {
+      "message": "Der Name fehlt."
+    },
+    "name_exists": {
+      "message": "Einen Spieler „{name}“ gibt es schon."
+    },
+    "player_not_found": {
+      "message": "Spieler nicht gefunden."
+    }
   }
 }

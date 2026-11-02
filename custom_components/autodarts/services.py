@@ -5,7 +5,7 @@ from __future__ import annotations
 import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from .const import DOMAIN
@@ -47,7 +47,7 @@ def _leiter(hass: HomeAssistant):
     for e in hass.config_entries.async_loaded_entries(DOMAIN):
         if e.runtime_data and e.runtime_data.spiel:
             return e.runtime_data.spiel
-    raise HomeAssistantError("Autodarts is not set up")
+    raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_set_up")
 
 
 def async_setup_services(hass: HomeAssistant) -> None:

@@ -12,6 +12,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
@@ -56,6 +58,8 @@ class Wert(DartsEntitaet, SensorEntity):
     def __init__(self, d, k, schluessel, name, icon, wert) -> None:
         super().__init__(d, k, schluessel, name, icon)
         self._wert = wert
+        # Status zeigt „Offline“, alle anderen Werte sind dann nicht verfügbar.
+        self._nur_online = schluessel != "status"
 
     @property
     def native_value(self) -> Any:
@@ -64,6 +68,8 @@ class Wert(DartsEntitaet, SensorEntity):
 
 class Wurf(DartsEntitaet, SensorEntity):
     """Wurf 1–3: Feld (z. B. T20), Position und Details als Attribute."""
+
+    _nur_online = True
 
     def __init__(self, d, k, i: int) -> None:
         super().__init__(d, k, f"wurf_{i + 1}", f"Wurf {i + 1}", f"mdi:numeric-{i + 1}-circle-outline")

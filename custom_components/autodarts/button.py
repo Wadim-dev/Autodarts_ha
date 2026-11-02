@@ -12,6 +12,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 1
+
 # Schlüssel, Name, Symbol, Pfad, Kategorie
 KNOEPFE = [
     ("start", "Erkennung starten", "mdi:play", "/api/start", None),
@@ -28,14 +30,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 
 
 class Knopf(DartsEntitaet, ButtonEntity):
+    _nur_online = True
+
     def __init__(self, d, schluessel, name, icon, pfad, kategorie) -> None:
         super().__init__(d, d.system, schluessel, name, icon)
         self._pfad = pfad
         self._attr_entity_category = kategorie
-
-    @property
-    def available(self) -> bool:
-        return super().available and self.online
 
     async def async_press(self) -> None:
         if self.schluessel == "kalibrieren" and not (self.daten.zustand.data or {}).get("laeuft"):

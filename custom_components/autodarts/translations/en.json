@@ -20,5 +20,43 @@
     "abort": {
       "already_configured": "The board is already set up."
     }
+  },
+  "exceptions": {
+    "not_set_up": {
+      "message": "Autodarts is not set up."
+    },
+    "board_error": {
+      "message": "The board answered {path} with HTTP status {status}."
+    },
+    "board_unreachable": {
+      "message": "The board cannot be reached: {error}"
+    },
+    "invalid_start_value": {
+      "message": "The start value must be 101, 170, 301, 501, 701 or 901."
+    },
+    "invalid_mode": {
+      "message": "Check-in and check-out must be straight, double or master."
+    },
+    "no_player": {
+      "message": "Choose at least one player."
+    },
+    "no_game": {
+      "message": "There is no running game."
+    },
+    "unknown_field": {
+      "message": "Unknown field \"{field}\". Use e.g. T20, D16, S5, S25, D25 or M."
+    },
+    "unknown_visit": {
+      "message": "This visit does not exist."
+    },
+    "name_missing": {
+      "message": "The name is missing."
+    },
+    "name_exists": {
+      "message": "A player called \"{name}\" already exists."
+    },
+    "player_not_found": {
+      "message": "Player not found."
+    }
   }
 }

@@ -10,6 +10,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
@@ -20,6 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 
 
 class Laeuft(DartsEntitaet, BinarySensorEntity):
+    _nur_online = True
+
     @property
     def is_on(self) -> bool:
         return bool(self.coordinator.data.get("laeuft"))

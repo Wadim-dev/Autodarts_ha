@@ -15,6 +15,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 0
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
@@ -27,6 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 class BoardKamera(DartsEntitaet, Camera):
     # Kalibrierpunkte nicht in den Verlauf schreiben (das Zugangs-Token ändert sich alle 5 min)
     _unrecorded_attributes = frozenset({"kalibrierung"})
+    _nur_online = True
 
     def __init__(self, d, schluessel, name, bild, strom, nr: str | None = None) -> None:
         DartsEntitaet.__init__(self, d, d.system, schluessel, name, "mdi:camera")
@@ -42,10 +45,6 @@ class BoardKamera(DartsEntitaet, Camera):
             return None
         netz = ((self.coordinator.data or {}).get("netz") or {}).get(self._nr)
         return {"kalibrierung": netz} if netz else None
-
-    @property
-    def available(self) -> bool:
-        return super().available and self.online
 
     async def async_camera_image(self, width: int | None = None, height: int | None = None) -> bytes | None:
         return await self.daten.board.bild(self._bild)

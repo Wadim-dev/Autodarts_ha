@@ -25,18 +25,20 @@ rules:
   unique-config-entry: done
 
   # Silver
-  action-exceptions: todo
+  action-exceptions: done
   config-entry-unloading: done
-  docs-configuration-parameters: todo
+  docs-configuration-parameters:
+    status: exempt
+    comment: The integration has no options flow; host and port are set in the config flow.
   docs-installation-parameters: done
-  entity-unavailable: todo
+  entity-unavailable: done
   integration-owner: done
   log-when-unavailable: done
-  parallel-updates: todo
+  parallel-updates: done
   reauthentication-flow:
     status: exempt
     comment: The local Board Manager API has no authentication.
-  test-coverage: todo
+  test-coverage: done
 
   # Gold
   devices: done
@@ -57,7 +59,7 @@ rules:
   entity-device-class: todo
   entity-disabled-by-default: todo
   entity-translations: todo
-  exception-translations: todo
+  exception-translations: done
   icon-translations: todo
   reconfiguration-flow: todo
   repair-issues: todo

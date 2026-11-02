@@ -11,6 +11,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+from .const import DOMAIN
+
 
 class Board:
     """Verbindung zum Board Manager."""
@@ -45,8 +47,14 @@ class Board:
                     async with self._session.request("PUT", self.basis + pfad, json=daten) as antwort:
                         status = antwort.status
                 if status >= 300:
-                    raise HomeAssistantError(f"Board antwortet {status} auf {pfad}")
+                    raise HomeAssistantError(
+                        translation_domain=DOMAIN, translation_key="board_error",
+                        translation_placeholders={"status": str(status), "path": pfad},
+                    )
         except (aiohttp.ClientError, TimeoutError) as err:
-            raise HomeAssistantError(f"Board nicht erreichbar ({err})") from err
+            raise HomeAssistantError(
+                translation_domain=DOMAIN, translation_key="board_unreachable",
+                translation_placeholders={"error": str(err) or type(err).__name__},
+            ) from err
 
 

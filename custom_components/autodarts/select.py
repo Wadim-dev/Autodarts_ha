@@ -10,6 +10,8 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from .coordinator import DartsEntry
 from .entity import DartsEntitaet
 
+PARALLEL_UPDATES = 1
+
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
@@ -18,6 +20,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 
 class Auswahl(DartsEntitaet, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
+    _nur_online = True
 
     def __init__(self, d, schluessel, name, icon) -> None:
         super().__init__(d, d.system, schluessel, name, icon)
@@ -28,7 +31,7 @@ class Auswahl(DartsEntitaet, SelectEntity):
 
     @property
     def available(self) -> bool:
-        return super().available and self.online and bool(self.konfig)
+        return super().available and bool(self.konfig)
 
     async def _setzen(self, daten: dict) -> None:
         await self.daten.board.befehl("/api/config", daten, "PATCH")

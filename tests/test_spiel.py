@@ -45,11 +45,11 @@ async def _spieler(hass: HomeAssistant, *namen: str) -> list[str]:
 async def test_ganzes_spiel(hass: HomeAssistant, geladen) -> None:
     anna, ben = await _spieler(hass, "Anna", "Ben")
     assert hass.states.get(SPIELER).state == "2"
-    assert hass.states.get(SPIEL).state == "Kein Spiel"
+    assert hass.states.get(SPIEL).state == "idle"
 
     await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=101, auswurf="double")
     await hass.async_block_till_done()
-    assert hass.states.get(SPIEL).state == "Läuft"
+    assert hass.states.get(SPIEL).state == "running"
     assert _attr(hass, "modus") == "101 · Double Out · Erster bis 1 Leg"
 
     # Anna: three darts from the board, then the darts are pulled
@@ -79,7 +79,7 @@ async def test_ganzes_spiel(hass: HomeAssistant, geladen) -> None:
     # Anna checks out 36 with D18
     await _dienst(hass, "wurf_aendern", dart=0, feld="D18")
     await hass.async_block_till_done()
-    assert hass.states.get(SPIEL).state == "Beendet"
+    assert hass.states.get(SPIEL).state == "finished"
     assert _attr(hass, "gewinner") == 0
     stat = {s["name"]: s for s in hass.states.get(SPIELER).attributes["spieler"]}
     assert stat["Anna"]["siege"] == 1 and stat["Anna"]["spiele"] == 1 and stat["Anna"]["finish"] == 36
@@ -88,20 +88,20 @@ async def test_ganzes_spiel(hass: HomeAssistant, geladen) -> None:
 
     # undo after the end: game runs again and statistics are taken back
     await _dienst(hass, "rueckgaengig")
-    assert hass.states.get(SPIEL).state == "Läuft"
+    assert hass.states.get(SPIEL).state == "running"
     stat = {s["name"]: s for s in hass.states.get(SPIELER).attributes["spieler"]}
     assert stat["Anna"]["spiele"] == 0 and stat["Anna"]["siege"] == 0
     assert hass.states.get(SPIELER).attributes["verlauf"] == []
 
     await _dienst(hass, "spiel_abbrechen")
-    assert hass.states.get(SPIEL).state == "Kein Spiel"
-    assert hass.states.get(SPIEL).attributes == {"quelle": "HA", "friendly_name": "Autodarts Board Game", "icon": "mdi:bullseye-arrow"}
+    assert hass.states.get(SPIEL).state == "idle"
+    assert hass.states.get(SPIEL).attributes == {"quelle": "HA", "friendly_name": "Autodarts Board Game", "device_class": "enum", "options": ["idle", "bull_off", "running", "finished"]}
 
 
 async def test_bull_off(hass: HomeAssistant, geladen) -> None:
     anna, ben = await _spieler(hass, "Anna", "Ben")
     await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=301, einwurf="double", legs=3, sets=2, bull_off=True)
-    assert hass.states.get(SPIEL).state == "Bull-Off"
+    assert hass.states.get(SPIEL).state == "bull_off"
     assert _attr(hass, "modus") == "301 · Double In · Double Out · Erster bis 2 Sets à 3 Legs"
     # both hit the bull: tie, both throw again
     await _dienst(hass, "wurf_aendern", dart=0, feld="50")
@@ -118,11 +118,11 @@ async def test_bull_off(hass: HomeAssistant, geladen) -> None:
     _board(hass, geladen, ["S25"])
     await _dienst(hass, "wurf_aendern", dart=0, feld="D25")
     await _dienst(hass, "weiter")
-    assert hass.states.get(SPIEL).state == "Läuft"
+    assert hass.states.get(SPIEL).state == "running"
     assert _attr(hass, "reihenfolge") == [0, 1]
     # undo with no visit yet: back to bull-off
     await _dienst(hass, "rueckgaengig")
-    assert hass.states.get(SPIEL).state == "Bull-Off"
+    assert hass.states.get(SPIEL).state == "bull_off"
 
 
 async def test_bot(hass: HomeAssistant, geladen) -> None:
@@ -137,7 +137,7 @@ async def test_bot(hass: HomeAssistant, geladen) -> None:
         await _dienst(hass, "weiter")
         await hass.async_block_till_done()
         # bot won the bull-off and plays its visit: T20 T20 ... aims at the checkout
-        assert hass.states.get(SPIEL).state in ("Läuft", "Beendet")
+        assert hass.states.get(SPIEL).state in ("running", "finished")
         verlauf = _attr(hass, "verlauf")
         assert verlauf and verlauf[0]["s"] == 0
         # board darts are ignored while the bot is on
@@ -199,7 +199,7 @@ async def test_spiel_bleibt_nach_neustart(hass: HomeAssistant, geladen, hass_sto
     await _dienst(hass, "spiel_starten", spieler=[anna], startwert=170)
     await hass.config_entries.async_reload(geladen.entry_id)
     await hass.async_block_till_done()
-    assert hass.states.get(SPIEL).state == "Läuft"
+    assert hass.states.get(SPIEL).state == "running"
     assert hass_storage["autodarts.spiel"]["data"]["spiel"]["einstellungen"]["startwert"] == 170
 
 

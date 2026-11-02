@@ -504,8 +504,8 @@ class Spielleiter:
     def phase(self) -> str:
         sp = self.spiel
         if not sp:
-            return "Kein Spiel"
-        return {"bulloff": "Bull-Off", "laeuft": "Läuft", "beendet": "Beendet"}[sp["phase"]]
+            return "idle"
+        return {"bulloff": "bull_off", "laeuft": "running", "beendet": "finished"}[sp["phase"]]
 
     def spiel_attribute(self) -> dict[str, Any]:
         sp = self.spiel

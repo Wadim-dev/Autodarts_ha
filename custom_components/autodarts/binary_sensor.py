@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -16,13 +16,14 @@ PARALLEL_UPDATES = 0
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
     async_add_entities([
-        Laeuft(d, d.zustand, "erkennung", "detection_running", "mdi:motion-sensor"),
-        Kalibriert(d, d.system, "kalibriert", "calibrated", "mdi:crosshairs-gps"),
+        Laeuft(d, d.zustand, "erkennung", "detection_running"),
+        Kalibriert(d, d.system, "kalibriert", "calibrated"),
     ])
 
 
 class Laeuft(DartsEntitaet, BinarySensorEntity):
     _nur_online = True
+    _attr_device_class = BinarySensorDeviceClass.RUNNING
 
     @property
     def is_on(self) -> bool:

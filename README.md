@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://github.com/Wadim-dev/Autodarts_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/Autodarts_ha?style=flat-square" alt="Release"></a>
   <a href="https://github.com/Wadim-dev/Autodarts_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/Autodarts_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
-  <img src="https://img.shields.io/badge/quality%20scale-silver-c0c0c0?style=flat-square" alt="Quality scale: Silver">
+  <img src="https://img.shields.io/badge/quality%20scale-gold-ffd700?style=flat-square" alt="Quality scale: Gold">
   <img src="https://img.shields.io/badge/IoT%20class-local%20polling-00a37a?style=flat-square" alt="Local polling">
   <img src="https://img.shields.io/badge/languages-EN%20%7C%20DE-blue?style=flat-square" alt="English and German">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/Autodarts_ha?style=flat-square" alt="License"></a>
@@ -32,6 +32,8 @@
 
 - [Highlights](#highlights)
 - [Dashboard cards](#dashboard-cards)
+- [Use cases](#use-cases)
+- [Supported devices](#supported-devices)
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -40,6 +42,7 @@
 - [Actions](#actions)
 - [Automation examples](#automation-examples)
 - [How it works](#how-it-works)
+- [Known limitations](#known-limitations)
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
 - [Removal](#removal)
@@ -135,6 +138,25 @@ type: custom:autodarts-players-card
 
 `back_button: false` hides the back arrow on the three page cards.
 
+## Use cases
+
+- **Play at home without a screen:** start an X01 game from the dashboard on a tablet next to the board; scores, checkout ways and statistics update with every dart.
+- **Switch the board on and off with the room:** power the board PC with a smart plug, switch it on when you enter the room and off when the board has been idle for a while.
+- **Celebrate:** flash the lights on a 180, play a sound on a checkout, announce the remaining score on a speaker.
+- **Keep an eye on the hardware:** get a notification when calibration drifts, a camera drops frames or a board software update is available.
+- **Track progress:** long-term statistics per player, including bots as training partners.
+
+## Supported devices
+
+| Device | Status |
+|--------|--------|
+| Autodarts board with **Board Manager 2.x** (local API on port 3180) | Supported, tested |
+| Autodarts board with **Board Manager 1.x** | Supported (older state format is read as well) |
+| Board Manager on Linux PC, mini PC, Raspberry Pi or Windows | Supported – only the network address matters |
+| Other e-dartboards (Granboard, Scolia …) | Not supported |
+
+One config entry is one board.
+
 ## Requirements
 
 - Home Assistant **2026.2** or newer
@@ -159,14 +181,16 @@ type: custom:autodarts-players-card
 
 [![Open your Home Assistant instance and start setting up Autodarts.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=autodarts)
 
-**Settings → Devices & services → Add integration → Autodarts.** The board must be switched on during setup.
+Boards with Board Manager 2.x announce themselves in the network: Home Assistant shows **Autodarts board found** under **Settings → Devices & services** – just confirm. Otherwise add it by hand: **Settings → Devices & services → Add integration → Autodarts.** The board must be switched on during setup.
 
 | Parameter | Description |
 |-----------|-------------|
 | Host | IP address or host name of the board PC, e.g. `192.168.1.50` |
 | Port | Port of the Board Manager, default `3180` |
 
-There are no further options. Polling is fixed: game state every second (every 30 s while the board is off), system values every 15 s.
+There are no further options. To change the address later, use **three dots → Reconfigure** on the integration. If the board gets a new IP address and announces itself, the integration follows it automatically (only if the old address no longer answers).
+
+**Data updates:** game state every second (every 30 s while the board is off), system values every 15 s, calibration points only after a new calibration, camera images only while they are shown.
 
 ## Entities
 
@@ -176,12 +200,12 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 |--------|-------------|
 | `sensor.autodarts_board_connection` | `Online` / `Offline` |
 | `sensor.autodarts_board_status` | Board status: `throw`, `takeout`, `calibrating`, `starting`, `stopped` … (`Offline` while off) |
-| `sensor.autodarts_board_event` | Last event of the board |
+| `sensor.autodarts_board_event` | Last event of the board *(disabled by default)* |
 | `sensor.autodarts_board_throw_1` … `_3` | Field of dart 1–3 (`T20`, `D16`, `S25`, `D25`, `M`), attributes: points, number, multiplier, position `x`/`y`, bouncer |
 | `sensor.autodarts_board_current_visit` | Points of the current visit |
-| `sensor.autodarts_board_number_of_throws` | Darts on the board |
+| `sensor.autodarts_board_number_of_throws` | Darts on the board *(disabled by default)* |
 | `binary_sensor.autodarts_board_detection_running` | Detection is running |
-| `sensor.autodarts_board_game` | Local game: `Kein Spiel` / `Bull-Off` / `Läuft` / `Beendet`, everything else as attributes (players, scores, checkout, visits, statistics) |
+| `sensor.autodarts_board_game` | Local game: `idle` / `bull_off` / `running` / `finished` (shown translated), everything else as attributes (players, scores, checkout, visits, statistics) |
 | `sensor.autodarts_board_players` | Number of players, attributes with all players, statistics and recent games |
 | `camera.autodarts_board_camera_1` … `_3` | Board cameras (attribute `kalibrierung` with the calibration points) |
 | `camera.autodarts_board_detection_image`, `_live_image` | Detection image and live image |
@@ -297,6 +321,14 @@ Dashboard cards (loaded automatically) · automations · voice assistants
 
 Only the documented local endpoints of the Board Manager are used. Camera images are only fetched while a card or the more-info dialog shows them.
 
+## Known limitations
+
+- Only **X01** is played locally. Games started in the Autodarts app are not imported (the Autodarts cloud is not used at all).
+- The integration **polls** the Board Manager every second; there is no push connection yet.
+- Camera settings depend on what the board's cameras report; some boards only offer one resolution or frame rate.
+- One board per Home Assistant installation.
+- The live camera stream is MJPEG from the board PC and uses its CPU while it is open.
+
 ## Troubleshooting
 
 | Problem | Solution |
@@ -307,6 +339,8 @@ Only the documented local endpoints of the Board Manager are used. Camera images
 | Calibration grid is missing | The board is not calibrated yet, or the calibration points could not be read. Calibrate once in the Board Manager card. |
 | Cards are not found | Restart Home Assistant after installing, then reload the browser (clear the app cache on phones). |
 | Darts are not counted in the game | Check that `sensor.autodarts_board_throw_1` changes when you throw. Darts are ignored while a bot is throwing. |
+
+For a bug report, download the diagnostics (**Settings → Devices & services → Autodarts → three dots → Download diagnostics**). The board address and host name are removed automatically.
 
 To get debug logs:
 
@@ -352,6 +386,6 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 
 **Installation:** HACS → Benutzerdefinierte Repositories → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → Autodarts herunterladen → Home Assistant neu starten.
-**Einrichtung:** Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein.
+**Einrichtung:** Boards mit Board Manager 2.x werden automatisch gefunden („Autodarts Board gefunden“ unter Geräte & Dienste, nur bestätigen). Sonst: Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein. Adresse später ändern: drei Punkte → Neu konfigurieren.
 
 > Kein offizielles Projekt von Autodarts. Der Name dient nur zur Beschreibung der Kompatibilität.

@@ -32,7 +32,7 @@ class BoardKamera(DartsEntitaet, Camera):
     _nur_online = True
 
     def __init__(self, d, schluessel, uebersetzung, bild, strom, nr: str | None = None) -> None:
-        DartsEntitaet.__init__(self, d, d.system, schluessel, uebersetzung, "mdi:camera")
+        DartsEntitaet.__init__(self, d, d.system, schluessel, uebersetzung)
         Camera.__init__(self)
         self._bild = bild
         self._strom = strom

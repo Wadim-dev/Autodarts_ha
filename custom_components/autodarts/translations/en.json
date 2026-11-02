@@ -12,14 +12,33 @@
           "host": "IP address or host name of the Autodarts PC, e.g. 192.168.1.50.",
           "port": "Port of the Board Manager (default 3180)."
         }
+      },
+      "zeroconf_confirm": {
+        "title": "Autodarts board found",
+        "description": "An Autodarts Board Manager was found at {host}. Do you want to set it up?"
+      },
+      "reconfigure": {
+        "title": "Change board address",
+        "description": "New address of the PC that runs the Autodarts Board Manager. The board must be switched on.",
+        "data": {
+          "host": "Host",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "IP address or host name of the Autodarts PC, e.g. 192.168.1.50.",
+          "port": "Port of the Board Manager (default 3180)."
+        }
       }
     },
     "error": {
       "cannot_connect": "The Board Manager does not answer. Check the address and that the board PC is on."
     },
     "abort": {
-      "already_configured": "The board is already set up."
-    }
+      "already_configured": "The board is already set up.",
+      "cannot_connect": "The Board Manager does not answer.",
+      "reconfigure_successful": "The board address was changed."
+    },
+    "flow_title": "Autodarts board ({host})"
   },
   "exceptions": {
     "not_set_up": {
@@ -162,7 +181,13 @@
         "name": "Board software"
       },
       "game": {
-        "name": "Game"
+        "name": "Game",
+        "state": {
+          "idle": "No game",
+          "bull_off": "Bull-off",
+          "running": "Running",
+          "finished": "Finished"
+        }
       },
       "players": {
         "name": "Players"

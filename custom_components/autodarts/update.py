@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.update import UpdateEntity, UpdateEntityFeature
+from homeassistant.components.update import UpdateDeviceClass, UpdateEntity, UpdateEntityFeature
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -28,9 +28,10 @@ class BoardUpdate(DartsEntitaet, UpdateEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_supported_features = UpdateEntityFeature.INSTALL
     _attr_title = "Autodarts Board"
+    _attr_device_class = UpdateDeviceClass.FIRMWARE
 
     def __init__(self, d) -> None:
-        super().__init__(d, d.system, "board_update", "board_software", "mdi:update")
+        super().__init__(d, d.system, "board_update", "board_software")
 
     @property
     def available(self) -> bool:

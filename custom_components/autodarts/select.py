@@ -22,8 +22,8 @@ class Auswahl(DartsEntitaet, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _nur_online = True
 
-    def __init__(self, d, schluessel, uebersetzung, icon) -> None:
-        super().__init__(d, d.system, schluessel, uebersetzung, icon)
+    def __init__(self, d, schluessel, uebersetzung) -> None:
+        super().__init__(d, d.system, schluessel, uebersetzung)
 
     @property
     def konfig(self) -> dict:
@@ -42,7 +42,7 @@ class Standby(Auswahl):
     _attr_options = ["10", "15", "30"]
 
     def __init__(self, d) -> None:
-        super().__init__(d, "standby", "camera_standby", "mdi:sleep")
+        super().__init__(d, "standby", "camera_standby")
 
     @property
     def current_option(self) -> str | None:
@@ -64,7 +64,7 @@ def _mjpg(d) -> list[dict]:
 
 class Bildrate(Auswahl):
     def __init__(self, d) -> None:
-        super().__init__(d, "bildrate_wahl", "camera_fps_setting", "mdi:speedometer")
+        super().__init__(d, "bildrate_wahl", "camera_fps_setting")
 
     @property
     def options(self) -> list[str]:
@@ -85,7 +85,7 @@ class Bildrate(Auswahl):
 
 class Aufloesung(Auswahl):
     def __init__(self, d) -> None:
-        super().__init__(d, "aufloesung", "camera_resolution", "mdi:aspect-ratio")
+        super().__init__(d, "aufloesung", "camera_resolution")
 
     @property
     def options(self) -> list[str]:

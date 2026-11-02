@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 
-from homeassistant.components.button import ButtonEntity
+from homeassistant.components.button import ButtonDeviceClass, ButtonEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -14,13 +14,13 @@ from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
 
-# Schlüssel, Übersetzungsschlüssel, Symbol, Pfad, Kategorie
+# Schlüssel, Übersetzungsschlüssel, Pfad, Kategorie (Symbole in icons.json)
 KNOEPFE = [
-    ("start", "start_detection", "mdi:play", "/api/start", None),
-    ("stop", "stop_detection", "mdi:stop", "/api/stop", None),
-    ("reset", "reset_throws", "mdi:eject", "/api/reset", None),
-    ("kalibrieren", "calibrate", "mdi:crosshairs-gps", "/api/config/calibration/auto", EntityCategory.CONFIG),
-    ("neustart", "restart_software", "mdi:restart", "/api/restart", EntityCategory.CONFIG),
+    ("start", "start_detection", "/api/start", None),
+    ("stop", "stop_detection", "/api/stop", None),
+    ("reset", "reset_throws", "/api/reset", None),
+    ("kalibrieren", "calibrate", "/api/config/calibration/auto", EntityCategory.CONFIG),
+    ("neustart", "restart_software", "/api/restart", EntityCategory.CONFIG),
 ]
 
 
@@ -32,10 +32,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 class Knopf(DartsEntitaet, ButtonEntity):
     _nur_online = True
 
-    def __init__(self, d, schluessel, uebersetzung, icon, pfad, kategorie) -> None:
-        super().__init__(d, d.system, schluessel, uebersetzung, icon)
+    def __init__(self, d, schluessel, uebersetzung, pfad, kategorie) -> None:
+        super().__init__(d, d.system, schluessel, uebersetzung)
         self._pfad = pfad
         self._attr_entity_category = kategorie
+        if schluessel == "neustart":
+            self._attr_device_class = ButtonDeviceClass.RESTART
 
     async def async_press(self) -> None:
         if self.schluessel == "kalibrieren" and not (self.daten.zustand.data or {}).get("laeuft"):

@@ -1,0 +1,150 @@
+{
+  "entity": {
+    "sensor": {
+      "connection": {
+        "default": "mdi:wifi-check"
+      },
+      "status": {
+        "default": "mdi:state-machine"
+      },
+      "event": {
+        "default": "mdi:flash-outline"
+      },
+      "visit_score": {
+        "default": "mdi:bullseye-arrow"
+      },
+      "throw_count": {
+        "default": "mdi:counter"
+      },
+      "throw_1": {
+        "default": "mdi:numeric-1-circle-outline"
+      },
+      "throw_2": {
+        "default": "mdi:numeric-2-circle-outline"
+      },
+      "throw_3": {
+        "default": "mdi:numeric-3-circle-outline"
+      },
+      "cpu_load": {
+        "default": "mdi:cpu-64-bit"
+      },
+      "memory": {
+        "default": "mdi:memory"
+      },
+      "fps": {
+        "default": "mdi:speedometer"
+      },
+      "camera_fps": {
+        "default": "mdi:camera-timer"
+      },
+      "calibration_error": {
+        "default": "mdi:crosshairs-question"
+      },
+      "software_version": {
+        "default": "mdi:information-outline"
+      },
+      "game": {
+        "default": "mdi:bullseye-arrow",
+        "state": {
+          "idle": "mdi:sleep",
+          "bull_off": "mdi:bullseye",
+          "running": "mdi:play-circle-outline",
+          "finished": "mdi:trophy-outline"
+        }
+      },
+      "players": {
+        "default": "mdi:account-group"
+      }
+    },
+    "binary_sensor": {
+      "detection_running": {
+        "default": "mdi:motion-sensor-off",
+        "state": {
+          "on": "mdi:motion-sensor"
+        }
+      },
+      "calibrated": {
+        "default": "mdi:crosshairs-question",
+        "state": {
+          "on": "mdi:crosshairs-gps"
+        }
+      }
+    },
+    "button": {
+      "start_detection": {
+        "default": "mdi:play"
+      },
+      "stop_detection": {
+        "default": "mdi:stop"
+      },
+      "reset_throws": {
+        "default": "mdi:eject"
+      },
+      "calibrate": {
+        "default": "mdi:crosshairs-gps"
+      },
+      "restart_software": {
+        "default": "mdi:restart"
+      }
+    },
+    "select": {
+      "camera_standby": {
+        "default": "mdi:sleep"
+      },
+      "camera_fps_setting": {
+        "default": "mdi:speedometer"
+      },
+      "camera_resolution": {
+        "default": "mdi:aspect-ratio"
+      }
+    },
+    "camera": {
+      "camera_1": {
+        "default": "mdi:camera"
+      },
+      "camera_2": {
+        "default": "mdi:camera"
+      },
+      "camera_3": {
+        "default": "mdi:camera"
+      },
+      "detection_image": {
+        "default": "mdi:image-filter-center-focus"
+      },
+      "live_image": {
+        "default": "mdi:cctv"
+      }
+    },
+    "update": {
+      "board_software": {
+        "default": "mdi:update"
+      }
+    }
+  },
+  "services": {
+    "spiel_starten": {
+      "service": "mdi:play"
+    },
+    "spiel_abbrechen": {
+      "service": "mdi:close-circle-outline"
+    },
+    "weiter": {
+      "service": "mdi:skip-next"
+    },
+    "rueckgaengig": {
+      "service": "mdi:undo"
+    },
+    "wurf_aendern": {
+      "service": "mdi:pencil"
+    },
+    "spieler_anlegen": {
+      "service": "mdi:account-plus"
+    },
+    "spieler_aendern": {
+      "service": "mdi:account-edit"
+    },
+    "statistik_loeschen": {
+      "service": "mdi:delete-sweep-outline"
+    }
+  }
+}

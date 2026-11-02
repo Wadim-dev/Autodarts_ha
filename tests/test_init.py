@@ -1,0 +1,42 @@
+"""Setup and unload tests."""
+
+from __future__ import annotations
+
+from homeassistant.config_entries import ConfigEntryState
+from homeassistant.core import HomeAssistant
+
+from custom_components.autodarts.const import DOMAIN
+
+from .conftest import BASIS, STATE
+
+
+def _board(aioclient_mock) -> None:
+    aioclient_mock.get(f"{BASIS}/api/state", json=STATE)
+    aioclient_mock.get(f"{BASIS}/api/system", json={"status": {"calibrated": True, "version": "1.0.0"}, "stats": {"cpuPercent": 12.5}})
+    aioclient_mock.get(f"{BASIS}/api/devices", json=[])
+    aioclient_mock.get(f"{BASIS}/api/host", json={"clientVersion": "1.0.0"})
+    aioclient_mock.get(f"{BASIS}/api/config/calibration/ellipses", json={})
+
+
+async def test_setup_and_unload(hass: HomeAssistant, aioclient_mock, mock_entry) -> None:
+    _board(aioclient_mock)
+    mock_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(mock_entry.entry_id)
+    await hass.async_block_till_done()
+    assert mock_entry.state is ConfigEntryState.LOADED
+    assert hass.states.get("sensor.autodarts_board_wurf_1").state == "T20"
+    assert hass.states.get("sensor.autodarts_board_verbindung").state == "Online"
+    assert hass.services.has_service(DOMAIN, "spiel_starten")
+
+    assert await hass.config_entries.async_unload(mock_entry.entry_id)
+    await hass.async_block_till_done()
+    assert mock_entry.state is ConfigEntryState.NOT_LOADED
+
+
+async def test_setup_board_offline(hass: HomeAssistant, aioclient_mock, mock_entry) -> None:
+    aioclient_mock.get(f"{BASIS}/api/state", exc=TimeoutError)
+    mock_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(mock_entry.entry_id)
+    await hass.async_block_till_done()
+    assert mock_entry.state is ConfigEntryState.LOADED
+    assert hass.states.get("sensor.autodarts_board_verbindung").state == "Offline"

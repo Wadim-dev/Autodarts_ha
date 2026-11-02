@@ -1,0 +1,113 @@
+spiel_starten:
+  name: Spiel starten
+  description: Startet ein lokales X01-Spiel. Ohne Angaben gelten die letzten Einstellungen.
+  fields:
+    spieler:
+      name: Spieler
+      description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler) und Bots als bot:55 (Average). Höchstens 6.
+      example: '["a1b2c3d4", "bot:55"]'
+      selector:
+        object:
+    startwert:
+      name: Startwert
+      example: 501
+      selector:
+        select:
+          options: ["101", "170", "301", "501", "701", "901"]
+    einwurf:
+      name: Einwurf
+      selector:
+        select:
+          options: ["straight", "double", "master"]
+    auswurf:
+      name: Auswurf
+      selector:
+        select:
+          options: ["straight", "double", "master"]
+    legs:
+      name: Legs (Erster bis)
+      selector:
+        number:
+          min: 1
+          max: 21
+    sets:
+      name: Sets (Erster bis, 0 = ohne)
+      selector:
+        number:
+          min: 0
+          max: 13
+    bull_off:
+      name: Bull-Off
+      selector:
+        boolean:
+spiel_abbrechen:
+  name: Spiel abbrechen
+  description: Beendet das Spiel ohne Wertung (nach Spielende zurück zur Auswahl).
+weiter:
+  name: Weiter
+  description: Aufnahme beenden, nächster Spieler (fehlende Darts zählen als Fehlwurf).
+rueckgaengig:
+  name: Rückgängig
+  description: Letzten Dart zurücknehmen.
+wurf_aendern:
+  name: Wurf ändern
+  description: Dart korrigieren, nachtragen oder löschen.
+  fields:
+    aufnahme:
+      name: Aufnahme
+      description: Nummer der Aufnahme (leer = aktuelle).
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+    dart:
+      name: Dart
+      description: 0, 1 oder 2
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 2
+    feld:
+      name: Feld
+      description: z. B. T20, D16, S5, 25, Bull, M; leer = löschen
+      selector:
+        text:
+spieler_anlegen:
+  name: Spieler anlegen
+  fields:
+    name:
+      name: Name
+      required: true
+      selector:
+        text:
+spieler_aendern:
+  name: Spieler ändern
+  description: Umbenennen oder löschen (löscht auch seine Statistik).
+  fields:
+    id:
+      name: Spieler-ID
+      required: true
+      selector:
+        text:
+    name:
+      name: Neuer Name
+      selector:
+        text:
+    loeschen:
+      name: Löschen
+      selector:
+        boolean:
+statistik_loeschen:
+  name: Statistik löschen
+  description: Statistik eines Spielers (oder aller) und auf Wunsch den Spielverlauf löschen.
+  fields:
+    id:
+      name: Spieler-ID (leer = alle)
+      selector:
+        text:
+    verlauf:
+      name: Spielverlauf auch löschen
+      selector:
+        boolean:

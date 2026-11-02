@@ -1,0 +1,24 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Autodarts board",
+        "description": "Enter the address of the PC that runs the Autodarts Board Manager. The board must be switched on for the setup.",
+        "data": {
+          "host": "Host",
+          "port": "Port"
+        },
+        "data_description": {
+          "host": "IP address or host name of the Autodarts PC, e.g. 192.168.1.50.",
+          "port": "Port of the Board Manager (default 3180)."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "The Board Manager does not answer. Check the address and that the board PC is on."
+    },
+    "abort": {
+      "already_configured": "The board is already set up."
+    }
+  }
+}

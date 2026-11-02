@@ -1,0 +1,15 @@
+{
+  "domain": "autodarts",
+  "name": "Autodarts",
+  "codeowners": [
+    "@Wadim-dev"
+  ],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/Wadim-dev/autodarts_ha",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/Wadim-dev/autodarts_ha/issues",
+  "requirements": [],
+  "version": "1.2.0"
+}

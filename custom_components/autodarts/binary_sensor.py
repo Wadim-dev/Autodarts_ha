@@ -16,8 +16,8 @@ PARALLEL_UPDATES = 0
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
     async_add_entities([
-        Laeuft(d, d.zustand, "erkennung", "Erkennung läuft", "mdi:motion-sensor"),
-        Kalibriert(d, d.system, "kalibriert", "Kalibriert", "mdi:crosshairs-gps"),
+        Laeuft(d, d.zustand, "erkennung", "detection_running", "mdi:motion-sensor"),
+        Kalibriert(d, d.system, "kalibriert", "calibrated", "mdi:crosshairs-gps"),
     ])
 
 

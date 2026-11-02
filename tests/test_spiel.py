@@ -13,8 +13,8 @@ from custom_components.autodarts.const import DOMAIN
 from custom_components.autodarts.coordinator import OFFLINE
 from custom_components.autodarts.spiel import modus_text
 
-SPIEL = "sensor.autodarts_board_spiel"
-SPIELER = "sensor.autodarts_board_spieler"
+SPIEL = "sensor.autodarts_board_game"
+SPIELER = "sensor.autodarts_board_players"
 
 
 async def _dienst(hass: HomeAssistant, dienst: str, **daten):
@@ -95,7 +95,7 @@ async def test_ganzes_spiel(hass: HomeAssistant, geladen) -> None:
 
     await _dienst(hass, "spiel_abbrechen")
     assert hass.states.get(SPIEL).state == "Kein Spiel"
-    assert hass.states.get(SPIEL).attributes == {"quelle": "HA", "friendly_name": "Autodarts Board Spiel", "icon": "mdi:bullseye-arrow"}
+    assert hass.states.get(SPIEL).attributes == {"quelle": "HA", "friendly_name": "Autodarts Board Game", "icon": "mdi:bullseye-arrow"}
 
 
 async def test_bull_off(hass: HomeAssistant, geladen) -> None:

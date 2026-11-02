@@ -22,8 +22,8 @@ class Auswahl(DartsEntitaet, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _nur_online = True
 
-    def __init__(self, d, schluessel, name, icon) -> None:
-        super().__init__(d, d.system, schluessel, name, icon)
+    def __init__(self, d, schluessel, uebersetzung, icon) -> None:
+        super().__init__(d, d.system, schluessel, uebersetzung, icon)
 
     @property
     def konfig(self) -> dict:
@@ -39,18 +39,18 @@ class Auswahl(DartsEntitaet, SelectEntity):
 
 
 class Standby(Auswahl):
-    _attr_options = ["10 Minuten", "15 Minuten", "30 Minuten"]
+    _attr_options = ["10", "15", "30"]
 
     def __init__(self, d) -> None:
-        super().__init__(d, "standby", "Kamera-Standby", "mdi:sleep")
+        super().__init__(d, "standby", "camera_standby", "mdi:sleep")
 
     @property
     def current_option(self) -> str | None:
         m = (self.konfig.get("motion") or {}).get("standbyMinutes")
-        return f"{m} Minuten" if m is not None else None
+        return str(m) if m is not None else None
 
     async def async_select_option(self, option: str) -> None:
-        await self._setzen({"motion": {"standbyMinutes": int(option.split()[0])}})
+        await self._setzen({"motion": {"standbyMinutes": int(option)}})
 
 
 def _mjpg(d) -> list[dict]:
@@ -64,7 +64,7 @@ def _mjpg(d) -> list[dict]:
 
 class Bildrate(Auswahl):
     def __init__(self, d) -> None:
-        super().__init__(d, "bildrate_wahl", "Kamera-Bildrate einstellen", "mdi:speedometer")
+        super().__init__(d, "bildrate_wahl", "camera_fps_setting", "mdi:speedometer")
 
     @property
     def options(self) -> list[str]:
@@ -85,7 +85,7 @@ class Bildrate(Auswahl):
 
 class Aufloesung(Auswahl):
     def __init__(self, d) -> None:
-        super().__init__(d, "aufloesung", "Kamera-Auflösung", "mdi:aspect-ratio")
+        super().__init__(d, "aufloesung", "camera_resolution", "mdi:aspect-ratio")
 
     @property
     def options(self) -> list[str]:

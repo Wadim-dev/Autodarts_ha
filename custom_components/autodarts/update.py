@@ -27,10 +27,10 @@ class BoardUpdate(DartsEntitaet, UpdateEntity):
 
     _attr_entity_category = EntityCategory.CONFIG
     _attr_supported_features = UpdateEntityFeature.INSTALL
-    _attr_title = "Autodarts Board-Software"
+    _attr_title = "Autodarts Board"
 
     def __init__(self, d) -> None:
-        super().__init__(d, d.system, "board_update", "Board-Software", "mdi:update")
+        super().__init__(d, d.system, "board_update", "board_software", "mdi:update")
 
     @property
     def available(self) -> bool:

@@ -58,5 +58,120 @@
     "player_not_found": {
       "message": "Player not found."
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "detection_running": {
+        "name": "Detection running"
+      },
+      "calibrated": {
+        "name": "Calibrated"
+      }
+    },
+    "button": {
+      "start_detection": {
+        "name": "Start detection"
+      },
+      "stop_detection": {
+        "name": "Stop detection"
+      },
+      "reset_throws": {
+        "name": "Reset throws"
+      },
+      "calibrate": {
+        "name": "Calibrate"
+      },
+      "restart_software": {
+        "name": "Restart board software"
+      }
+    },
+    "camera": {
+      "camera_1": {
+        "name": "Camera 1"
+      },
+      "camera_2": {
+        "name": "Camera 2"
+      },
+      "camera_3": {
+        "name": "Camera 3"
+      },
+      "detection_image": {
+        "name": "Detection image"
+      },
+      "live_image": {
+        "name": "Live image"
+      }
+    },
+    "select": {
+      "camera_standby": {
+        "name": "Camera standby",
+        "state": {
+          "10": "10 minutes",
+          "15": "15 minutes",
+          "30": "30 minutes"
+        }
+      },
+      "camera_fps_setting": {
+        "name": "Camera frame rate setting"
+      },
+      "camera_resolution": {
+        "name": "Camera resolution"
+      }
+    },
+    "sensor": {
+      "connection": {
+        "name": "Connection"
+      },
+      "status": {
+        "name": "Status"
+      },
+      "event": {
+        "name": "Event"
+      },
+      "visit_score": {
+        "name": "Current visit"
+      },
+      "throw_count": {
+        "name": "Number of throws"
+      },
+      "throw_1": {
+        "name": "Throw 1"
+      },
+      "throw_2": {
+        "name": "Throw 2"
+      },
+      "throw_3": {
+        "name": "Throw 3"
+      },
+      "cpu_load": {
+        "name": "CPU load"
+      },
+      "memory": {
+        "name": "Memory"
+      },
+      "fps": {
+        "name": "Frame rate"
+      },
+      "camera_fps": {
+        "name": "Camera frame rate"
+      },
+      "calibration_error": {
+        "name": "Calibration deviation"
+      },
+      "software_version": {
+        "name": "Board software"
+      },
+      "game": {
+        "name": "Game"
+      },
+      "players": {
+        "name": "Players"
+      }
+    },
+    "update": {
+      "board_software": {
+        "name": "Board software"
+      }
+    }
   }
 }

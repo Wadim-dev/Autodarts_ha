@@ -58,5 +58,120 @@
     "player_not_found": {
       "message": "Spieler nicht gefunden."
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "detection_running": {
+        "name": "Erkennung läuft"
+      },
+      "calibrated": {
+        "name": "Kalibriert"
+      }
+    },
+    "button": {
+      "start_detection": {
+        "name": "Erkennung starten"
+      },
+      "stop_detection": {
+        "name": "Erkennung stoppen"
+      },
+      "reset_throws": {
+        "name": "Würfe zurücksetzen"
+      },
+      "calibrate": {
+        "name": "Kalibrieren"
+      },
+      "restart_software": {
+        "name": "Board-Software neu starten"
+      }
+    },
+    "camera": {
+      "camera_1": {
+        "name": "Kamera 1"
+      },
+      "camera_2": {
+        "name": "Kamera 2"
+      },
+      "camera_3": {
+        "name": "Kamera 3"
+      },
+      "detection_image": {
+        "name": "Erkennungsbild"
+      },
+      "live_image": {
+        "name": "Live-Bild"
+      }
+    },
+    "select": {
+      "camera_standby": {
+        "name": "Kamera-Standby",
+        "state": {
+          "10": "10 Minuten",
+          "15": "15 Minuten",
+          "30": "30 Minuten"
+        }
+      },
+      "camera_fps_setting": {
+        "name": "Kamera-Bildrate einstellen"
+      },
+      "camera_resolution": {
+        "name": "Kamera-Auflösung"
+      }
+    },
+    "sensor": {
+      "connection": {
+        "name": "Verbindung"
+      },
+      "status": {
+        "name": "Status"
+      },
+      "event": {
+        "name": "Ereignis"
+      },
+      "visit_score": {
+        "name": "Aktuelle Aufnahme"
+      },
+      "throw_count": {
+        "name": "Anzahl Würfe"
+      },
+      "throw_1": {
+        "name": "Wurf 1"
+      },
+      "throw_2": {
+        "name": "Wurf 2"
+      },
+      "throw_3": {
+        "name": "Wurf 3"
+      },
+      "cpu_load": {
+        "name": "CPU-Last"
+      },
+      "memory": {
+        "name": "Speicher"
+      },
+      "fps": {
+        "name": "Bildrate"
+      },
+      "camera_fps": {
+        "name": "Kamera-Bildrate"
+      },
+      "calibration_error": {
+        "name": "Kalibrier-Abweichung"
+      },
+      "software_version": {
+        "name": "Board-Software"
+      },
+      "game": {
+        "name": "Spiel"
+      },
+      "players": {
+        "name": "Spieler"
+      }
+    },
+    "update": {
+      "board_software": {
+        "name": "Board-Software"
+      }
+    }
   }
 }

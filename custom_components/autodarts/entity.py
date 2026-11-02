@@ -9,17 +9,17 @@ from .const import DOMAIN
 
 
 class DartsEntitaet(CoordinatorEntity):
-    """Entität am Gerät „Autodarts Board“; Name = Gerätename + eigener Name."""
+    """Entität am Gerät „Autodarts Board“; Name = Gerätename + übersetzter Name (strings.json)."""
 
     _attr_has_entity_name = True
     # Wenn True: Entität ist nicht verfügbar, solange das Board nicht antwortet.
     _nur_online = False
 
-    def __init__(self, daten: DartsDaten, koordinator, schluessel: str, name: str, icon: str | None = None) -> None:
+    def __init__(self, daten: DartsDaten, koordinator, schluessel: str, uebersetzung: str, icon: str | None = None) -> None:
         super().__init__(koordinator)
         self.daten = daten
         self.schluessel = schluessel
-        self._attr_name = name
+        self._attr_translation_key = uebersetzung
         self._attr_unique_id = f"{DOMAIN}_{schluessel}"
         self._attr_device_info = daten.geraet
         if icon:

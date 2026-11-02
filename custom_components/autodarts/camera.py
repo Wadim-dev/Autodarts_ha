@@ -20,9 +20,9 @@ PARALLEL_UPDATES = 0
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
-    liste = [BoardKamera(d, f"kamera_{i + 1}", f"Kamera {i + 1}", f"/api/img/cams/{i}", f"/api/streams/cams/{i}", str(i)) for i in range(3)]
-    liste.append(BoardKamera(d, "erkennung_bild", "Erkennungsbild", "/api/img/detection", "/api/streams/detection"))
-    liste.append(BoardKamera(d, "live_bild", "Live-Bild", "/api/img/live", "/api/streams/live"))
+    liste = [BoardKamera(d, f"kamera_{i + 1}", f"camera_{i + 1}", f"/api/img/cams/{i}", f"/api/streams/cams/{i}", str(i)) for i in range(3)]
+    liste.append(BoardKamera(d, "erkennung_bild", "detection_image", "/api/img/detection", "/api/streams/detection"))
+    liste.append(BoardKamera(d, "live_bild", "live_image", "/api/img/live", "/api/streams/live"))
     async_add_entities(liste)
 
 
@@ -31,8 +31,8 @@ class BoardKamera(DartsEntitaet, Camera):
     _unrecorded_attributes = frozenset({"kalibrierung"})
     _nur_online = True
 
-    def __init__(self, d, schluessel, name, bild, strom, nr: str | None = None) -> None:
-        DartsEntitaet.__init__(self, d, d.system, schluessel, name, "mdi:camera")
+    def __init__(self, d, schluessel, uebersetzung, bild, strom, nr: str | None = None) -> None:
+        DartsEntitaet.__init__(self, d, d.system, schluessel, uebersetzung, "mdi:camera")
         Camera.__init__(self)
         self._bild = bild
         self._strom = strom

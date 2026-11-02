@@ -14,13 +14,13 @@ from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
 
-# Schlüssel, Name, Symbol, Pfad, Kategorie
+# Schlüssel, Übersetzungsschlüssel, Symbol, Pfad, Kategorie
 KNOEPFE = [
-    ("start", "Erkennung starten", "mdi:play", "/api/start", None),
-    ("stop", "Erkennung stoppen", "mdi:stop", "/api/stop", None),
-    ("reset", "Würfe zurücksetzen", "mdi:eject", "/api/reset", None),
-    ("kalibrieren", "Kalibrieren", "mdi:crosshairs-gps", "/api/config/calibration/auto", EntityCategory.CONFIG),
-    ("neustart", "Board-Software neu starten", "mdi:restart", "/api/restart", EntityCategory.CONFIG),
+    ("start", "start_detection", "mdi:play", "/api/start", None),
+    ("stop", "stop_detection", "mdi:stop", "/api/stop", None),
+    ("reset", "reset_throws", "mdi:eject", "/api/reset", None),
+    ("kalibrieren", "calibrate", "mdi:crosshairs-gps", "/api/config/calibration/auto", EntityCategory.CONFIG),
+    ("neustart", "restart_software", "mdi:restart", "/api/restart", EntityCategory.CONFIG),
 ]
 
 
@@ -32,8 +32,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 class Knopf(DartsEntitaet, ButtonEntity):
     _nur_online = True
 
-    def __init__(self, d, schluessel, name, icon, pfad, kategorie) -> None:
-        super().__init__(d, d.system, schluessel, name, icon)
+    def __init__(self, d, schluessel, uebersetzung, icon, pfad, kategorie) -> None:
+        super().__init__(d, d.system, schluessel, uebersetzung, icon)
         self._pfad = pfad
         self._attr_entity_category = kategorie
 

@@ -20,24 +20,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
     z = d.zustand
     s = d.system
     liste: list[SensorEntity] = [
-        Verbindung(d, z, "verbindung", "Verbindung", "mdi:wifi-check"),
-        Wert(d, z, "status", "Status", "mdi:state-machine", lambda x: x["status"]),
-        Wert(d, z, "ereignis", "Ereignis", "mdi:flash-outline", lambda x: x["ereignis"]),
-        Wert(d, z, "aufnahme", "Aktuelle Aufnahme", "mdi:bullseye-arrow", lambda x: sum(w["punkte"] for w in x["wuerfe"])),
-        Wert(d, z, "anzahl", "Anzahl Würfe", "mdi:counter", lambda x: len(x["wuerfe"])),
+        Verbindung(d, z, "verbindung", "connection", "mdi:wifi-check"),
+        Wert(d, z, "status", "status", "mdi:state-machine", lambda x: x["status"]),
+        Wert(d, z, "ereignis", "event", "mdi:flash-outline", lambda x: x["ereignis"]),
+        Wert(d, z, "aufnahme", "visit_score", "mdi:bullseye-arrow", lambda x: sum(w["punkte"] for w in x["wuerfe"])),
+        Wert(d, z, "anzahl", "throw_count", "mdi:counter", lambda x: len(x["wuerfe"])),
     ]
     liste += [Wurf(d, z, i) for i in range(3)]
     liste += [
-        System(d, s, "cpu", "CPU-Last", "mdi:cpu-64-bit", lambda x: x.get("cpu"), PERCENTAGE),
-        System(d, s, "speicher", "Speicher", "mdi:memory", lambda x: x.get("speicher_mb"), UnitOfInformation.MEGABYTES),
-        System(d, s, "fps", "Bildrate", "mdi:speedometer", lambda x: x.get("fps"), "fps"),
-        System(d, s, "kamera_fps", "Kamera-Bildrate", "mdi:camera-timer",
+        System(d, s, "cpu", "cpu_load", "mdi:cpu-64-bit", lambda x: x.get("cpu"), PERCENTAGE),
+        System(d, s, "speicher", "memory", "mdi:memory", lambda x: x.get("speicher_mb"), UnitOfInformation.MEGABYTES),
+        System(d, s, "fps", "fps", "mdi:speedometer", lambda x: x.get("fps"), "fps"),
+        System(d, s, "kamera_fps", "camera_fps", "mdi:camera-timer",
                lambda x: min([f for f in x.get("kamera_fps") or [] if f is not None], default=None), "fps",
                lambda x: {"kameras": x.get("kamera_fps")}),
-        System(d, s, "kalibrierfehler", "Kalibrier-Abweichung", "mdi:crosshairs-question",
+        System(d, s, "kalibrierfehler", "calibration_error", "mdi:crosshairs-question",
                lambda x: max(x.get("kalibrierfehler") or [0]) if x.get("kalibrierfehler") else None, "px",
                lambda x: {"kameras": x.get("kalibrierfehler")}),
-        System(d, s, "version", "Board-Software", "mdi:information-outline", lambda x: x.get("version"), None,
+        System(d, s, "version", "software_version", "mdi:information-outline", lambda x: x.get("version"), None,
                lambda x: {k: (x.get("host") or {}).get(k) for k in ("visionVersion", "openCVVersion", "platformVersion", "kernelVersion", "hostname")}),
     ]
     liste += [SpielSensor(d), SpielerSensor(d)]
@@ -55,8 +55,8 @@ class Verbindung(DartsEntitaet, SensorEntity):
 
 
 class Wert(DartsEntitaet, SensorEntity):
-    def __init__(self, d, k, schluessel, name, icon, wert) -> None:
-        super().__init__(d, k, schluessel, name, icon)
+    def __init__(self, d, k, schluessel, uebersetzung, icon, wert) -> None:
+        super().__init__(d, k, schluessel, uebersetzung, icon)
         self._wert = wert
         # Status zeigt „Offline“, alle anderen Werte sind dann nicht verfügbar.
         self._nur_online = schluessel != "status"
@@ -72,7 +72,7 @@ class Wurf(DartsEntitaet, SensorEntity):
     _nur_online = True
 
     def __init__(self, d, k, i: int) -> None:
-        super().__init__(d, k, f"wurf_{i + 1}", f"Wurf {i + 1}", f"mdi:numeric-{i + 1}-circle-outline")
+        super().__init__(d, k, f"wurf_{i + 1}", f"throw_{i + 1}", f"mdi:numeric-{i + 1}-circle-outline")
         self._i = i
 
     def _wurf(self) -> dict | None:
@@ -95,8 +95,8 @@ class Wurf(DartsEntitaet, SensorEntity):
 class System(DartsEntitaet, SensorEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, d, k, schluessel, name, icon, wert, einheit=None, attribute=None) -> None:
-        super().__init__(d, k, schluessel, name, icon)
+    def __init__(self, d, k, schluessel, uebersetzung, icon, wert, einheit=None, attribute=None) -> None:
+        super().__init__(d, k, schluessel, uebersetzung, icon)
         self._wert = wert
         self._attr_native_unit_of_measurement = einheit
         self._attribute = attribute
@@ -122,9 +122,9 @@ class _SpielBasis(SensorEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
 
-    def __init__(self, d, schluessel: str, name: str, icon: str) -> None:
+    def __init__(self, d, schluessel: str, uebersetzung: str, icon: str) -> None:
         self.daten = d
-        self._attr_name = name
+        self._attr_translation_key = uebersetzung
         self._attr_unique_id = f"autodarts_{schluessel}"
         self._attr_device_info = d.geraet
         self._attr_icon = icon
@@ -141,7 +141,7 @@ class SpielSensor(_SpielBasis):
                                         "ansage_id", "reihenfolge", "bot_wirft", "aufnahmen", "verlauf"})
 
     def __init__(self, d) -> None:
-        super().__init__(d, "spiel", "Spiel", "mdi:bullseye-arrow")
+        super().__init__(d, "spiel", "game", "mdi:bullseye-arrow")
 
     @property
     def native_value(self) -> str:
@@ -158,7 +158,7 @@ class SpielerSensor(_SpielBasis):
     _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte"})
 
     def __init__(self, d) -> None:
-        super().__init__(d, "spieler", "Spieler", "mdi:account-group")
+        super().__init__(d, "spieler", "players", "mdi:account-group")
 
     @property
     def native_value(self) -> int:

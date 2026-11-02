@@ -24,8 +24,8 @@ async def test_setup_and_unload(hass: HomeAssistant, aioclient_mock, mock_entry)
     assert await hass.config_entries.async_setup(mock_entry.entry_id)
     await hass.async_block_till_done()
     assert mock_entry.state is ConfigEntryState.LOADED
-    assert hass.states.get("sensor.autodarts_board_wurf_1").state == "T20"
-    assert hass.states.get("sensor.autodarts_board_verbindung").state == "Online"
+    assert hass.states.get("sensor.autodarts_board_throw_1").state == "T20"
+    assert hass.states.get("sensor.autodarts_board_connection").state == "Online"
     assert hass.services.has_service(DOMAIN, "spiel_starten")
 
     assert await hass.config_entries.async_unload(mock_entry.entry_id)
@@ -39,4 +39,19 @@ async def test_setup_board_offline(hass: HomeAssistant, aioclient_mock, mock_ent
     assert await hass.config_entries.async_setup(mock_entry.entry_id)
     await hass.async_block_till_done()
     assert mock_entry.state is ConfigEntryState.LOADED
-    assert hass.states.get("sensor.autodarts_board_verbindung").state == "Offline"
+    assert hass.states.get("sensor.autodarts_board_connection").state == "Offline"
+
+
+async def test_karten_werden_geladen(hass: HomeAssistant) -> None:
+    """With the frontend running, the card file is served and added to every dashboard."""
+    from unittest.mock import AsyncMock, MagicMock, patch
+
+    from custom_components.autodarts import KARTEN_URL, _karten_anmelden
+
+    hass.http = MagicMock(async_register_static_paths=AsyncMock())
+    hass.config.components.add("frontend")
+    with patch("custom_components.autodarts.add_extra_js_url") as extra:
+        await _karten_anmelden(hass)
+    pfad = hass.http.async_register_static_paths.call_args[0][0][0]
+    assert pfad.url_path == KARTEN_URL and pfad.path.endswith("autodarts-cards.js")
+    assert extra.call_args[0][1].startswith(KARTEN_URL + "?v=")

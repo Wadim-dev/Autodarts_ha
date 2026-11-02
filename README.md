@@ -1,4 +1,9 @@
-<p align="center"><img src="docs/logo.png" alt="Autodarts for Home Assistant" height="96"></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/dark_logo.png">
+    <img src="docs/logo.png" alt="Autodarts for Home Assistant" height="96">
+  </picture>
+</p>
 
 # Autodarts for Home Assistant
 

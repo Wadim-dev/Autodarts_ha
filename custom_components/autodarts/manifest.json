@@ -1,6 +1,6 @@
 {
   "domain": "autodarts",
-  "name": "Autodarts",
+  "name": "Autodarts (unofficial)",
   "after_dependencies": [
     "frontend",
     "http"

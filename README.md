@@ -68,6 +68,23 @@
 | 🔌 **Works with a smart plug** | Switch the board PC off whenever you like. The integration shows `Offline` and continues on its own when the board is back. |
 | 🌍 **English and German** | Entities, errors and cards follow your Home Assistant language. |
 
+## On a real board
+
+Phone screenshots from a real Winmau board with three cameras: the live image is straightened onto the board with the darts where they landed, effects run on top of the camera image, and the Board Manager shows the calibration grid on every camera.
+
+<table>
+  <tr>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-game.png" alt="Game with live camera image"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-180.png" alt="180 effect"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-manager.png" alt="Board Manager"></td>
+  </tr>
+  <tr>
+    <td><b>Live game</b> – straightened camera image, darts 1–3 on the board, last visits</td>
+    <td><b>180!</b> – effect over the live image</td>
+    <td><b>Board Manager</b> – status, cameras with calibration grid, controls</td>
+  </tr>
+</table>
+
 ## Dashboard cards
 
 The cards are part of the integration and are loaded automatically in every dashboard. Add them with **Edit dashboard → Add card → search "Autodarts"** or in YAML.

@@ -7,6 +7,7 @@ triggers are checked first). Nothing has to be set up by hand.
 from __future__ import annotations
 
 from collections.abc import Callable
+import inspect
 import logging
 import re
 from typing import Any
@@ -180,12 +181,19 @@ def async_setup_assist(hass: HomeAssistant, leiter_holen: Callable[[], Spielleit
         return None
     try:
         from homeassistant.components.conversation.agent_manager import get_agent_manager
-        from homeassistant.components.conversation.trigger import TriggerDetails
     except ImportError:  # pragma: no cover - Assist changed its internals
         _LOGGER.warning("Assist sentences for Autodarts are not available in this Home Assistant version")
         return None
     abmelden: list[CALLBACK_TYPE] = []
     manager = get_agent_manager(hass)
+
+    def anmelden(saetze: list[str], antwort: Any) -> CALLBACK_TYPE:
+        # Home Assistant 2026.11 and newer: register_trigger(sentences, trigger_callback)
+        if "sentences" in inspect.signature(manager.register_trigger).parameters:
+            return manager.register_trigger(sentences=saetze, trigger_callback=antwort)  # type: ignore[call-arg]
+        from homeassistant.components.conversation.trigger import TriggerDetails  # older versions
+
+        return manager.register_trigger(TriggerDetails(sentences=saetze, callback=antwort))
     for befehl, sprachen in SAETZE.items():
         for sprache, saetze in sprachen.items():
 
@@ -196,7 +204,7 @@ def async_setup_assist(hass: HomeAssistant, leiter_holen: Callable[[], Spielleit
                 slots = {k: v.value for k, v in result.entities.items()}
                 return await ausfuehren(leiter, befehl, sprache, slots)
 
-            abmelden.append(manager.register_trigger(TriggerDetails(sentences=saetze, callback=antwort)))
+            abmelden.append(anmelden(saetze, antwort))
 
     def alle_abmelden() -> None:
         for f in abmelden:

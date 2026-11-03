@@ -58,3 +58,23 @@ async def test_saetze(hass: HomeAssistant, mit_assist) -> None:
     cem = (await _spieler(hass, "Cem"))[0]
     await _dienst(hass, "turnier_starten", spieler=[anna, ben, cem], spiel="highscore", runden=1)
     assert "Ben" in await _sag(hass, "wer führt beim darts")
+
+
+async def test_neue_schnittstelle(hass: HomeAssistant, monkeypatch) -> None:
+    """Home Assistant 2026.11 takes sentences and callback directly."""
+    from homeassistant.components.conversation import agent_manager
+
+    from custom_components.autodarts.assist import async_setup_assist
+
+    gemeldet: list[list[str]] = []
+
+    class Manager:
+        def register_trigger(self, sentences: list[str], trigger_callback) -> object:
+            gemeldet.append(sentences)
+            return lambda: None
+
+    monkeypatch.setattr(agent_manager, "get_agent_manager", lambda _hass: Manager())
+    hass.config.components.add("conversation")
+    abmelden = async_setup_assist(hass, lambda: None)
+    assert abmelden is not None and len(gemeldet) == 18
+    abmelden()

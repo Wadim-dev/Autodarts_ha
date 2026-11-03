@@ -149,7 +149,8 @@ class SpielSensor(_SpielBasis):
 
     _unrecorded_attributes = frozenset({"quelle", "id", "phase", "modus", "einstellungen", "beginn", "ende", "bulloff", "am_zug",
                                         "aufnahme", "weg", "spieler", "gewinner", "leg_gewinner", "leg", "set", "ansage",
-                                        "ansage_id", "reihenfolge", "bot_wirft", "aufnahmen", "verlauf"})
+                                        "ansage_id", "reihenfolge", "bot_wirft", "aufnahmen", "verlauf",
+                                        "art", "zahlen", "runden", "ziel", "turnier"})
 
     _attr_device_class = SensorDeviceClass.ENUM
     _attr_options = ["idle", "bull_off", "running", "finished"]  # noqa: RUF012
@@ -169,7 +170,7 @@ class SpielSensor(_SpielBasis):
 class SpielerSensor(_SpielBasis):
     """Angelegte Spieler mit Gesamtstatistik und den letzten Spielen."""
 
-    _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte"})
+    _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte", "turnier"})
 
     def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "spieler", "players")

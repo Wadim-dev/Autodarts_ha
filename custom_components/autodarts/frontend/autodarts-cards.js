@@ -67,6 +67,11 @@
       hit_double: '{n}: hit D{z} to become a killer', killer_aims: '{n} is a killer – hit the doubles of the others', place: 'Place', ranking: 'Ranking', score: 'Score',
       fx_win: 'WINNER', fx_marks: '{n} MARKS', fx_killer: 'KILLER', fx_life: 'HIT!', fx_out: 'OUT', fx_halved: 'HALVED', fx_hio: 'HOLE IN ONE', fx_homerun: 'HOME RUN',
       fx_done: 'DONE', fx_check: 'CHECKED', fx_missed: 'MISSED', fx_closed: '{z} closed', fx_lives: '{n} lives left', fx_life1: '1 life left',
+      elo: 'Rating', streak: 'Streak', n_days: '{n} days', n_day: '1 day', best_streak: 'Best streak', heatmap: 'Hit map', t_fields: 'Fields', t_points: 'Darts', top_fields: 'Most hit fields',
+      trend: 'Trend (X01 average, last games)', badges: 'Badges', vs: 'Head to head', export: 'Export statistics (CSV)', no_data: 'No data yet – play a game.', n_of: '{a} of {b}',
+      ranking_elo: 'Ranking', wins_losses: '{w} wins · {l} losses', gold: 'Gold', silver: 'Silver', bronze: 'Bronze', next_at: 'next at {n}', points_hint: 'Only darts detected by the board have a position.',
+      b_n180: '180s', b_ton: '100+ visits', b_high_finish: 'High finish', b_kurzes_leg: 'Short leg (darts)', b_average: 'Best average', b_siege: 'Wins', b_spiele: 'Games', b_darts: 'Darts thrown',
+      b_serie: 'Days in a row', b_nine_marks: 'Nine marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in one', b_allrounder: 'Allrounder (game types)',
       d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games'
     },
     de: {
@@ -126,6 +131,11 @@
       hit_double: '{n}: triff D{z}, um Killer zu werden', killer_aims: '{n} ist Killer – triff die Doubles der anderen', place: 'Platz', ranking: 'Rangliste', score: 'Stand',
       fx_win: 'SIEG', fx_marks: '{n} MARKS', fx_killer: 'KILLER', fx_life: 'TREFFER!', fx_out: 'RAUS', fx_halved: 'HALBIERT', fx_hio: 'HOLE IN ONE', fx_homerun: 'HOME RUN',
       fx_done: 'GESCHAFFT', fx_check: 'GECHECKT', fx_missed: 'VERFEHLT', fx_closed: '{z} zu', fx_lives: 'noch {n} Leben', fx_life1: 'noch 1 Leben',
+      elo: 'Wertung', streak: 'Serie', n_days: '{n} Tage', n_day: '1 Tag', best_streak: 'Beste Serie', heatmap: 'Trefferbild', t_fields: 'Felder', t_points: 'Darts', top_fields: 'Häufigste Felder',
+      trend: 'Trend (X01-Average, letzte Spiele)', badges: 'Abzeichen', vs: 'Direkter Vergleich', export: 'Statistik exportieren (CSV)', no_data: 'Noch keine Daten – spiel eine Runde.', n_of: '{a} von {b}',
+      ranking_elo: 'Rangliste', wins_losses: '{w} Siege · {l} Niederlagen', gold: 'Gold', silver: 'Silber', bronze: 'Bronze', next_at: 'nächste Stufe bei {n}', points_hint: 'Nur vom Board erkannte Darts haben eine Position.',
+      b_n180: '180er', b_ton: '100+-Aufnahmen', b_high_finish: 'High Finish', b_kurzes_leg: 'Kurzes Leg (Darts)', b_average: 'Bester Average', b_siege: 'Siege', b_spiele: 'Spiele', b_darts: 'Geworfene Darts',
+      b_serie: 'Tage in Folge', b_nine_marks: 'Neun Marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in One', b_allrounder: 'Allrounder (Spielarten)',
       d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele'
     }
   };
@@ -582,7 +592,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
   /* ---------- Game card (lobby, bull-off, X01, result) ---------- */
   const STARTWERTE = [101, 170, 301, 501, 701, 901];
   const MODUS = [['straight', 'Straight'], ['double', 'Double'], ['master', 'Master']];
-  const BOTS = [20, 30, 40, 50, 60, 70, 80, 90, 100];
+  const BOTS = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
   const GRUPPE = { x01: 'x01', cricket: 'cricket', atc: 'training', bobs27: 'training', doppel: 'training', checkout121: 'training', highscore: 'training',
     shanghai: 'party', killer: 'party', halve_it: 'party', golf: 'party', baseball: 'party' };
   const ART_ICON = { x01: 'mdi:numeric', cricket: 'mdi:grid', training: 'mdi:dumbbell', party: 'mdi:party-popper',
@@ -647,6 +657,36 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     });
     return s + '</svg>';
   };
+
+  // hit map: every field coloured by how often it was hit, or the darts as dots
+  const HEAT = ['#1e3a5f', '#2a6fb0', '#22a7a0', '#7cc644', '#f2c12e', '#f07b22', '#e53935'];
+  const heatBrett = (felder, xy, punkte) => {
+    if (punkte) {
+      let s = brett([]).replace('</svg>', '');
+      (xy || []).forEach(([x, y]) => { const r = Math.hypot(x, y), f = r > 1.12 ? 1.12 / r : 1; s += '<circle cx="' + f1(60 + x * f * BRETT_K) + '" cy="' + f1(60 - y * f * BRETT_K) + '" r="1.4" fill="#00e5ff" fill-opacity=".75" stroke="#000" stroke-width=".3"/>'; });
+      return s + '</svg>';
+    }
+    const P = brettP, k = BRETT_K / 170, max = Math.max(1, ...Object.values(felder || {}));
+    const farbe = n => { if (!n) return '#262626'; const q = Math.pow(n / max, .6); return HEAT[Math.min(HEAT.length - 1, Math.floor(q * (HEAT.length - 1) + .0001))]; };
+    const sek = (r1, r2, w1, w2, f) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return '<path d="M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z" fill="' + f + '" stroke="#111" stroke-width=".35"/>'; };
+    const n = f => (felder || {})[f] || 0;
+    let s = '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="60" fill="#111"/>';
+    ORDER.forEach((z, i) => {
+      const w1 = i * 18 - 9, w2 = w1 + 18;
+      s += sek(15.9 * k, 99 * k, w1, w2, farbe(n('S' + z))) + sek(99 * k, 107 * k, w1, w2, farbe(n('T' + z))) + sek(107 * k, 162 * k, w1, w2, farbe(n('S' + z))) + sek(162 * k, 170 * k, w1, w2, farbe(n('D' + z)));
+      const [x, y] = P(56.5, i * 18); s += '<text x="' + f1(x) + '" y="' + f1(y + 1.8) + '">' + z + '</text>';
+    });
+    s += '<circle cx="60" cy="60" r="' + f1(15.9 * k) + '" fill="' + farbe(n('S25')) + '" stroke="#111" stroke-width=".35"/><circle cx="60" cy="60" r="' + f1(6.35 * k) + '" fill="' + farbe(n('D25')) + '" stroke="#111" stroke-width=".35"/>';
+    return s + '</svg>';
+  };
+  const linie = (werte, b, h) => {
+    if (werte.length < 2) return '';
+    const lo = Math.min(...werte), hi = Math.max(...werte), sp = hi - lo || 1;
+    const pt = werte.map((v, i) => f1(i * b / (werte.length - 1)) + ',' + f1(h - 4 - (v - lo) / sp * (h - 8)));
+    return '<svg viewBox="0 0 ' + b + ' ' + h + '" preserveAspectRatio="none" class="spark"><polyline points="' + pt.join(' ') + '" fill="none" stroke="var(--primary-color)" stroke-width="2" vector-effect="non-scaling-stroke"/>' +
+      '<circle cx="' + pt[pt.length - 1].split(',')[0] + '" cy="' + pt[pt.length - 1].split(',')[1] + '" r="3" fill="var(--primary-color)"/></svg>';
+  };
+  const MEDAILLE = ['#5f6368', '#cd7f32', '#c0c7d0', '#ffc83d'];
   // calibration: camera image (px) -> board (mm, centre 0, y down, 20 on top)
   const RADIEN = [170, 162, 107, 99];
   const mul3 = (a, b) => a.map(r => [0, 1, 2].map(j => r[0] * b[0][j] + r[1] * b[1][j] + r[2] * b[2][j]));
@@ -804,7 +844,12 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .rang div{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;font-size:15px}
 .rang b{font-size:20px;font-variant-numeric:tabular-nums}
 .rang span:first-child{font-weight:800;color:var(--secondary-text-color)}
-.rang .g span:first-child{color:var(--amber-color,#ffc107)}`;
+.rang .g span:first-child{color:var(--amber-color,#ffc107)}
+.vor{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;margin-top:10px}
+.vor span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--primary-text-color) 8%,transparent)}
+.vor span:first-child{background:color-mix(in srgb,var(--primary-color) 20%,transparent)}
+.vor i{font-style:normal;font-weight:600;color:var(--secondary-text-color)}
+.vor .b{color:var(--red-color,#e53935)}.vor .c{color:var(--green-color,#43a047)}`;
   const KAMERA_KEYS = ['camera.camera_1', 'camera.camera_2', 'camera.camera_3'];
   /* ---------- effects: one-shot animations for what happens at the board ----------
      Triggered only by new darts and finished visits (never by undo or corrections), CSS transforms and
@@ -1230,7 +1275,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const dz = [0, 1, 2].map(i => { const d = au.darts[i]; return '<button class="dz feld' + (d ? '' : ' leer') + '" data-act="dart" data-i="' + i + '"><b>' + (d ? ft(d.f) : '–') + '</b><small>' + (d ? pkt(d.f) + ' ' + t('pts') : t('dart') + ' ' + (i + 1)) + '</small></button>'; }).join('');
       const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
       let s = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + tiles + '</div><div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
-        '<div class="summe"><b>' + au.summe + '</b><span>' + t('rest', { n: wer.rest }) + '</span></div>' + weg + '</div>' +
+        '<div class="summe"><b>' + au.summe + '</b><span>' + t('rest', { n: wer.rest }) + '</span></div>' + weg + this._vorige(a) + '</div>' +
         this._brettHtml(au.darts) + '</div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
         '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
@@ -1310,7 +1355,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
       const golf = art === 'golf' && au.darts.length && !au.fertig ? '<div class="klein" style="margin:8px 0 0">' + t('golf_hint') + '</div>' : '';
       let s = oben + '<div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
-        '<div class="summe"><b>' + summe + '</b><span>' + (einheit ? einheit + (rechts ? ' · ' : '') : '') + rechts + '</span></div>' + (art === 'checkout121' ? weg : '') + ziel + golf + '</div>' +
+        '<div class="summe"><b>' + summe + '</b><span>' + (einheit ? einheit + (rechts ? ' · ' : '') : '') + rechts + '</span></div>' + (art === 'checkout121' ? weg : '') + ziel + golf + this._vorige(a) + '</div>' +
         this._brettHtml(au.darts, art === 'cricket' ? null : (art === 'checkout121' ? null : a.ziel)) + '</div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
         '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
@@ -1381,6 +1426,16 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const zu = x.filter(v => v.startsWith('zu:'));
       if (zu.length) return this._fxGross('gruen', wort(zu.map(v => v === 'zu:25' ? 'BULL' : v.slice(3)).join(' · '), zu.length > 1) + unter(t('fx_closed', { z: '' }).trim() + ' · ' + wer), 1800);
       return null;
+    }
+    // the last finished visits of everybody, newest first
+    _vorige(a) {
+      const sp = a.spieler || [], au = a.aufnahme || { darts: [] };
+      let v = (a.verlauf || []).slice();
+      if ((au.darts || []).length && !au.fertig) v = v.slice(0, -1);
+      v = v.filter(z => z.d.length || z.p).slice(-5).reverse();
+      if (!v.length) return '';
+      return '<div class="vor">' + v.map(z => '<span class="' + (z.b ? 'b' : '') + (z.c ? ' c' : '') + '"><i>' + esc(((sp[z.s] || {}).name || '?').slice(0, 10)) + '</i>' +
+        (a.art === 'cricket' ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01') ? 'Bust' : z.p)) + '</span>').join('') + '</div>';
     }
     _verlauf(a) {
       const sp = a.spieler || [], v = (a.verlauf || []).slice().reverse();
@@ -1637,10 +1692,70 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
 .plknoepfe ha-icon{--mdc-icon-size:18px}
 .sv{border-radius:14px;padding:10px 12px;margin-bottom:6px;font-size:13.5px}
 .sv .k{display:flex;justify-content:space-between;color:var(--secondary-text-color);font-size:12px;margin-bottom:4px}
-.sv .g{color:var(--amber-color,#ffc107);font-weight:700}`;
+.sv .g{color:var(--amber-color,#ffc107);font-weight:700}
+.chipz{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chipz span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:color-mix(in srgb,var(--primary-text-color) 9%,transparent)}
+.chipz ha-icon{--mdc-icon-size:16px}
+.ab{display:flex;align-items:center;gap:8px;margin:14px 0 8px;font-size:13px;font-weight:700;color:var(--secondary-text-color);letter-spacing:.02em}
+.ab ha-icon{--mdc-icon-size:17px}.ab .rechts{margin-left:auto}
+.hm{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.hm svg{width:100%;height:auto;display:block}.hm text{font-size:5px;font-weight:700;fill:#ddd;text-anchor:middle;font-family:Arial,sans-serif}
+.hm .skala{height:6px;border-radius:99px;margin-top:6px;background:linear-gradient(90deg,#1e3a5f,#2a6fb0,#22a7a0,#7cc644,#f2c12e,#f07b22,#e53935)}
+.tf{display:grid;gap:6px}
+.tf div{display:grid;grid-template-columns:44px 1fr 34px;gap:6px;align-items:center;font-size:12.5px;font-weight:700}
+.tf i{display:block;height:7px;border-radius:99px;background:var(--primary-color)}
+.tf span:last-child{text-align:right;color:var(--secondary-text-color)}
+.seg2{display:inline-flex;gap:4px}
+.seg2 button{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:transparent;color:var(--secondary-text-color)}
+.seg2 button.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);color:var(--primary-color)}
+.spark{width:100%;height:60px;display:block;border-radius:12px;background:color-mix(in srgb,var(--primary-text-color) 5%,transparent)}
+.abz{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:6px}
+.abz div{display:flex;gap:8px;align-items:center;border-radius:12px;padding:8px}
+.abz .md{width:30px;height:30px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25)}
+.abz .md.s0{opacity:.35}
+.abz b{display:block;font-size:12.5px;line-height:1.2}.abz small{font-size:11px;color:var(--secondary-text-color)}
+.vs div{display:flex;justify-content:space-between;padding:6px 2px;font-size:13.5px;border-top:1px solid color-mix(in srgb,var(--primary-text-color) 8%,transparent)}
+.vs div:first-child{border-top:none}
+.rl{display:grid;gap:4px}
+.rl div{display:grid;grid-template-columns:26px 1fr auto auto;gap:8px;align-items:center;font-size:13.5px;padding:7px 10px;border-radius:12px}
+.rl b{font-variant-numeric:tabular-nums}.rl small{color:var(--secondary-text-color)}
+@container (max-width:420px){.hm{grid-template-columns:1fr}}`;
   const datum = x => { try { const d = new Date(x); return d.toLocaleDateString(LOC, { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString(LOC, { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
   class AutodartsPlayersCard extends DartsSeite {
     static get CSS() { return SPL_CSS; }
+    // hit map, most hit fields, trend, badges and head to head of one player
+    _profil(p, alle) {
+      const felder = p.felder || {}, summe = Object.values(felder).reduce((a, b) => a + b, 0), pkt = !!(this._hm || {})[p.id];
+      let s = '<div class="ab"><ha-icon icon="mdi:bullseye"></ha-icon>' + t('heatmap') + '<span class="rechts seg2"><button class="' + (pkt ? '' : 'an') + '" data-act="hm" data-id="' + p.id + '" data-v="f">' + t('t_fields') + '</button>' +
+        '<button class="' + (pkt ? 'an' : '') + '" data-act="hm" data-id="' + p.id + '" data-v="p">' + t('t_points') + '</button></span></div>';
+      if (!summe) s += '<div class="leer">' + t('no_data') + '</div>';
+      else {
+        const top = Object.entries(felder).sort((a, b) => b[1] - a[1]).slice(0, 7), max = top[0][1];
+        s += '<div class="hm"><div>' + heatBrett(felder, p.xy, pkt) + (pkt ? '<div class="klein">' + t('points_hint') + '</div>' : '<div class="skala"></div>') + '</div><div><div class="ab" style="margin-top:0">' + t('top_fields') + '</div><div class="tf">' +
+          top.map(([f, n]) => '<div><span>' + ft(f) + '</span><i style="width:' + Math.max(4, n / max * 100) + '%"></i><span>' + Math.round(n / summe * 100) + ' %</span></div>').join('') + '</div></div></div>';
+      }
+      const avgs = (p.trend || []).filter(e => e[0] === 'x01').map(e => e[1]);
+      if (avgs.length > 1) s += '<div class="ab"><ha-icon icon="mdi:chart-line"></ha-icon>' + t('trend') + '<span class="rechts">' + z1(avgs[0]) + ' → ' + z1(avgs[avgs.length - 1]) + '</span></div>' + linie(avgs, 300, 60);
+      const abz = p.abzeichen || [];
+      if (abz.length) {
+        const n = abz.filter(a => a.stufe > 0).length;
+        s += '<div class="ab"><ha-icon icon="mdi:medal-outline"></ha-icon>' + t('badges') + '<span class="rechts">' + t('n_of', { a: n, b: abz.length }) + '</span></div><div class="abz">' +
+          abz.slice().sort((a, b) => b.stufe - a.stufe).map(a => '<div class="feld" title="' + (a.ziel != null ? t('next_at', { n: a.ziel }) : t('gold')) + '"><span class="md s' + a.stufe + '" style="background:' + MEDAILLE[a.stufe] + '">' + (a.stufe ? '★' : '☆') + '</span><span><b>' + t('b_' + a.key) + '</b><small>' +
+            (a.stufe ? t(['', 'bronze', 'silver', 'gold'][a.stufe]) + ' · ' : '') + zahl(a.wert || 0, Number.isInteger(a.wert || 0) ? 0 : 1) + (a.ziel != null ? ' / ' + zahl(a.ziel) : '') + '</small></span></div>').join('') + '</div>';
+      }
+      const gegen = Object.entries(p.gegen || {}).filter(([, w]) => w[0] + w[1] > 0);
+      if (gegen.length) s += '<div class="ab"><ha-icon icon="mdi:sword-cross"></ha-icon>' + t('vs') + '</div><div class="vs">' + gegen.map(([id, w]) => '<div><span>' + esc((alle.find(x => x.id === id) || {}).name || '?') + '</span><b>' + w[0] + ' : ' + w[1] + '</b></div>').join('') + '</div>';
+      return s;
+    }
+    _export() {
+      const a = att(this._h, E(this._h, 'sensor.players')), sp = a.spieler || [];
+      const kopf = ['name', 'elo', 'games', 'wins', 'average', 'first9', 'checkout_pct', 'highest', 'best_finish', 'best_leg', 'n180', 'n140', 'n100', 'darts', 'streak', 'best_streak'];
+      const zeilen = sp.map(p => [p.name, p.elo, p.spiele, p.siege, p.avg, p.f9, p.quote, p.hoechste, p.finish, p.bestes_leg, p.n180, p.n140, p.n100, p.darts, p.serie, p.beste_serie]);
+      Object.keys(sp.reduce((o, p) => Object.assign(o, p.arten || {}), {})).forEach(art => { kopf.push(art + '_games', art + '_wins', art + '_best'); zeilen.forEach((z, i) => { const g = (sp[i].arten || {})[art] || {}; z.push(g.spiele || 0, g.siege || 0, g.best == null ? '' : g.best); }); });
+      const csv = [kopf, ...zeilen].map(z => z.map(v => { const x = String(v == null ? '' : v); return /[",;\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; }).join(',')).join('\n');
+      const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })), l = document.createElement('a');
+      l.href = url; l.download = 'autodarts-statistik.csv'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
     _zeichnen() {
       if (this._fehlt()) return;
       const a = att(this._h, E(this._h, 'sensor.players')), sp = a.spieler || [], vl = a.verlauf || [];
@@ -1653,9 +1768,12 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           t('games_wins', { g: p.spiele, w: p.siege }) + (p.spiele ? ' (' + Math.round(p.siege / p.spiele * 100) + ' %)' : '') + '</small></span><span class="gr">' + z1(p.avg) + '<small>' + t('average') + '</small></span></button>';
         if (offen) {
           const ka = (x, v) => '<div class="ka feld"><small>' + x + '</small><b>' + v + '</b></div>';
-          s += '<div class="pld"><div class="kach">' + ka(t('average'), z1(p.avg)) + ka(t('first9'), z1(p.f9)) + ka(t('best_avg'), z1(p.bester_avg)) + ka('Checkout', z1(p.quote) + ' %') +
+          s += '<div class="pld"><div class="chipz"><span><ha-icon icon="mdi:chart-line-variant"></ha-icon>' + t('elo') + ' ' + (p.elo || 1000) + '</span>' +
+            '<span><ha-icon icon="mdi:fire"></ha-icon>' + t('streak') + ' ' + (p.serie === 1 ? t('n_day') : t('n_days', { n: p.serie || 0 })) + '</span>' +
+            '<span><ha-icon icon="mdi:trophy-outline"></ha-icon>' + t('best_streak') + ' ' + (p.beste_serie === 1 ? t('n_day') : t('n_days', { n: p.beste_serie || 0 })) + '</span></div><div class="kach">' + ka(t('average'), z1(p.avg)) + ka(t('first9'), z1(p.f9)) + ka(t('best_avg'), z1(p.bester_avg)) + ka('Checkout', z1(p.quote) + ' %') +
             ka(t('highest'), p.hoechste) + ka(t('best_finish'), p.finish || '–') + ka(t('best_leg'), p.bestes_leg ? t('n_darts', { n: p.bestes_leg }) : '–') + ka(t('n180'), p.n180) +
             ka('140+', p.n140) + ka('100+', p.n100) + ka(t('legs'), p.legs) + ka(t('darts'), zahl(p.darts)) + '</div>' +
+            this._profil(p, sp) +
             (Object.keys(p.arten || {}).length ? '<div class="kach" style="margin-top:8px">' + Object.entries(p.arten).filter(([, g]) => g.spiele).map(([art, g]) =>
               ka(t('a_' + art), t('games_wins', { g: g.spiele, w: g.siege }) + (g.best != null ? '<br><small>' + t('best') + ' ' + (art === 'cricket' ? z1(g.best) + ' MPR' : g.best) + '</small>' : ''))).join('') + '</div>' : '') +
             '<div class="plknoepfe"><button class="feld" data-act="umb" data-id="' + p.id + '" data-n="' + esc(p.name) + '"><ha-icon icon="mdi:pencil"></ha-icon><span class="lbl">' + t('rename') + '</span></button>' +
@@ -1664,9 +1782,15 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         }
         s += '</div>';
       });
+      if (sp.length > 1) {
+        s += auf('rang', this._auf.rang, 'mdi:podium', t('ranking_elo'), t('elo'));
+        if (this._auf.rang) s += '<div class="aufinhalt"><div class="rl">' + sp.slice().sort((x, y) => (y.elo || 1000) - (x.elo || 1000)).map((p, i) =>
+          '<div class="feld"><b>' + (i + 1) + '.</b><span>' + esc(p.name) + '</span><small>' + t('games_wins', { g: p.spiele + Object.values(p.arten || {}).reduce((a, g) => a + (g.spiele || 0), 0), w: p.siege + Object.values(p.arten || {}).reduce((a, g) => a + (g.siege || 0), 0) }) + '</small><b>' + (p.elo || 1000) + '</b></div>').join('') + '</div></div>';
+      }
       s += auf('verlauf', this._auf.verlauf, 'mdi:history', t('recent'), vl.length ? datum(vl[0].zeit) : '');
       if (this._auf.verlauf) s += '<div class="aufinhalt">' + (vl.length ? vl.map(v => '<div class="sv feld"><div class="k"><span>' + datum(v.zeit) + '</span><span></span></div>' +
         (v.art ? '<small>' + esc(t('a_' + v.art)) + '</small> ' : '') + v.spieler.map(p => '<span class="' + (p.sieger ? 'g' : '') + '">' + (p.sieger ? '🏆 ' : '') + esc(p.name) + ' ' + (p.wert != null ? p.wert : (p.sets || p.legs) + ' <small>(Ø ' + z1(p.avg) + ')</small>') + '</span>').join(' · ') + '</div>').join('') : '<div class="leer">' + t('no_game_yet') + '</div>') + '</div>';
+      if (sp.length) s += '<button class="auf feld" data-act="export"><ha-icon icon="mdi:file-delimited-outline"></ha-icon><span>' + t('export') + '</span></button>';
       s += auf('gefahr', this._auf.gefahr, 'mdi:delete-outline', t('reset_all'));
       if (this._auf.gefahr) s += '<div class="aufinhalt"><div class="plknoepfe" style="margin-top:0"><button class="feld" data-act="allesweg" data-lbl="' + t('del_all') + '"><ha-icon icon="mdi:delete-forever"></ha-icon><span class="lbl">' + t('del_all') + '</span></button></div>' +
         '<div class="klein">' + t('players_stay') + '</div></div>';
@@ -1685,6 +1809,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         if (act === 'neuok') this._dienst('spieler_anlegen', { name }); else this._dienst('spieler_aendern', { id: this._m.id, name });
         this._modal(null); return;
       }
+      if (act === 'hm') { this._hm = this._hm || {}; this._hm[b.dataset.id] = b.dataset.v === 'p'; this._alt = null; this._zeichnen(); return; }
+      if (act === 'export') { this._export(); return; }
       if (act === 'statweg') zweimal(this, b, t('really_del'), () => this._dienst('statistik_loeschen', { id: b.dataset.id }));
       if (act === 'spweg') zweimal(this, b, t('really_del'), () => this._dienst('spieler_aendern', { id: b.dataset.id, loeschen: true }));
       if (act === 'allesweg') zweimal(this, b, t('del_all_q'), () => this._dienst('statistik_loeschen', { verlauf: true }));

@@ -20,7 +20,7 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
-from . import spielarten, x01
+from . import auswertung, spielarten, x01
 from .api import Board
 from .const import DOMAIN
 from .coordinator import ZustandKoordinator
@@ -405,6 +405,7 @@ class Spielleiter:
         if st["art"] != "x01":
             eintrag["art"] = st["art"]
         self.daten["verlauf"] = [eintrag, *self.daten.get("verlauf", [])][:MAX_VERLAUF]
+        auswertung.nachtragen(self.daten, sp, st, +1, dt_util.now().date())
         if st["art"] != "x01":
             self._art_statistik(st, +1)
             return
@@ -571,6 +572,7 @@ class Spielleiter:
     def _statistik_abziehen(self) -> None:
         """Rückgängig nach Spielende: Gesamtstatistik wieder abziehen (Bestwerte bleiben)."""
         st = spielarten.auswerten(self._laufend)
+        auswertung.nachtragen(self.daten, self._laufend, st, -1, dt_util.now().date())
         if st["art"] != "x01":
             self._art_statistik(st, -1)
             return
@@ -639,6 +641,7 @@ class Spielleiter:
         if loeschen:
             liste.remove(s)
             self.daten["statistik"].pop(sid, None)
+            self.daten.get("profil", {}).pop(sid, None)
         elif name and name.strip():
             s["name"] = name.strip()[:20]
         self._speichern()
@@ -647,8 +650,10 @@ class Spielleiter:
     async def statistik_loeschen(self, sid: str | None, verlauf: bool) -> None:
         if sid:
             self.daten["statistik"].pop(sid, None)
+            self.daten.get("profil", {}).pop(sid, None)
         else:
             self.daten["statistik"] = {}
+            self.daten["profil"] = {}
         if verlauf:
             self.daten["verlauf"] = []
         self._speichern()
@@ -701,8 +706,11 @@ class Spielleiter:
 
     def spieler_attribute(self) -> dict[str, Any]:
         liste = []
+        heute = dt_util.now().date()
         for s in self.daten["spieler"]:
             g = self.daten["statistik"].get(s["id"], {})
+            pr = self.daten.get("profil", {}).get(s["id"], {})
+            aktuell, beste = auswertung.serie(pr.get("tage") or [], heute)
             liste.append({
                 "id": s["id"],
                 "name": s["name"],
@@ -719,6 +727,13 @@ class Spielleiter:
                 "bester_avg": g.get("bester_avg", 0),
                 "n180": g.get("n180", 0), "n140": g.get("n140", 0), "n100": g.get("n100", 0),
                 "arten": g.get("arten", {}),
+                "elo": round(pr.get("elo", auswertung.ELO_START)),
+                "serie": aktuell, "beste_serie": beste,
+                "felder": pr.get("felder", {}),
+                "xy": pr.get("xy", []),
+                "trend": [[e["art"], e["w"], e["s"]] for e in (pr.get("trend") or [])[-30:]],
+                "gegen": pr.get("gegen", {}),
+                "abzeichen": auswertung.abzeichen(g, pr, beste),
             })
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte")}
 

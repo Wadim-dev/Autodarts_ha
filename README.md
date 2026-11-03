@@ -8,7 +8,7 @@
 <h1 align="center">Autodarts for Home Assistant</h1>
 
 <p align="center">
-  Your Autodarts board in Home Assistant – fully local, with a complete X01 game, players, bots, statistics and ready-made dashboard cards.
+  Your Autodarts board in Home Assistant – fully local, with X01, Cricket, training and party games, players, bots, statistics, effects and ready-made dashboard cards.
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Entities](#entities)
-- [Local X01 game](#local-x01-game)
+- [Local games](#local-games)
 - [Actions](#actions)
 - [Automation examples](#automation-examples)
 - [How it works](#how-it-works)
@@ -54,7 +54,8 @@
 |---|---|
 | 🏠 **100 % local** | Talks directly to the Autodarts Board Manager on your board PC. No cloud, no account, no internet needed. |
 | 🎯 **Live darts** | Every dart with field (e.g. `T20`) and exact position on the board, the current visit and the board status – updated every second. |
-| 🏆 **Complete X01 game** | 101 to 901, straight / double / master in and out, legs and sets, bull-off, 1–6 players, bots with adjustable average. |
+| 🏆 **Complete X01 game** | 101 to 901, straight / double / master in and out, legs and sets, bull-off, 1–8 players, bots with adjustable average. |
+| 🎯 **Cricket, training and party games** | Cricket (standard, cut-throat, no score; 15–20, 10–20, random), Around the Clock, Bob's 27, doubles, 121 checkout, highscore, Shanghai, Killer, Halve-It, Golf, Baseball – with rule text, target on the board and bots. |
 | ✏️ **Correct anything** | Undo, add, change or delete any dart of any visit – the whole score is recalculated automatically. |
 | 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score, highest finish, best leg, 180s / 140+ / 100+, wins, history. |
 | 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
@@ -208,7 +209,7 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 | `sensor.autodarts_board_number_of_throws` | Darts on the board *(disabled by default)* |
 | `binary_sensor.autodarts_board_detection_running` | Detection is running |
 | `sensor.autodarts_board_game` | Local game: `idle` / `bull_off` / `running` / `finished` (shown translated), everything else as attributes (players, scores, checkout, visits, statistics) |
-| `event.autodarts_board_game_event` | Fires on game events: `dart`, `triple`, `bull`, `bullseye`, `visit`, `ton`, `ton_forty`, `one_eighty`, `no_score`, `bust`, `three_in_a_bed`, `checkout`, `high_finish`, `nine_darter`, `leg_won`, `set_won`, `match_won`; attributes `player` and, depending on the event, `field`/`points` (darts), `score`/`darts`/`remaining` (visits) or `finish` (checkouts) |
+| `event.autodarts_board_game_event` | Fires on game events: `dart`, `triple`, `bull`, `bullseye`, `visit`, `ton`, `ton_forty`, `one_eighty`, `no_score`, `bust`, `three_in_a_bed`, `checkout`, `high_finish`, `nine_darter`, `leg_won`, `set_won`, `match_won`, and for the other games `nine_marks`, `shanghai`, `killer`, `eliminated`, `halved`, `hole_in_one`; attributes `player` and, depending on the event, `field`/`points` (darts), `score`/`darts`/`remaining` (visits) or `finish` (checkouts) |
 | `sensor.autodarts_board_players` | Number of players, attributes with all players, statistics and recent games |
 | `camera.autodarts_board_camera_1` … `_3` | Board cameras (attribute `kalibrierung` with the calibration points) |
 | `camera.autodarts_board_detection_image`, `_live_image` | Detection image and live image |
@@ -220,11 +221,32 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 
 While the board is off, connection and status show `Offline`; all other board entities are *unavailable*. The game and player sensors always stay available.
 
-## Local X01 game
+## Local games
+
+All games run completely inside Home Assistant: X01, Cricket, five training games and five party games, for 1–8 players, people and bots mixed. The game card shows a short rule text for every game, highlights the current target on the board and has its own effects (nine marks, Shanghai, killer, hole in one …).
+
+| Game | `spiel` | Rules in short | Options |
+|------|---------|----------------|---------|
+| X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets |
+| Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` |
+| Around the Clock | `atc` | 1 to 20, then bull; first through wins | `variante`: `single` (any segment), `double`, `triple` |
+| Bob's 27 | `bobs27` | Start 27; three darts at D1 … D20 and bull; hits add, no hit subtracts; below 0 you are out | – |
+| Doubles | `doppel` | Three darts at every double, one point per hit | – |
+| 121 Checkout | `checkout121` | Nine darts to check out (double out); done +1, missed −1 | `runden` (attempts, default 10) |
+| Highscore | `highscore` | Most points in N visits | `runden` (default 10) |
+| Shanghai | `shanghai` | Round n counts number n; single, double and treble in one visit wins at once | `runden`: 7 or 20 |
+| Killer | `killer` | Hit your double to become a killer, then take the lives of the others with their double | `leben` (default 3) |
+| Halve-It | `halve_it` | 15, 16, any double, 17, 18, any treble, 19, 20, bull; no hit halves your score | – |
+| Golf | `golf` | Hole n = number n; last dart counts (treble 1, double 2, single 3, miss 5); fewest strokes win | `runden`: 9 or 18 holes |
+| Baseball | `baseball` | Nine innings, inning n = number n; single 1, double 2, treble 3 runs | – |
+
+Every game can be played as first to N legs. Statistics of Cricket, training and party games are kept per game (games, wins, best result; Cricket: best MPR) and shown on the players card.
+
+### X01
 
 The game runs completely inside Home Assistant and is stored in `.storage/autodarts.spiel`, so it survives restarts.
 
-- **Players**: up to 6 per game, any mix of people and bots. Bots throw with a realistic scatter for the chosen average (20–120).
+- **Players**: up to 8 per game, any mix of people and bots. Bots throw with a realistic scatter for the chosen average (20–120).
 - **Modes**: start value 101, 170, 301, 501, 701, 901; check-in and check-out `straight`, `double` or `master`; first to N legs or N sets of M legs.
 - **Bull-off**: closest dart to the bull starts; ties throw again.
 - **Darts from the board** are counted automatically. Pulling the darts finishes the visit. Without the board (or for corrections) darts can be entered by hand.
@@ -235,7 +257,7 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 
 | Action | Description |
 |--------|-------------|
-| `autodarts.spiel_starten` | Start a game. Fields: `spieler` (list of player IDs, bots as `bot:55`), `startwert`, `einwurf`, `auswurf` (`straight`/`double`/`master`), `legs`, `sets`, `bull_off`. Without fields the last settings and players are used (rematch). |
+| `autodarts.spiel_starten` | Start a game. Fields: `spiel` (see table above, default `x01`), `variante`, `zahlen`, `runden`, `leben`, `spieler` (list of player IDs, bots as `bot:55`, up to 8), `startwert`, `einwurf`, `auswurf` (`straight`/`double`/`master`), `legs`, `sets`, `bull_off`. Without fields the last settings and players are used (rematch). |
 | `autodarts.spiel_abbrechen` | Cancel the running game (not counted). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
 | `autodarts.rueckgaengig` | Undo the last dart (also after the end of a game). |
@@ -316,6 +338,17 @@ actions:
   - action: autodarts.spiel_starten
 ```
 
+**Start a Cricket game against a bot**
+
+```yaml
+actions:
+  - action: autodarts.spiel_starten
+    data:
+      spiel: cricket
+      variante: cut_throat
+      spieler: ["a1b2c3d4", "bot:60"]
+```
+
 **Start a game against a bot**
 
 ```yaml
@@ -349,7 +382,7 @@ actions:
 Board PC (Autodarts Board Manager, port 3180)
    │  GET /api/state every second · /api/system every 15 s · camera images on demand
    ▼
-Home Assistant ── Autodarts integration ── entities, actions, local X01 game (.storage)
+Home Assistant ── Autodarts integration ── entities, actions, local games (.storage)
    ▼
 Dashboard cards (loaded automatically) · automations · voice assistants
 ```
@@ -358,7 +391,7 @@ Only the documented local endpoints of the Board Manager are used. Camera images
 
 ## Known limitations
 
-- Only **X01** is played locally. Games started in the Autodarts app are not imported (the Autodarts cloud is not used at all).
+- Games started in the Autodarts app are not imported (the Autodarts cloud is not used at all).
 - The integration **polls** the Board Manager every second; there is no push connection yet.
 - Camera settings depend on what the board's cameras report; some boards only offer one resolution or frame rate.
 - One board per Home Assistant installation.
@@ -389,7 +422,7 @@ logger:
 
 **Does it need the Autodarts cloud or a subscription?** No. Everything runs locally between Home Assistant and your board PC.
 
-**Can I still use the Autodarts app?** Yes. The integration only reads the Board Manager; games in the app are not affected. The local X01 game in Home Assistant is independent of the app.
+**Can I still use the Autodarts app?** Yes. The integration only reads the Board Manager; games in the app are not affected. The local games in Home Assistant are independent of the app.
 
 **Can I switch the board PC off with a smart plug?** Yes, that is the intended use. Use the `power_*` options of the overview card for a power button with a nice start-up animation.
 
@@ -416,7 +449,7 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 **Autodarts für Home Assistant** – inoffizielle, komplett lokale Integration für ein Autodarts-Board.
 
 - Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
-- Lokales X01-Spiel: 1–6 Spieler, Bots, Double/Master In und Out, Legs und Sets, Bull-Off, Korrekturen, Statistik
+- Lokale Spiele für 1–8 Spieler, mit Bots: X01 (Double/Master In und Out, Legs und Sets), Cricket (Standard, Cut-Throat, ohne Punkte; 15–20, 10–20, Zufall), Training (Rund um die Uhr, Bob's 27, Doppel, 121 Checkout, Highscore) und Partyspiele (Shanghai, Killer, Halve-It, Golf, Baseball) – mit Regeltext, Ziel auf der Scheibe, Bull-Off, Korrekturen und Statistik
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
 - Vier fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist

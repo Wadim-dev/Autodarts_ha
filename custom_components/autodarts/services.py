@@ -9,11 +9,17 @@ import voluptuous as vol
 
 from .const import DOMAIN
 from .coordinator import DartsEntry
-from .spiel import Spielleiter
+from .spiel import EINSTELLUNGEN, Spielleiter
+from .spielarten import GRUPPEN
 
 MODUS = vol.In(["straight", "double", "master"])
 DIENSTE = {
     "spiel_starten": vol.Schema({
+        vol.Optional("spiel"): vol.In(list(GRUPPEN)),
+        vol.Optional("variante"): cv.string,
+        vol.Optional("zahlen"): vol.In(["classic", "tactics", "random"]),
+        vol.Optional("runden"): vol.Coerce(int),
+        vol.Optional("leben"): vol.Coerce(int),
         vol.Optional("spieler"): vol.All(cv.ensure_list, [cv.string]),
         vol.Optional("startwert"): vol.Coerce(int),
         vol.Optional("einwurf"): MODUS,
@@ -58,7 +64,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
         d = call.data
         name = call.service
         if name == "spiel_starten":
-            await s.starten(d.get("spieler"), {k: d.get(k) for k in ("startwert", "einwurf", "auswurf", "legs", "sets", "bull_off")})
+            await s.starten(d.get("spieler"), {k: d.get(k) for k in EINSTELLUNGEN})
         elif name == "spiel_abbrechen":
             await s.abbrechen()
         elif name == "weiter":

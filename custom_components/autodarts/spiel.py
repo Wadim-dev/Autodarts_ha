@@ -20,7 +20,7 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
-from . import x01
+from . import spielarten, x01
 from .api import Board
 from .const import DOMAIN
 from .coordinator import ZustandKoordinator
@@ -28,9 +28,11 @@ from .coordinator import ZustandKoordinator
 _LOGGER = logging.getLogger(__name__)
 
 SPEICHER_VERSION = 1
-MAX_SPIELER = 6
+MAX_SPIELER = 8
 MAX_VERLAUF = 50
-STANDARD = {"startwert": 501, "einwurf": "straight", "auswurf": "double", "legs": 1, "sets": 0, "bull_off": False}
+STANDARD = {"spiel": "x01", "startwert": 501, "einwurf": "straight", "auswurf": "double", "legs": 1, "sets": 0, "bull_off": False,
+            "variante": "", "zahlen": "classic", "runden": 0, "leben": 3}
+EINSTELLUNGEN = ("spiel", "startwert", "einwurf", "auswurf", "legs", "sets", "bull_off", "variante", "zahlen", "runden", "leben")
 MODI = ("straight", "double", "master")
 STAT_FELDER = ("punkte", "darts", "f9p", "f9d", "versuche", "treffer", "n180", "n140", "n100", "legs", "sets")
 
@@ -145,6 +147,9 @@ class Spielleiter:
         name = st["spieler"][z["s"]]["name"]
         daten = {"player": name, "score": z["p"], "darts": z["d"], "remaining": z["r"]}
         self._ereignis("visit", daten)
+        if st.get("art", "x01") != "x01":
+            self._art_ereignisse(st, z, daten)
+            return
         if z["b"]:
             self._ereignis("bust", daten)
         elif z["p"] == 180:
@@ -173,10 +178,26 @@ class Spielleiter:
         else:
             self._ereignis("leg_won", {"player": name})
 
+    def _art_ereignisse(self, st: dict[str, Any], z: dict[str, Any], daten: dict[str, Any]) -> None:
+        """Events of Cricket, training and party games (180 & co. only in Highscore)."""
+        name = daten["player"]
+        if st["art"] == "highscore" and z["p"] == 180:
+            self._ereignis("one_eighty", daten)
+        namen = {"nine_marks": "nine_marks", "shanghai": "shanghai", "killer": "killer", "halbiert": "halved", "hole_in_one": "hole_in_one"}
+        for tag in z.get("x") or []:
+            if tag in namen:
+                self._ereignis(namen[tag], daten)
+            elif tag.startswith("raus"):
+                q = int(tag[5:]) if tag.startswith("raus:") else z["s"]
+                self._ereignis("eliminated", {"player": st["spieler"][q]["name"]})
+        if z["c"]:
+            ansage = str(st.get("ansage") or "")
+            self._ereignis("match_won" if ansage.startswith("Spiel ") else "leg_won", {"player": name})
+
     def _neu_rechnen(self, speichern: bool = True) -> None:
         sp = self.spiel
         if sp and sp.get("phase") in ("laeuft", "beendet"):
-            self.stand = x01.auswerten(sp)
+            self.stand = spielarten.auswerten(sp)
             if sp["phase"] == "laeuft" and self.stand["gewinner"] is not None:
                 self._spiel_abschliessen()
         else:
@@ -343,7 +364,12 @@ class Spielleiter:
             if st["aufnahme"]["fertig"] or st["leg_gewinner"] is not None:
                 break
             uebrig = 3 - len(st["aufnahme"]["darts"])
-            ziel = x01.bot_ziel(st["spieler"][p]["rest"], uebrig, st["spieler"][p]["offen"], e["einwurf"], e["auswurf"])
+            if st["art"] == "x01":
+                ziel = x01.bot_ziel(st["spieler"][p]["rest"], uebrig, st["spieler"][p]["offen"], e["einwurf"], e["auswurf"])
+            else:
+                ziel = st.get("bot_ziel") or ""
+            if not ziel:
+                break  # z. B. Golf: stehen bleiben
             self._dart_annehmen(x01.bot_wurf(ziel, sigma, self._zufall), vom_board=False)
             self._neu_rechnen_ohne_bot()
             await _pause(1.2)
@@ -353,7 +379,7 @@ class Spielleiter:
 
     def _neu_rechnen_ohne_bot(self) -> None:
         sp = self._laufend
-        self.stand = x01.auswerten(sp)
+        self.stand = spielarten.auswerten(sp)
         if self.stand["gewinner"] is not None:
             self._spiel_abschliessen()
         self._speichern()
@@ -372,10 +398,16 @@ class Spielleiter:
             "gewinner": sp["spieler"][st["gewinner"]]["name"],
             "spieler": [
                 {"name": s["name"], "avg": s["avg"], "legs": s["legs"], "sets": s["sets"], "sieger": k == st["gewinner"], "bot": s.get("bot")}
+                | ({"wert": s["rest"]} if st["art"] != "x01" else {})
                 for k, s in enumerate(st["spieler"])
             ],
         }
+        if st["art"] != "x01":
+            eintrag["art"] = st["art"]
         self.daten["verlauf"] = [eintrag, *self.daten.get("verlauf", [])][:MAX_VERLAUF]
+        if st["art"] != "x01":
+            self._art_statistik(st, +1)
+            return
         for k, s in enumerate(sp["spieler"]):
             if not s.get("id"):
                 continue
@@ -392,10 +424,31 @@ class Spielleiter:
             avg = round(roh["punkte"] / roh["darts"] * 3, 2) if roh["darts"] else 0
             ges["bester_avg"] = max(ges.get("bester_avg", 0), avg)
 
+    def _art_statistik(self, st: dict[str, Any], vorzeichen: int) -> None:
+        """Gesamtstatistik je Spielart (Cricket, Training, Party): Spiele, Siege, Darts, Marks, Bestwert."""
+        art = st["art"]
+        for k, s in enumerate(self._laufend["spieler"]):
+            if not s.get("id"):
+                continue
+            ges = self.daten["statistik"].setdefault(s["id"], {}).setdefault("arten", {}).setdefault(art, {})
+            roh = st["statistik"][k]
+            ges["spiele"] = max(0, ges.get("spiele", 0) + vorzeichen)
+            ges["siege"] = max(0, ges.get("siege", 0) + (vorzeichen if k == st["gewinner"] else 0))
+            for f in ("darts", "marks", "aufnahmen"):
+                ges[f] = max(0, ges.get(f, 0) + vorzeichen * roh[f])
+            if vorzeichen > 0:
+                # Cricket: beste MPR; sonst Endstand (Golf: weniger ist besser)
+                wert = st["spieler"][k]["avg" if art == "cricket" else "rest"]
+                besser = art == "cricket" or spielarten.ARTEN[art].mehr_ist_besser
+                if "best" not in ges or (wert > ges["best"] if besser else wert < ges["best"]):
+                    ges["best"] = wert
+
     # ---------- Dienste ----------
 
     async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any]) -> None:
         e = {**self.daten["letzte"], **{k: v for k, v in einstellungen.items() if v is not None}}
+        if e["spiel"] not in spielarten.GRUPPEN:
+            raise _fehler("invalid_game")
         if int(e["startwert"]) not in (101, 170, 301, 501, 701, 901):
             raise _fehler("invalid_start_value")
         if e["einwurf"] not in MODI or e["auswurf"] not in MODI:
@@ -403,6 +456,10 @@ class Spielleiter:
         e["legs"] = max(1, min(int(e["legs"]), 21))
         e["sets"] = max(0, min(int(e.get("sets") or 0), 13))
         e["bull_off"] = bool(e.get("bull_off"))
+        e["runden"] = max(0, min(int(e.get("runden") or 0), 30))
+        e["leben"] = max(1, min(int(e.get("leben") or 3), 9))
+        e["variante"] = str(e.get("variante") or "")
+        e["zahlen"] = str(e.get("zahlen") or "classic")
         eintraege = eintraege or e.get("spieler") or []
         spieler = []
         bekannt = {s["id"]: s for s in self.daten["spieler"]}
@@ -418,7 +475,9 @@ class Spielleiter:
         e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
         self.daten["letzte"] = e
         self._bot_stoppen()
-        einst = {k: e[k] for k in ("startwert", "einwurf", "auswurf", "legs", "sets", "bull_off")}
+        einst = {k: e[k] for k in EINSTELLUNGEN}
+        if e["spiel"] != "x01":
+            einst["sets"] = 0
         bulloff = e["bull_off"] and len(spieler) > 1
         self.daten["spiel"] = {
             "id": uuid.uuid4().hex[:8],
@@ -511,7 +570,10 @@ class Spielleiter:
 
     def _statistik_abziehen(self) -> None:
         """Rückgängig nach Spielende: Gesamtstatistik wieder abziehen (Bestwerte bleiben)."""
-        st = x01.auswerten(self._laufend)
+        st = spielarten.auswerten(self._laufend)
+        if st["art"] != "x01":
+            self._art_statistik(st, -1)
+            return
         for k, s in enumerate(self._laufend["spieler"]):
             ges = self.daten["statistik"].get(s.get("id") or "")
             if not ges:
@@ -627,7 +689,8 @@ class Spielleiter:
                             for s in sp["spieler"]]
             return a
         st = self.stand or {}
-        a.update({k: st.get(k) for k in ("am_zug", "aufnahme", "weg", "spieler", "gewinner", "leg_gewinner", "leg", "set", "ansage", "ansage_id")})
+        a.update({k: st.get(k) for k in ("am_zug", "aufnahme", "weg", "spieler", "gewinner", "leg_gewinner", "leg", "set", "ansage", "ansage_id",
+                                         "art", "zahlen", "runden", "ziel")})
         a["reihenfolge"] = sp["reihenfolge"]
         a["bot_wirft"] = bool(self._bot_aufgabe and not self._bot_aufgabe.done())
         a["aufnahmen"] = len(sp["aufnahmen"])
@@ -655,6 +718,7 @@ class Spielleiter:
                 "bestes_leg": g.get("bestes_leg", 0),
                 "bester_avg": g.get("bester_avg", 0),
                 "n180": g.get("n180", 0), "n140": g.get("n140", 0), "n100": g.get("n100", 0),
+                "arten": g.get("arten", {}),
             })
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte")}
 
@@ -668,7 +732,21 @@ def _rund(v: Any) -> Any:
     return round(v, 3) if isinstance(v, (int, float)) else None
 
 
+ART_NAMEN = {"cricket": "Cricket", "atc": "Rund um die Uhr", "bobs27": "Bob's 27", "doppel": "Doppel-Training", "checkout121": "121 Checkout",
+             "highscore": "Highscore", "shanghai": "Shanghai", "killer": "Killer", "halve_it": "Halve-It", "golf": "Golf", "baseball": "Baseball"}
+
+
 def modus_text(e: dict[str, Any]) -> str:
+    art = e.get("spiel") or "x01"
+    if art != "x01":
+        teile = [ART_NAMEN.get(art, art)]
+        if art == "cricket":
+            teile += [{"cut_throat": "Cut-Throat", "no_score": "Ohne Punkte"}.get(e.get("variante") or "", "Standard")]
+            if e.get("zahlen") in ("tactics", "random"):
+                teile.append({"tactics": "Tactics", "random": "Zufall"}[e["zahlen"]])
+        if int(e.get("legs") or 1) > 1:
+            teile.append(f"Erster bis {e['legs']} Legs")
+        return " · ".join(teile)
     teile = [str(e["startwert"])]
     if e["einwurf"] != "straight":
         teile.append({"double": "Double In", "master": "Master In"}[e["einwurf"]])

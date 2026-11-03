@@ -15,8 +15,8 @@
       sc_off: 'Board off', sc_starting: 'Starting …', sc_stopping: 'Shutting down …', sc_ready: 'Ready – throw!', sc_takeout: 'Remove darts', sc_calib: 'Calibrating …', sc_stopped: 'Detection stopped', sc_lost: 'Connection lost',
       dart_of: 'Dart {n} of 3 · {s} so far', visit_pts: 'Visit {s} points', pc_running: 'PC is running, Autodarts is starting', about_minute: 'Takes about a minute', plug_after: 'The plug switches off afterwards',
       plug_on: 'Plug on', ready_hint: 'Throw a dart to start', game_running: 'Game running', back: 'Back', missing: 'Autodarts integration not found',
-      new_game: 'New game', game_over: 'Game over', darts: 'Darts', local: 'X01 – local in Home Assistant', cancel_game: 'Cancel game', caller: 'Caller', fullscreen: 'Full screen',
-      nobody: 'Nobody yet – tap below.', of6: '{n} of 6', shuffle: 'Shuffle order', new_player: 'New player', bot: 'Bot', bot_level: 'Bot level (average)', average: 'Average',
+      new_game: 'New game', game_over: 'Game over', darts: 'Darts', local: 'Local in Home Assistant', cancel_game: 'Cancel game', caller: 'Caller', fullscreen: 'Full screen',
+      nobody: 'Nobody yet – tap below.', of6: '{n} of 8', shuffle: 'Shuffle order', new_player: 'New player', bot: 'Bot', bot_level: 'Bot level (average)', average: 'Average',
       game: 'Game', start_value: 'Start value', legs_per_set: 'Legs per set', first_to: 'First to', checkout: 'Check-out', checkin: 'Check-in', more: 'More settings',
       sets_first: 'Sets (first to)', no_sets: 'no sets', sets_to: 'Sets: first to {n}', bulloff_who: 'Bull-off (who starts)', bulloff_onoff: 'Bull-off {v}', off_w: 'off', on_w: 'on',
       board_off_hint: 'The board is off. Without the board you can only enter darts by hand.', start_game: 'Start game', move_up: 'move up', remove: 'remove',
@@ -43,15 +43,39 @@
       recent: 'Recent games', no_game_yet: 'No finished game yet.', reset_all: 'Reset everything', del_all: 'Delete statistics of all players and game history', del_all_q: 'Sure? This cannot be undone',
       players_stay: 'The players themselves are kept.', save: 'Save',
       effects: 'Effects', fx_nine: 'NINE-DARTER', fx_perfect: 'The perfect leg', fx_match: 'and the match, {n}', fx_set: 'and the set, {n}', fx_leg: 'Leg {n}', fx_bust: 'BUST',
-      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local X01 game: lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games'
+
+      g_x01: 'X01', g_cricket: 'Cricket', g_training: 'Training', g_party: 'Party', game_type: 'Game type',
+      a_cricket: 'Cricket', a_atc: 'Around the Clock', a_bobs27: "Bob's 27", a_doppel: 'Doubles', a_checkout121: '121 Checkout', a_highscore: 'Highscore',
+      a_shanghai: 'Shanghai', a_killer: 'Killer', a_halve_it: 'Halve-It', a_golf: 'Golf', a_baseball: 'Baseball',
+      h_cricket: 'Close 15–20 and the bull with three marks each. Extra marks on a number you closed score points as long as an opponent has it open.',
+      h_cut_throat: 'Cut-Throat: your extra marks give points to every opponent who has the number open. Lowest score wins.',
+      h_no_score: 'No points: whoever closes all numbers first wins.',
+      h_atc: 'Hit 1 to 20 in order, then the bull. First one through wins.',
+      h_bobs27: 'Start with 27. Three darts at D1, D2 … D20 and the bull. Every hit adds the double, no hit subtracts it. Below 0 you are out.',
+      h_doppel: 'Three darts at every double from D1 to D20 and the bull. Every hit is a point.',
+      h_checkout121: 'Check out 121 with nine darts (double out). Done: next target +1, missed: −1. Most checkouts win.',
+      h_highscore: 'Score as many points as possible in a fixed number of visits.',
+      h_shanghai: 'Round n only counts number n. Single, double and treble of it in one visit (Shanghai) wins at once.',
+      h_killer: 'Everyone gets a number. Hit your double to become a killer, then hit the doubles of the others to take their lives. Careful: as a killer, your own double costs you a life.',
+      h_halve_it: 'Targets 15, 16, any double, 17, 18, any treble, 19, 20, bull. Start with 40 – no hit on the target halves your score.',
+      h_golf: 'Hole n is number n. The last dart counts: treble 1, double 2, single 3, miss 5 strokes. Stop early with Next. Fewest strokes win.',
+      h_baseball: 'Nine innings, inning n is number n. Single 1, double 2, treble 3 runs. Most runs win.',
+      variant: 'Variant', v_standard: 'Standard', v_cut_throat: 'Cut-Throat', v_no_score: 'No score', numbers: 'Numbers', z_classic: '15–20', z_tactics: '10–20', z_random: 'Random',
+      area: 'Segment', any: 'any', rounds: 'Visits', holes: 'Holes', lives: 'Lives', target: 'Target', round_of: 'Round {n} of {m}', inning_of: 'Inning {n} of {m}', hole_of: 'Hole {n} of {m}',
+      mpr: 'MPR', marks: 'Marks', hits: 'hits', out_w: 'out', done_w: 'done', attempt: 'Attempt {n} of 3', target_n: 'Target {n}', golf_hint: 'Last dart counts – Next keeps it',
+      any_double: 'any double', any_triple: 'any treble', points: 'Points', strokes: 'Strokes', runs: 'Runs', checks: 'Checkouts', best: 'Best', killer_w: 'Killer', number_w: 'Number',
+      hit_double: '{n}: hit D{z} to become a killer', killer_aims: '{n} is a killer – hit the doubles of the others', place: 'Place', ranking: 'Ranking', score: 'Score',
+      fx_win: 'WINNER', fx_marks: '{n} MARKS', fx_killer: 'KILLER', fx_life: 'HIT!', fx_out: 'OUT', fx_halved: 'HALVED', fx_hio: 'HOLE IN ONE', fx_homerun: 'HOME RUN',
+      fx_done: 'DONE', fx_check: 'CHECKED', fx_missed: 'MISSED', fx_closed: '{z} closed', fx_lives: '{n} lives left', fx_life1: '1 life left',
+      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games'
     },
     de: {
       dart: 'Dart', visit: 'Aufnahme', on: 'Einschalten', off: 'Ausschalten', off_q: 'Wirklich aus?', play: 'Spielen', manager: 'Board Manager', players: 'Spieler',
       sc_off: 'Board aus', sc_starting: 'Startet …', sc_stopping: 'Fährt herunter …', sc_ready: 'Bereit – wirf!', sc_takeout: 'Darts ziehen', sc_calib: 'Kalibriert …', sc_stopped: 'Erkennung gestoppt', sc_lost: 'Verbindung kurz weg',
       dart_of: 'Dart {n} von 3 · bisher {s}', visit_pts: 'Aufnahme {s} Punkte', pc_running: 'PC läuft, Autodarts startet', about_minute: 'Dauert etwa eine Minute', plug_after: 'Steckdose geht danach aus',
       plug_on: 'Steckdose an', ready_hint: 'Wirf einen Dart zum Start', game_running: 'Spiel läuft', back: 'Zurück', missing: 'Integration „Autodarts“ nicht gefunden',
-      new_game: 'Neues Spiel', game_over: 'Spielende', darts: 'Darts', local: 'X01 – lokal in Home Assistant', cancel_game: 'Spiel abbrechen', caller: 'Ansage', fullscreen: 'Vollbild',
-      nobody: 'Noch niemand dabei – unten antippen.', of6: '{n} von 6', shuffle: 'Reihenfolge mischen', new_player: 'Neuer Spieler', bot: 'Bot', bot_level: 'Bot-Stärke (Average)', average: 'Average',
+      new_game: 'Neues Spiel', game_over: 'Spielende', darts: 'Darts', local: 'Lokal in Home Assistant', cancel_game: 'Spiel abbrechen', caller: 'Ansage', fullscreen: 'Vollbild',
+      nobody: 'Noch niemand dabei – unten antippen.', of6: '{n} von 8', shuffle: 'Reihenfolge mischen', new_player: 'Neuer Spieler', bot: 'Bot', bot_level: 'Bot-Stärke (Average)', average: 'Average',
       game: 'Spiel', start_value: 'Startwert', legs_per_set: 'Legs je Satz', first_to: 'Erster bis', checkout: 'Auswurf', checkin: 'Einwurf', more: 'Weitere Einstellungen',
       sets_first: 'Sets (erster bis)', no_sets: 'ohne Sets', sets_to: 'Sets: erster bis {n}', bulloff_who: 'Bull-Off (wer anfängt)', bulloff_onoff: 'Bull-Off {v}', off_w: 'aus', on_w: 'an',
       board_off_hint: 'Das Board ist aus. Ohne Board kannst du nur von Hand eintragen.', start_game: 'Spiel starten', move_up: 'nach oben', remove: 'entfernen',
@@ -78,7 +102,31 @@
       recent: 'Letzte Spiele', no_game_yet: 'Noch kein Spiel beendet.', reset_all: 'Alles zurücksetzen', del_all: 'Statistik aller Spieler und Spielverlauf löschen', del_all_q: 'Sicher? Lässt sich nicht rückgängig machen',
       players_stay: 'Die Spieler selbst bleiben.', save: 'Speichern',
       effects: 'Effekte', fx_nine: 'NEUN-DARTER', fx_perfect: 'Das perfekte Leg', fx_match: 'Spiel für {n}', fx_set: 'Satz für {n}', fx_leg: 'Leg für {n}', fx_bust: 'ÜBERWORFEN',
-      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokales X01-Spiel: Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele'
+
+      g_x01: 'X01', g_cricket: 'Cricket', g_training: 'Training', g_party: 'Party', game_type: 'Spielart',
+      a_cricket: 'Cricket', a_atc: 'Rund um die Uhr', a_bobs27: "Bob's 27", a_doppel: 'Doppel-Training', a_checkout121: '121 Checkout', a_highscore: 'Highscore',
+      a_shanghai: 'Shanghai', a_killer: 'Killer', a_halve_it: 'Halve-It', a_golf: 'Golf', a_baseball: 'Baseball',
+      h_cricket: 'Schließe 15–20 und Bull mit je drei Treffern (Marks). Weitere Treffer auf deinen geschlossenen Zahlen bringen Punkte, solange ein Gegner sie noch offen hat.',
+      h_cut_throat: 'Cut-Throat: Deine zusätzlichen Treffer geben jedem Gegner Punkte, der die Zahl noch offen hat. Wenigste Punkte gewinnen.',
+      h_no_score: 'Ohne Punkte: Wer zuerst alle Zahlen schließt, gewinnt.',
+      h_atc: 'Triff 1 bis 20 der Reihe nach, dann Bull. Wer zuerst durch ist, gewinnt.',
+      h_bobs27: 'Start mit 27. Je drei Darts auf D1, D2 … D20 und Bull. Jeder Treffer bringt das Doppelte, kein Treffer kostet es. Unter 0 bist du raus.',
+      h_doppel: 'Je drei Darts auf jedes Doppel von D1 bis D20 und Bull. Jeder Treffer ist ein Punkt.',
+      h_checkout121: 'Checke 121 mit neun Darts aus (Double Out). Geschafft: nächstes Ziel +1, verfehlt: −1. Die meisten Checkouts gewinnen.',
+      h_highscore: 'So viele Punkte wie möglich in einer festen Zahl von Aufnahmen.',
+      h_shanghai: 'In Runde n zählt nur die Zahl n. Single, Double und Triple davon in einer Aufnahme (Shanghai) gewinnt sofort.',
+      h_killer: 'Jeder bekommt eine Zahl. Triff dein Double, dann bist du Killer und nimmst den anderen mit ihrem Double Leben. Vorsicht: Als Killer kostet dich dein eigenes Double ein Leben.',
+      h_halve_it: 'Ziele 15, 16, ein Double, 17, 18, ein Triple, 19, 20, Bull. Start mit 40 – kein Treffer aufs Ziel halbiert deinen Stand.',
+      h_golf: 'Loch n ist die Zahl n. Der letzte Dart zählt: Triple 1, Double 2, Single 3, daneben 5 Schläge. Mit Weiter früher aufhören. Wenigste Schläge gewinnen.',
+      h_baseball: 'Neun Innings, Inning n ist die Zahl n. Single 1, Double 2, Triple 3 Runs. Die meisten Runs gewinnen.',
+      variant: 'Variante', v_standard: 'Standard', v_cut_throat: 'Cut-Throat', v_no_score: 'Ohne Punkte', numbers: 'Zahlen', z_classic: '15–20', z_tactics: '10–20', z_random: 'Zufall',
+      area: 'Bereich', any: 'alle', rounds: 'Aufnahmen', holes: 'Löcher', lives: 'Leben', target: 'Ziel', round_of: 'Runde {n} von {m}', inning_of: 'Inning {n} von {m}', hole_of: 'Loch {n} von {m}',
+      mpr: 'MPR', marks: 'Marks', hits: 'Treffer', out_w: 'raus', done_w: 'fertig', attempt: 'Versuch {n} von 3', target_n: 'Ziel {n}', golf_hint: 'Letzter Dart zählt – Weiter behält ihn',
+      any_double: 'beliebiges Double', any_triple: 'beliebiges Triple', points: 'Punkte', strokes: 'Schläge', runs: 'Runs', checks: 'Checkouts', best: 'Bestes', killer_w: 'Killer', number_w: 'Zahl',
+      hit_double: '{n}: triff D{z}, um Killer zu werden', killer_aims: '{n} ist Killer – triff die Doubles der anderen', place: 'Platz', ranking: 'Rangliste', score: 'Stand',
+      fx_win: 'SIEG', fx_marks: '{n} MARKS', fx_killer: 'KILLER', fx_life: 'TREFFER!', fx_out: 'RAUS', fx_halved: 'HALBIERT', fx_hio: 'HOLE IN ONE', fx_homerun: 'HOME RUN',
+      fx_done: 'GESCHAFFT', fx_check: 'GECHECKT', fx_missed: 'VERFEHLT', fx_closed: '{z} zu', fx_lives: 'noch {n} Leben', fx_life1: 'noch 1 Leben',
+      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele'
     }
   };
   const sprache = h => { const l = String((h && ((h.locale && h.locale.language) || h.language)) || navigator.language || 'en'); return l.slice(0, 2) === 'de' ? 'de' : 'en'; };
@@ -147,6 +195,13 @@ button:disabled{opacity:.38;cursor:default;transform:none}
   // game phase from the attributes (language independent)
   const phase = a => ({ bulloff: 'bulloff', laeuft: 'running', beendet: 'finished' }[a && a.phase] || 'idle');
   const modusText = e => {
+    if (e && e.spiel && e.spiel !== 'x01') {
+      const teile = [t('a_' + e.spiel)];
+      if (e.spiel === 'cricket') { teile.push(t('v_' + (e.variante || 'standard'))); if (e.zahlen === 'tactics' || e.zahlen === 'random') teile.push(t('z_' + e.zahlen)); }
+      if (e.spiel === 'atc' && e.variante && e.variante !== 'single') teile.push(t(e.variante === 'double' ? 'double' : 'treble'));
+      if (+e.legs > 1) teile.push(t('first_legs', { n: e.legs }));
+      return teile.join(' · ');
+    }
     if (!e || !e.startwert) return '';
     const teile = [String(e.startwert)];
     if (e.einwurf === 'double') teile.push(t('din')); else if (e.einwurf === 'master') teile.push(t('min'));
@@ -528,6 +583,26 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
   const STARTWERTE = [101, 170, 301, 501, 701, 901];
   const MODUS = [['straight', 'Straight'], ['double', 'Double'], ['master', 'Master']];
   const BOTS = [20, 30, 40, 50, 60, 70, 80, 90, 100];
+  const GRUPPE = { x01: 'x01', cricket: 'cricket', atc: 'training', bobs27: 'training', doppel: 'training', checkout121: 'training', highscore: 'training',
+    shanghai: 'party', killer: 'party', halve_it: 'party', golf: 'party', baseball: 'party' };
+  const ART_ICON = { x01: 'mdi:numeric', cricket: 'mdi:grid', training: 'mdi:dumbbell', party: 'mdi:party-popper',
+    atc: 'mdi:clock-outline', bobs27: 'mdi:numeric-2-circle-outline', doppel: 'mdi:circle-double', checkout121: 'mdi:flag-checkered', highscore: 'mdi:trending-up',
+    shanghai: 'mdi:dice-multiple-outline', killer: 'mdi:skull-outline', halve_it: 'mdi:division', golf: 'mdi:golf', baseball: 'mdi:baseball' };
+  // options per game: [setting, [[value, text key or text], …]]
+  const ART_OPT = {
+    cricket: [['variante', [['standard', 'v_standard'], ['cut_throat', 'v_cut_throat'], ['no_score', 'v_no_score']]], ['zahlen', [['classic', 'z_classic'], ['tactics', 'z_tactics'], ['random', 'z_random']]]],
+    atc: [['variante', [['single', 'any'], ['double', 'double'], ['triple', 'treble']]]],
+    checkout121: [['runden', [[5, '5'], [10, '10'], [20, '20']]]],
+    highscore: [['runden', [[5, '5'], [10, '10'], [20, '20']]]],
+    shanghai: [['runden', [[7, '1–7'], [20, '1–20']]]],
+    golf: [['runden', [[9, '9'], [18, '18']]]],
+    killer: [['leben', [[1, '1'], [3, '3'], [5, '5']]]]
+  };
+  const OPT_TITEL = { variante: 'variant', zahlen: 'numbers', runden: 'rounds', leben: 'lives' };
+  const OPT_STANDARD = { variante: { cricket: 'standard', atc: 'single' }, runden: { checkout121: 10, highscore: 10, shanghai: 7, golf: 9 } };
+  // marks in cricket: /, X, circled X
+  const MARK = ['', '<svg viewBox="0 0 24 24"><path d="M6 19L18 5"/></svg>', '<svg viewBox="0 0 24 24"><path d="M6 19L18 5M6 5l12 14"/></svg>',
+    '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 16.5l9-9M7.5 7.5l9 9"/></svg>'];
   const BRETT_CX = 60, BRETT_K = 52;
   const brettP = (r, w) => { const a = (w - 90) * Math.PI / 180; return [BRETT_CX + r * Math.cos(a), BRETT_CX + r * Math.sin(a)]; };
   // position of a dart on the drawn board (viewBox 0 0 120 120)
@@ -539,7 +614,23 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     const n = parseInt(x.slice(1), 10), w = ORDER.indexOf(n) * 18 + [-4, 3, 0][i];
     return P(x[0] === 'T' ? 103 * k : x[0] === 'D' ? 166 * k : (x[0] === 'S' ? 135 * k : 50), w);
   };
-  const brett = darts => {
+  // highlight of the current target on the drawn board: a number (whole wedge), D/T ring of a number, any double/treble ring, bull
+  const zielMarke = ziel => {
+    if (!ziel) return '';
+    const P = brettP, k = BRETT_K / 170;
+    const bogen = (r1, r2, w1, w2) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return 'M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z'; };
+    let d = '';
+    if (ziel === 'B' || ziel === 'S25' || ziel === 'D25' || ziel === '25') d = 'M60 ' + f1(60 - 15.9 * k) + 'a' + f1(15.9 * k) + ' ' + f1(15.9 * k) + ' 0 1 0 .01 0Z';
+    else if (ziel === 'D' || ziel === 'T') { const r = ziel === 'D' ? [162, 170] : [99, 107]; d = 'M60 ' + f1(60 - r[1] * k) + 'a' + f1(r[1] * k) + ' ' + f1(r[1] * k) + ' 0 1 0 .01 0ZM60 ' + f1(60 - r[0] * k) + 'a' + f1(r[0] * k) + ' ' + f1(r[0] * k) + ' 0 1 0 .01 0Z'; }
+    else {
+      const m = /^([SDT]?)(\d+)$/.exec(ziel); if (!m) return '';
+      const w1 = ORDER.indexOf(+m[2]) * 18 - 9; if (w1 < -9) return '';
+      const r = { D: [162, 170], T: [99, 107], S: [15.9, 162], '': [15.9, 170] }[m[1]];
+      d = bogen(r[0] * k, r[1] * k, w1, w1 + 18);
+    }
+    return '<path class="zm" d="' + d + '" fill-rule="evenodd"/>';
+  };
+  const brett = (darts, ziel) => {
     const P = brettP;
     const sek = (r1, r2, w1, w2, f) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return '<path d="M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z" fill="' + f + '"/>'; };
     const k = BRETT_K / 170;
@@ -549,7 +640,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
       s += sek(15.9 * k, 99 * k, w1, w2, e) + sek(99 * k, 107 * k, w1, w2, f) + sek(107 * k, 162 * k, w1, w2, e) + sek(162 * k, 170 * k, w1, w2, f);
       const [x, y] = P(56.5, i * 18); s += '<text x="' + f1(x) + '" y="' + f1(y + 1.8) + '">' + n + '</text>';
     });
-    s += '<circle cx="60" cy="60" r="' + f1(15.9 * k) + '" fill="#2e7d32"/><circle cx="60" cy="60" r="' + f1(6.35 * k) + '" fill="#c62828"/>';
+    s += '<circle cx="60" cy="60" r="' + f1(15.9 * k) + '" fill="#2e7d32"/><circle cx="60" cy="60" r="' + f1(6.35 * k) + '" fill="#c62828"/>' + zielMarke(ziel);
     (darts || []).forEach((d, i) => {
       const p = brettPos(d, i);
       s += '<g transform="translate(' + f1(p[0]) + ' ' + f1(p[1]) + ')"><circle r="3.6" fill="' + ['#ff5252', '#40c4ff', '#ffd740'][i] + '" stroke="#000" stroke-width="1"/><text y="1.6" font-size="4.4" fill="#000">' + (i + 1) + '</text></g>';
@@ -677,7 +768,43 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .boz b{flex:1}.boz span{color:var(--secondary-text-color)}
 .viele .sk{padding:8px 10px}.viele .sk .sr{font-size:38px;margin:2px 0 0}.viele .sk .sa{font-size:11.5px}
 @container (min-width:700px){.mitte{grid-template-columns:1.4fr 1fr}.sk .sr{font-size:64px}}
-@container (max-width:420px){.sk .sr{font-size:44px}.spieler{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}.dz b{font-size:22px}}`;
+@container (max-width:420px){.sk .sr{font-size:44px}.spieler{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}.dz b{font-size:22px}}
+.arten{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.arten button{display:flex;flex-direction:column;align-items:center;gap:4px;border-radius:14px;padding:10px 4px;font-size:13px;font-weight:700}
+.arten button ha-icon{--mdc-icon-size:22px}
+.arten button.an,.achips button.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color);color:var(--primary-color)}
+.achips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.achips button{display:flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600}
+.achips button ha-icon{--mdc-icon-size:18px}
+.regel{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--secondary-text-color);margin:10px 2px 2px}
+.regel ha-icon{--mdc-icon-size:18px;flex:none;margin-top:1px}
+.zm{fill:rgba(0,229,255,.28);stroke:#00e5ff;stroke-width:.9;animation:ad-ziel 1.6s ease-in-out infinite}
+@keyframes ad-ziel{50%{fill:rgba(0,229,255,.12)}}
+@media (prefers-reduced-motion:reduce){.zm{animation:none}}
+.ziel{display:inline-flex;align-items:center;gap:8px;margin:10px auto 0;padding:6px 16px;border-radius:999px;font-weight:800;font-size:20px;background:color-mix(in srgb,#00e5ff 18%,transparent);color:var(--primary-text-color);border:1px solid color-mix(in srgb,#00e5ff 55%,transparent)}
+.ziel small{font-size:12.5px;font-weight:600;color:var(--secondary-text-color)}
+.sk .zk{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:6px;background:color-mix(in srgb,#00e5ff 16%,transparent)}
+.sk.raus{opacity:.38;filter:grayscale(1)}
+.sk .herz{color:var(--red-color,#e53935);letter-spacing:1px}
+.sk .kil{font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;background:var(--red-color,#e53935);color:#fff;margin-left:4px}
+.ct{display:grid;gap:0;border-radius:18px;overflow:hidden}
+.ct .r{display:grid;grid-template-columns:var(--sp);align-items:center;min-height:40px;border-top:1px solid color-mix(in srgb,var(--primary-text-color) 8%,transparent)}
+.ct .r:first-child{border-top:none}
+.ct .r>*{text-align:center;padding:4px 2px;height:100%;display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.ct .kopf>*{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:8px 4px}
+.ct .z{font-weight:800;font-size:18px}
+.ct .r.zu .z{color:var(--secondary-text-color);text-decoration:line-through;opacity:.6}
+.ct .r.zu .m svg{opacity:.45}
+.ct .akt{background:color-mix(in srgb,var(--red-color,#e53935) 12%,transparent)}
+.ct .m svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.ct .m.v3 svg{stroke:var(--green-color,#43a047)}
+.ct .pk>*{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.ct .mp>*{font-size:12.5px;color:var(--secondary-text-color)}
+.rang{display:grid;gap:6px;margin-top:12px}
+.rang div{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;font-size:15px}
+.rang b{font-size:20px;font-variant-numeric:tabular-nums}
+.rang span:first-child{font-weight:800;color:var(--secondary-text-color)}
+.rang .g span:first-child{color:var(--amber-color,#ffc107)}`;
   const KAMERA_KEYS = ['camera.camera_1', 'camera.camera_2', 'camera.camera_3'];
   /* ---------- effects: one-shot animations for what happens at the board ----------
      Triggered only by new darts and finished visits (never by undo or corrections), CSS transforms and
@@ -826,8 +953,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     _lobbyStart() {
       const l = att(this._h, this._spieler).letzte || {};
       this._lob = {
-        spieler: (l.spieler || []).slice(0, 6), startwert: l.startwert || 501, legs: l.legs || 1, sets: l.sets || 0,
-        einwurf: l.einwurf || 'straight', auswurf: l.auswurf || 'double', bull_off: !!l.bull_off
+        spieler: (l.spieler || []).slice(0, 8), startwert: l.startwert || 501, legs: l.legs || 1, sets: l.sets || 0,
+        einwurf: l.einwurf || 'straight', auswurf: l.auswurf || 'double', bull_off: !!l.bull_off,
+        spiel: l.spiel || 'x01', variante: l.variante || '', zahlen: l.zahlen || 'classic', runden: l.runden || 0, leben: l.leben || 3
       };
     }
     _sichtbar() { this._wach(); this._lvStrom(); }
@@ -839,9 +967,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const id = this._ansicht(), h = this._h;
       return id && id !== 'grafik' && phase(att(h, this._spiel)) === 'running' && boardOnline(h) && an(h, E(h, 'binary_sensor.detection_running')) && !!entzerrung(att(h, id).kalibrierung);
     }
-    _brettHtml(darts) {
+    _brettHtml(darts, ziel) {
       const id = this._ansicht(), nr = this._ansichtNr();
-      if (!this._lvSoll()) return '<div class="brett grafik" data-act="ansicht" title="' + t('tap_view') + '">' + brett(darts) + (id !== 'grafik' ? '<div class="bk"><span>' + (boardOnline(this._h) ? t('cams_off') : t('sc_off')) + ' – ' + t('graphic') + '</span></div>' : '') + '</div>';
+      if (!this._lvSoll()) return '<div class="brett grafik" data-act="ansicht" title="' + t('tap_view') + '">' + brett(darts, ziel) + (id !== 'grafik' ? '<div class="bk"><span>' + (boardOnline(this._h) ? t('cams_off') : t('sc_off')) + ' – ' + t('graphic') + '</span></div>' : '') + '</div>';
       const netz = this._netzAn();
       const pf = (darts || []).map((d, i) => { const [x, y] = dartMM(d, i); return '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><circle r="15" fill="' + ['#ff5252', '#40c4ff', '#ffd740'][i] + '"/><text y="6.5">' + (i + 1) + '</text></g>'; }).join('');
       return '<div class="brett live" data-act="ansicht" title="' + t('tap_view') + '"><div class="lvh"></div>' +
@@ -971,6 +1099,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (klang && this._ansage()) fxKlang(klang);
     }
     _fxAufnahme(z, a) {
+      if (a.art && a.art !== 'x01' && (a.art !== 'highscore' || z.c)) return this._fxArt(z, a);
       const sp = a.spieler || [], wer = (sp[z.s] || {}).name || '', p = z.p, d = z.d || [];
       const wort = (x, lang) => '<div class="wort' + (lang ? ' lang' : '') + '">' + esc(x) + '<span class="glanz"></span></div>';
       const unter = (x, y) => '<div class="unter">' + esc(x) + '</div>' + (y ? '<div class="unter2">' + esc(y) + '</div>' : '');
@@ -1037,7 +1166,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     _lobby() {
       const h = this._h, L = this._lob, alle = att(h, this._spieler).spieler || [], name = id => (alle.find(s => s.id === id) || {}).name;
       L.spieler = L.spieler.filter(x => x.startsWith('bot:') || name(x));
-      if (this._wartName) { const n = alle.find(s => s.name.toLowerCase() === this._wartName); if (n) { this._wartName = null; if (!L.spieler.includes(n.id) && L.spieler.length < 6) L.spieler.push(n.id); } }
+      if (this._wartName) { const n = alle.find(s => s.name.toLowerCase() === this._wartName); if (n) { this._wartName = null; if (!L.spieler.includes(n.id) && L.spieler.length < 8) L.spieler.push(n.id); } }
       const liste = L.spieler.map((x, i) => {
         const bot = x.startsWith('bot:');
         return '<div class="sp feld"><span class="nr">' + (i + 1) + '</span><span class="nm">' + (bot ? t('bot') + ' <small>' + t('average') + ' ' + x.slice(4) + '</small>' : esc(name(x))) + '</span>' +
@@ -1045,7 +1174,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           '<button data-act="weg" data-i="' + i + '" title="' + t('remove') + '"><ha-icon icon="mdi:close"></ha-icon></button></div>';
       }).join('') || '<div class="leer">' + t('nobody') + '</div>';
       const frei = alle.filter(s => !L.spieler.includes(s.id));
-      const voll = L.spieler.length >= 6;
+      const voll = L.spieler.length >= 8;
       let s = '<div class="lobby"><div class="blk feld"><div class="bt"><ha-icon icon="mdi:account-group"></ha-icon>' + t('players') + '<span class="rechts">' + t('of6', { n: L.spieler.length }) + '</span>' +
         '<button class="ik" data-act="mischen" title="' + t('shuffle') + '"' + (L.spieler.length < 2 ? ' disabled' : '') + '><ha-icon icon="mdi:shuffle-variant"></ha-icon></button></div>' +
         '<div class="sliste">' + liste + '</div><div class="chips">' +
@@ -1057,16 +1186,19 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const seg = (k, opts) => '<div class="seg">' + opts.map(([v, x]) => '<button class="feld' + (String(L[k]) === String(v) ? ' an' : '') + '" data-act="set" data-k="' + k + '" data-v="' + v + '">' + x + '</button>').join('') + '</div>';
       const legs = n => n + ' Leg' + (n > 1 ? 's' : '');
       const mehrText = (L.sets ? t('sets_to', { n: L.sets }) : t('no_sets')) + ' · ' + MODUS.find(m => m[0] === L.einwurf)[1] + ' In · ' + t('bulloff_onoff', { v: L.bull_off ? t('on_w') : t('off_w') });
-      s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:tune-variant"></ha-icon>' + t('game') + '</div>' +
-        '<div class="reihe"><span>' + t('start_value') + '</span>' + seg('startwert', STARTWERTE.map(v => [v, v])) + '</div>' +
-        '<div class="reihe"><span>' + (L.sets ? t('legs_per_set') : t('first_to')) + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="legs">−</button><b>' + legs(L.legs) + '</b><button class="feld" data-act="plus" data-k="legs">+</button></div></div>' +
-        '<div class="reihe"><span>' + t('checkout') + '</span>' + seg('auswurf', MODUS) + '</div>' +
-        auf('mehr', this._auf.mehr, 'mdi:cog-outline', t('more'), mehrText);
-      if (this._auf.mehr) s += '<div class="aufinhalt">' +
-        '<div class="reihe"><span>' + t('sets_first') + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="sets">−</button><b>' + (L.sets ? L.sets + ' Set' + (L.sets > 1 ? 's' : '') : t('no_sets')) + '</b><button class="feld" data-act="plus" data-k="sets">+</button></div></div>' +
-        '<div class="reihe"><span>' + t('checkin') + '</span>' + seg('einwurf', MODUS) + '</div>' +
-        '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
-      s += '</div>';
+      s += this._artWahl(L, seg, legs);
+      if (L.spiel === 'x01') {
+        s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:tune-variant"></ha-icon>' + t('game') + '</div>' +
+          '<div class="reihe"><span>' + t('start_value') + '</span>' + seg('startwert', STARTWERTE.map(v => [v, v])) + '</div>' +
+          '<div class="reihe"><span>' + (L.sets ? t('legs_per_set') : t('first_to')) + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="legs">−</button><b>' + legs(L.legs) + '</b><button class="feld" data-act="plus" data-k="legs">+</button></div></div>' +
+          '<div class="reihe"><span>' + t('checkout') + '</span>' + seg('auswurf', MODUS) + '</div>' +
+          auf('mehr', this._auf.mehr, 'mdi:cog-outline', t('more'), mehrText);
+        if (this._auf.mehr) s += '<div class="aufinhalt">' +
+          '<div class="reihe"><span>' + t('sets_first') + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="sets">−</button><b>' + (L.sets ? L.sets + ' Set' + (L.sets > 1 ? 's' : '') : t('no_sets')) + '</b><button class="feld" data-act="plus" data-k="sets">+</button></div></div>' +
+          '<div class="reihe"><span>' + t('checkin') + '</span>' + seg('einwurf', MODUS) + '</div>' +
+          '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
+        s += '</div>';
+      }
       if (!boardOnline(this._h) && !L.spieler.every(x => x.startsWith('bot:')))
         s += '<div class="warn"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon><span>' + t('board_off_hint') + '</span>' + (this._c.power_on ? '<button data-act="pcein">' + t('on') + '</button>' : '') + '</div>';
       s += '<button class="start" data-act="start"' + (L.spieler.length ? '' : ' disabled') + '><ha-icon icon="mdi:play"></ha-icon>' + t('start_game') + '</button></div>';
@@ -1082,6 +1214,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         '<button class="auf feld" data-act="abbr" data-lbl="' + t('cancel_game') + '" style="--sr-f:var(--red-color,#e53935)"><ha-icon icon="mdi:close-circle-outline"></ha-icon><span class="lbl">' + t('cancel_game') + '</span></button>';
     }
     _match(a) {
+      if (a.art && a.art !== 'x01') return this._matchArt(a);
       const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, wer = sp[am] || {};
       const tiles = sp.map((p, i) => '<div class="sk feld' + (i === am ? ' aktiv' : '') + '"><div class="sn">' + (p.bot ? '<ha-icon icon="mdi:robot-outline"></ha-icon>' : '') + esc(p.name) +
         '<span class="lg">' + (e.sets ? p.sets + ' S · ' : '') + p.legs + ' L</span></div><div class="sr">' + p.rest + '</div>' +
@@ -1109,11 +1242,151 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (this._auf.opt) s += '<div class="aufinhalt"><button class="auf feld" style="margin-top:0;--sr-f:var(--red-color,#e53935)" data-act="abbr" data-lbl="' + t('cancel_noscore') + '"><ha-icon icon="mdi:close-circle-outline"></ha-icon><span class="lbl">' + t('cancel_noscore') + '</span></button></div>';
       return s;
     }
+    // lobby: game type (X01, Cricket, Training, Party), the game and its options
+    _artWahl(L, seg, legs) {
+      const g = GRUPPE[L.spiel] || 'x01';
+      let s = '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:bullseye-arrow"></ha-icon>' + t('game_type') + '</div><div class="arten">' +
+        ['x01', 'cricket', 'training', 'party'].map(x => '<button class="feld' + (g === x ? ' an' : '') + '" data-act="gruppe" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' + t('g_' + x) + '</button>').join('') + '</div>';
+      if (g === 'training' || g === 'party')
+        s += '<div class="achips">' + Object.keys(GRUPPE).filter(x => GRUPPE[x] === g).map(x => '<button class="feld' + (L.spiel === x ? ' an' : '') + '" data-act="art" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' + t('a_' + x) + '</button>').join('') + '</div>';
+      if (L.spiel !== 'x01') {
+        const v = L.spiel === 'cricket' && L.variante && L.variante !== 'standard' ? L.variante : L.spiel;
+        s += '<div class="regel"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t('h_' + v) + '</span></div>';
+      }
+      s += '</div>';
+      if (L.spiel === 'x01') return s;
+      (ART_OPT[L.spiel] || []).forEach(([k]) => { if (L[k] === '' || L[k] == null || (k === 'runden' && !L[k]) || !ART_OPT[L.spiel].find(o => o[0] === k)[1].some(o => String(o[0]) === String(L[k]))) L[k] = (OPT_STANDARD[k] || {})[L.spiel] || (k === 'leben' ? 3 : ART_OPT[L.spiel].find(o => o[0] === k)[1][0][0]); });
+      s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:tune-variant"></ha-icon>' + t('game') + '</div>';
+      (ART_OPT[L.spiel] || []).forEach(([k, opts]) => {
+        s += '<div class="reihe"><span>' + t(L.spiel === 'golf' && k === 'runden' ? 'holes' : OPT_TITEL[k]) + '</span>' + seg(k, opts.map(([w, x]) => [w, TEXTE.en[x] !== undefined ? t(x) : x])) + '</div>';
+      });
+      s += '<div class="reihe"><span>' + t('first_to') + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="legs">−</button><b>' + legs(L.legs) + '</b><button class="feld" data-act="plus" data-k="legs">+</button></div></div>' +
+        '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
+      return s;
+    }
+    // text of a target: "D7", "18", "any double" …
+    _zielText(z) {
+      if (!z) return '';
+      if (z === 'D') return t('any_double'); if (z === 'T') return t('any_triple'); if (z === 'B' || z === 'S25' || z === 'D25' || z === '25') return z === 'S25' ? '25 / Bull' : 'Bull';
+      return z[0] === 'S' ? z.slice(1) : z;
+    }
+    _rundeText(a, p) {
+      const m = a.runden || 0; if (!m) return '';
+      const n = Math.min((p.runde || 0) + 1, m);
+      return t(a.art === 'golf' ? 'hole_of' : a.art === 'baseball' ? 'inning_of' : 'round_of', { n, m });
+    }
+    _matchArt(a) {
+      const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, wer = sp[am] || {}, art = a.art;
+      let oben;
+      if (art === 'cricket') oben = this._cricketTafel(a);
+      else {
+        const neben = p => {
+          if (art === 'killer') return '<span class="herz">' + '❤'.repeat(Math.max(0, p.leben || 0)) + '</span> ' + t('lives') + ' <b>' + (p.leben || 0) + '</b>';
+          if (art === 'checkout121') return t('target_n', { n: p.zielwert }) + ' · ' + t('checks') + ' <b>' + (p.geschafft || 0) + '</b>';
+          if (art === 'atc') return t('n_darts', { n: p.leg_darts });
+          return this._rundeText(a, p) + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '');
+        };
+        oben = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + sp.map((p, i) => '<div class="sk feld' + (i === am ? ' aktiv' : '') + (p.raus ? ' raus' : '') + '"><div class="sn">' +
+          (p.bot ? '<ha-icon icon="mdi:robot-outline"></ha-icon>' : '') + esc(p.name) + (p.killer ? '<span class="kil">' + t('killer_w') + '</span>' : '') +
+          (p.raus || p.fertig || +e.legs > 1 ? '<span class="lg">' + (p.raus ? t('out_w') : p.fertig ? t('done_w') : p.legs + ' L') + '</span>' : '') + '</div>' +
+          '<div class="sr">' + (art === 'atc' ? this._zielText(p.fertig ? 'D25' : (p.ziel || '')) : art === 'killer' ? p.nummer : p.rest) + '</div><div class="sa">' + neben(p) + '</div>' +
+          (i !== am && p.ziel && !p.raus && art !== 'atc' ? '<span class="zk">' + t('target') + ' ' + esc(this._zielText(p.ziel)) + '</span>' : '') + '</div>').join('') + '</div>';
+      }
+      let hinw, cls = '';
+      if (a.leg_gewinner != null) { hinw = '<ha-icon icon="mdi:check-decagram"></ha-icon>' + t('leg_won', { n: esc(sp[a.leg_gewinner].name) }); cls = ' check'; }
+      else if (au.fertig) hinw = '<ha-icon icon="mdi:hand-back-left-outline"></ha-icon>' + t('remove_darts');
+      else if (wer.bot) hinw = '<ha-icon icon="mdi:robot-outline"></ha-icon>' + t('throws_now', { n: esc(wer.name) });
+      else if (art === 'killer') hinw = '<ha-icon icon="mdi:skull-outline"></ha-icon>' + (wer.killer ? t('killer_aims', { n: esc(wer.name) }) : t('hit_double', { n: esc(wer.name), z: wer.nummer }));
+      else hinw = '<ha-icon icon="mdi:target"></ha-icon>' + t('your_turn', { n: esc(wer.name) });
+      const dz = [0, 1, 2].map(i => { const d = au.darts[i]; return '<button class="dz feld' + (d ? '' : ' leer') + '" data-act="dart" data-i="' + i + '"><b>' + (d ? ft(d.f) : '–') + '</b><small>' + (d ? pkt(d.f) + ' ' + t('pts') : t('dart') + ' ' + (i + 1)) + '</small></button>'; }).join('');
+      let rechts = this._rundeText(a, wer);
+      if (art === 'cricket') rechts = t('mpr') + ' ' + z1(wer.avg);
+      if (art === 'checkout121') rechts = t('rest', { n: wer.rest }) + ' · ' + t('attempt', { n: Math.min(3, wer.versuch || 1) });
+      if (art === 'atc') rechts = t('n_darts', { n: wer.leg_darts });
+      if (art === 'killer') rechts = '';
+      const einheit = { cricket: t('marks'), golf: t('strokes'), baseball: t('runs'), atc: t('hits'), doppel: t('hits') }[art];
+      const summe = art === 'cricket' ? (((a.verlauf || []).slice(-1)[0] || {}).m || 0) * (au.darts.length ? 1 : 0) : au.summe;
+      const ziel = a.ziel && art !== 'cricket' ? '<div class="ziel">' + esc(this._zielText(a.ziel)) + '<small>' + t('target') + '</small></div>' : '';
+      const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
+      const golf = art === 'golf' && au.darts.length && !au.fertig ? '<div class="klein" style="margin:8px 0 0">' + t('golf_hint') + '</div>' : '';
+      let s = oben + '<div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
+        '<div class="summe"><b>' + summe + '</b><span>' + (einheit ? einheit + (rechts ? ' · ' : '') : '') + rechts + '</span></div>' + (art === 'checkout121' ? weg : '') + ziel + golf + '</div>' +
+        this._brettHtml(au.darts, art === 'cricket' ? null : (art === 'checkout121' ? null : a.ziel)) + '</div>' +
+        '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
+        '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
+      s += auf('verlauf', this._auf.verlauf, 'mdi:history', t('visits'), +e.legs > 1 ? t('leg') + ' ' + a.leg : '');
+      if (this._auf.verlauf) s += '<div class="aufinhalt">' + this._verlauf(a) + '</div>';
+      s += auf('regel', this._auf.regel, 'mdi:information-outline', t('a_' + art));
+      if (this._auf.regel) s += '<div class="aufinhalt"><div class="regel" style="margin:0">' + t('h_' + (art === 'cricket' && e.variante && e.variante !== 'standard' ? e.variante : art)) + '</div></div>';
+      s += auf('opt', this._auf.opt, 'mdi:dots-horizontal', t('game'));
+      if (this._auf.opt) s += '<div class="aufinhalt"><button class="auf feld" style="margin-top:0;--sr-f:var(--red-color,#e53935)" data-act="abbr" data-lbl="' + t('cancel_noscore') + '"><ha-icon icon="mdi:close-circle-outline"></ha-icon><span class="lbl">' + t('cancel_noscore') + '</span></button></div>';
+      return s;
+    }
+    _cricketTafel(a) {
+      const sp = a.spieler || [], zahlen = a.zahlen || [], am = a.am_zug, ohne = (a.einstellungen || {}).variante === 'no_score';
+      const spalten = 'minmax(44px,.7fr) repeat(' + sp.length + ',minmax(0,1fr))';
+      const zelle = (i, x, cls) => '<div class="' + (cls || '') + (i === am ? ' akt' : '') + '">' + x + '</div>';
+      let s = '<div class="ct feld" style="--sp:' + spalten + '"><div class="r kopf"><div></div>' + sp.map((p, i) => zelle(i, (p.bot ? '🤖 ' : '') + esc(p.name) + (+(a.einstellungen || {}).legs > 1 ? ' · ' + p.legs : ''))).join('') + '</div>';
+      zahlen.forEach((z, k) => {
+        const zu = sp.every(p => (p.marks || [])[k] >= 3);
+        s += '<div class="r' + (zu ? ' zu' : '') + '"><div class="z">' + (z === 25 ? 'B' : z) + '</div>' + sp.map((p, i) => { const m = (p.marks || [])[k] || 0; return zelle(i, MARK[m], 'm v' + m); }).join('') + '</div>';
+      });
+      if (!ohne) s += '<div class="r pk"><div></div>' + sp.map((p, i) => zelle(i, p.rest)).join('') + '</div>';
+      s += '<div class="r mp"><div>' + t('mpr') + '</div>' + sp.map((p, i) => zelle(i, z1(p.avg))).join('') + '</div></div>';
+      return s;
+    }
+    _endeArt(a) {
+      const sp = a.spieler || [], g = sp[a.gewinner] || {}, e = a.einstellungen || {}, art = a.art;
+      const weniger = art === 'golf' || (art === 'cricket' && e.variante === 'cut_throat');
+      const wert = p => art === 'checkout121' ? (p.geschafft || 0) : art === 'killer' ? (p.leben || 0) : p.rest;
+      const reihe = sp.map((p, i) => i).sort((x, y) => (x === a.gewinner ? -1 : y === a.gewinner ? 1 : (+e.legs > 1 ? sp[y].legs - sp[x].legs : 0) || (weniger ? wert(sp[x]) - wert(sp[y]) : wert(sp[y]) - wert(sp[x]))));
+      const einheit = { cricket: e.variante === 'no_score' ? t('mpr') : t('points'), golf: t('strokes'), baseball: t('runs'), checkout121: t('checks'), killer: t('lives'), atc: t('n_darts', { n: '' }).trim() }[art] || t('points');
+      const zeig = p => art === 'atc' ? p.darts : art === 'cricket' && e.variante === 'no_score' ? z1(p.avg) : wert(p);
+      return '<div class="sieg"><ha-icon icon="mdi:trophy"></ha-icon><h2>' + t('wins', { n: esc(g.name) }) + '</h2><div>' + esc(modusText(e)) + '</div></div>' +
+        '<div class="rang">' + reihe.map((i, k) => '<div class="feld' + (i === a.gewinner ? ' g' : '') + '"><span>' + (k + 1) + '.</span><span>' + esc(sp[i].name) + (+e.legs > 1 ? ' · ' + sp[i].legs + ' L' : '') + '</span><b>' + zeig(sp[i]) + ' <small style="font-size:12px;font-weight:600;color:var(--secondary-text-color)">' + einheit + '</small></b></div>').join('') + '</div>' +
+        '<div class="zweier"><button class="lk weiter" data-act="revanche"><ha-icon icon="mdi:refresh"></ha-icon>' + t('rematch') + '</button><button class="lk feld" data-act="neues"><ha-icon icon="mdi:account-group"></ha-icon>' + t('new_game') + '</button></div>' +
+        '<button class="auf feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon><span>' + t('undo_last') + '</span></button>';
+    }
+    // effects of Cricket, training and party games
+    _fxArt(z, a) {
+      const sp = a.spieler || [], wer = (sp[z.s] || {}).name || '', x = z.x || [], art = a.art;
+      const wort = (w, lang) => '<div class="wort' + (lang ? ' lang' : '') + '">' + esc(w) + '<span class="glanz"></span></div>';
+      const unter = (u, v) => '<div class="unter">' + esc(u) + '</div>' + (v ? '<div class="unter2">' + esc(v) + '</div>' : '');
+      const strahlen = '<div class="strahl l"></div><div class="strahl r"></div>';
+      if (z.c) {
+        const match = String(a.ansage || '').startsWith('Spiel ');
+        if (x.includes('shanghai')) return this._fxGross('regenbogen', strahlen + feuerwerk(5, .3) + konfetti(60) + wort('SHANGHAI!', true) + unter(wer, match ? t('fx_match', { n: wer }) : t('fx_leg', { n: wer })), 5200, 'fx-stoss', 'gross');
+        if (match) return this._fxGross('gold', feuerwerk(5, .4) + konfetti(50, .2) + '<div class="pokal">🏆</div>' + wort(t('fx_win'), true) + unter(wer, modusText(a.einstellungen)), 5200, 'fx-stoss', 'gross');
+        return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(30) + wort('LEG', true) + unter(t('fx_leg', { n: wer })), 3200, 'fx-stoss', 'jubel');
+      }
+      const raus = x.filter(v => v.startsWith('raus')), leben = x.filter(v => v.startsWith('leben:'));
+      if (x.includes('killer')) return this._fxGross('bust', '<div class="pokal">💀</div>' + wort(t('fx_killer'), true) + unter(wer), 2600, 'fx-stoss', 'buzz');
+      if (raus.length) {
+        const namen = raus.map(v => (sp[v.startsWith('raus:') ? +v.slice(5) : z.s] || {}).name).join(', ');
+        return this._fxGross('bust', RISS_SVG + wort(t('fx_out'), t('fx_out').length > 5) + unter(namen), 2600, 'fx-wackeln', 'buzz');
+      }
+      if (leben.length) {
+        const opfer = sp[+leben[0].slice(6)] || {};
+        return this._fxGross('bust', '<div class="pokal">💔</div>' + wort(t('fx_life'), true) + unter(opfer.name || '', opfer.leben === 1 ? t('fx_life1') : t('fx_lives', { n: opfer.leben })), 2400, 'fx-wackeln', 'buzz');
+      }
+      if (x.includes('nine_marks')) return this._fxGross('gold', strahlen + '<div class="welle"></div>' + konfetti(50, .15) + wort(t('fx_marks', { n: z.m || 9 }), true) + unter(wer, (z.d || []).map(ft).join(' · ')), 4200, 'fx-stoss', 'gross');
+      if (x.includes('six_marks')) return this._fxGross('silber', '<div class="welle"></div>' + konfetti(16) + wort(t('fx_marks', { n: z.m }), true) + unter(wer), 2600, 'fx-stoss', 'jubel');
+      if (x.includes('hole_in_one')) return this._fxGross('gold', strahlen + '<div class="pokal">⛳</div>' + konfetti(36) + wort(t('fx_hio'), true) + unter(wer), 3600, 'fx-stoss', 'jubel');
+      if (x.includes('home_run')) return this._fxGross('gold', '<div class="pokal">⚾</div><div class="welle"></div>' + konfetti(30) + wort(t('fx_homerun'), true) + unter(wer, z.p + ' ' + t('runs')), 3400, 'fx-stoss', 'jubel');
+      if (x.includes('halbiert')) return this._fxGross('bust', RISS_SVG + wort(t('fx_halved'), true) + unter(wer, String(z.r)), 2400, 'fx-wackeln', 'buzz');
+      if (x.includes('check')) return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(24) + wort(t('fx_check'), true) + unter(wer), 2800, 'fx-stoss', 'jubel');
+      if (x.includes('verfehlt')) return this._fxGross('grau', wort(t('fx_missed'), true) + unter(wer), 2200);
+      if (x.includes('bust')) return this._fxGross('bust', RISS_SVG + wort(t('fx_bust'), t('fx_bust').length > 5) + unter(wer), 2000, 'fx-wackeln', 'buzz');
+      if (x.includes('geschafft')) return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(30) + wort(t('fx_done'), true) + unter(wer), 3000, 'fx-stoss', 'jubel');
+      const zu = x.filter(v => v.startsWith('zu:'));
+      if (zu.length) return this._fxGross('gruen', wort(zu.map(v => v === 'zu:25' ? 'BULL' : v.slice(3)).join(' · '), zu.length > 1) + unter(t('fx_closed', { z: '' }).trim() + ' · ' + wer), 1800);
+      return null;
+    }
     _verlauf(a) {
       const sp = a.spieler || [], v = (a.verlauf || []).slice().reverse();
       if (!v.length) return '<div class="leer">' + t('no_visit') + '</div>';
       return '<div class="vl">' + v.map(z => '<div class="vz' + (z.b ? ' bu' : '') + (z.c ? ' co' : '') + '" data-act="vz" data-i="' + z.i + '"><span>' + esc((sp[z.s] || {}).name) + '</span><span>' +
-        (z.d.length ? z.d.map(ft).join(' · ') : '–') + '</span><b>' + (z.b ? 'Bust' : z.p) + '</b><span class="r">' + z.r + '</span></div>').join('') + '</div>' +
+        (z.d.length ? z.d.map(ft).join(' · ') : '–') + '</span><b>' + (a.art === 'cricket' ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01') ? 'Bust' : z.p)) + '</b><span class="r">' + z.r + '</span></div>').join('') + '</div>' +
         '<div class="klein">' + t('tap_fix') + '</div>';
     }
     _statTab(sp) {
@@ -1123,6 +1396,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         zeilen.map(([x, f]) => '<tr><td>' + x + '</td>' + sp.map(p => '<td>' + f(p) + '</td>').join('') + '</tr>').join('') + '</table></div>';
     }
     _ende(a) {
+      if (a.art && a.art !== 'x01') return this._endeArt(a);
       const sp = a.spieler || [], g = sp[a.gewinner] || {};
       return '<div class="sieg"><ha-icon icon="mdi:trophy"></ha-icon><h2>' + t('wins', { n: esc(g.name) }) + '</h2><div>' + esc(modusText(a.einstellungen)) + ' · ' +
         sp.map(p => esc(p.name) + ' ' + ((a.einstellungen || {}).sets ? p.sets : p.legs)).join(' : ') + '</div></div>' +
@@ -1151,12 +1425,14 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'vollbild':
           if (document.fullscreenElement) document.exitFullscreen(); else if (this.requestFullscreen) this.requestFullscreen().catch(() => {});
           setTimeout(() => { this._kxAlt = null; this._zeichnen(); }, 300); break;
-        case 'dazu': if (L.spieler.length < 6) L.spieler.push(b.dataset.id); neu(); break;
-        case 'bot': if (L.spieler.length < 6) L.spieler.push('bot:' + b.dataset.l); this._auf.bot = false; neu(); break;
+        case 'dazu': if (L.spieler.length < 8) L.spieler.push(b.dataset.id); neu(); break;
+        case 'bot': if (L.spieler.length < 8) L.spieler.push('bot:' + b.dataset.l); this._auf.bot = false; neu(); break;
         case 'weg': L.spieler.splice(+b.dataset.i, 1); neu(); break;
         case 'hoch': { const i = +b.dataset.i; [L.spieler[i - 1], L.spieler[i]] = [L.spieler[i], L.spieler[i - 1]]; neu(); break; }
         case 'mischen': for (let i = L.spieler.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L.spieler[i], L.spieler[j]] = [L.spieler[j], L.spieler[i]]; } neu(); break;
-        case 'set': { const v = b.dataset.v; L[b.dataset.k] = b.dataset.k === 'startwert' ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
+        case 'set': { const v = b.dataset.v, k = b.dataset.k; L[k] = ['startwert', 'runden', 'leben'].includes(k) ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
+        case 'gruppe': { const g = b.dataset.v; if (g !== GRUPPE[L.spiel]) { L.spiel = g === 'training' ? 'atc' : g === 'party' ? 'shanghai' : g; L.variante = ''; L.runden = 0; } neu(); break; }
+        case 'art': L.spiel = b.dataset.v; L.variante = ''; L.runden = 0; neu(); break;
         case 'plus': case 'minus': { const k = b.dataset.k, d = act === 'plus' ? 1 : -1; L[k] = Math.max(k === 'legs' ? 1 : 0, Math.min(k === 'legs' ? 21 : 13, L[k] + d)); neu(); break; }
         case 'neu':
           this._modal('<h3>' + t('new_player') + '</h3><input maxlength="20" placeholder="' + t('name') + '"><div class="mknoepfe"><button class="feld" data-act="mzu">' + t('cancel') + '</button><button class="ja" data-act="neuok">' + t('create') + '</button></div>');
@@ -1170,7 +1446,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         }
         case 'pcein': if (this._c.power_on) ausloesen(h, this._c.power_on, false); break;
         case 'start':
-          this._dienst('spiel_starten', { spieler: L.spieler, startwert: L.startwert, legs: L.legs, sets: L.sets, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off });
+          this._dienst('spiel_starten', { spieler: L.spieler, spiel: L.spiel, startwert: L.startwert, legs: L.legs, sets: L.spiel === 'x01' ? L.sets : 0, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off,
+            variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben });
           this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
         case 'undo': this._dienst('rueckgaengig'); break;
         case 'weiter': this._dienst('weiter'); break;
@@ -1379,6 +1656,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           s += '<div class="pld"><div class="kach">' + ka(t('average'), z1(p.avg)) + ka(t('first9'), z1(p.f9)) + ka(t('best_avg'), z1(p.bester_avg)) + ka('Checkout', z1(p.quote) + ' %') +
             ka(t('highest'), p.hoechste) + ka(t('best_finish'), p.finish || '–') + ka(t('best_leg'), p.bestes_leg ? t('n_darts', { n: p.bestes_leg }) : '–') + ka(t('n180'), p.n180) +
             ka('140+', p.n140) + ka('100+', p.n100) + ka(t('legs'), p.legs) + ka(t('darts'), zahl(p.darts)) + '</div>' +
+            (Object.keys(p.arten || {}).length ? '<div class="kach" style="margin-top:8px">' + Object.entries(p.arten).filter(([, g]) => g.spiele).map(([art, g]) =>
+              ka(t('a_' + art), t('games_wins', { g: g.spiele, w: g.siege }) + (g.best != null ? '<br><small>' + t('best') + ' ' + (art === 'cricket' ? z1(g.best) + ' MPR' : g.best) + '</small>' : ''))).join('') + '</div>' : '') +
             '<div class="plknoepfe"><button class="feld" data-act="umb" data-id="' + p.id + '" data-n="' + esc(p.name) + '"><ha-icon icon="mdi:pencil"></ha-icon><span class="lbl">' + t('rename') + '</span></button>' +
             '<button class="feld" data-act="statweg" data-id="' + p.id + '" data-lbl="' + t('del_stats') + '"><ha-icon icon="mdi:delete-sweep-outline"></ha-icon><span class="lbl">' + t('del_stats') + '</span></button>' +
             '<button class="feld" data-act="spweg" data-id="' + p.id + '" data-lbl="' + t('del_player') + '"><ha-icon icon="mdi:account-remove"></ha-icon><span class="lbl">' + t('del_player') + '</span></button></div></div>';
@@ -1387,7 +1666,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       });
       s += auf('verlauf', this._auf.verlauf, 'mdi:history', t('recent'), vl.length ? datum(vl[0].zeit) : '');
       if (this._auf.verlauf) s += '<div class="aufinhalt">' + (vl.length ? vl.map(v => '<div class="sv feld"><div class="k"><span>' + datum(v.zeit) + '</span><span></span></div>' +
-        v.spieler.map(p => '<span class="' + (p.sieger ? 'g' : '') + '">' + (p.sieger ? '🏆 ' : '') + esc(p.name) + ' ' + (p.sets || p.legs) + ' <small>(Ø ' + z1(p.avg) + ')</small></span>').join(' · ') + '</div>').join('') : '<div class="leer">' + t('no_game_yet') + '</div>') + '</div>';
+        (v.art ? '<small>' + esc(t('a_' + v.art)) + '</small> ' : '') + v.spieler.map(p => '<span class="' + (p.sieger ? 'g' : '') + '">' + (p.sieger ? '🏆 ' : '') + esc(p.name) + ' ' + (p.wert != null ? p.wert : (p.sets || p.legs) + ' <small>(Ø ' + z1(p.avg) + ')</small>') + '</span>').join(' · ') + '</div>').join('') : '<div class="leer">' + t('no_game_yet') + '</div>') + '</div>';
       s += auf('gefahr', this._auf.gefahr, 'mdi:delete-outline', t('reset_all'));
       if (this._auf.gefahr) s += '<div class="aufinhalt"><div class="plknoepfe" style="margin-top:0"><button class="feld" data-act="allesweg" data-lbl="' + t('del_all') + '"><ha-icon icon="mdi:delete-forever"></ha-icon><span class="lbl">' + t('del_all') + '</span></button></div>' +
         '<div class="klein">' + t('players_stay') + '</div></div>';

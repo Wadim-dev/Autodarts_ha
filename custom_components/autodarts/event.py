@@ -15,6 +15,7 @@ PARALLEL_UPDATES = 0
 EREIGNISSE = [
     "dart", "triple", "bull", "bullseye", "visit", "ton", "ton_forty", "one_eighty", "no_score", "bust",
     "three_in_a_bed", "checkout", "high_finish", "nine_darter", "leg_won", "set_won", "match_won",
+    "nine_marks", "shanghai", "killer", "eliminated", "halved", "hole_in_one",
 ]
 
 

@@ -76,6 +76,9 @@
     },
     "player_not_found": {
       "message": "Player not found."
+    },
+    "invalid_game": {
+      "message": "Unknown game. Use x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf or baseball."
     }
   },
   "entity": {
@@ -220,7 +223,13 @@
               "nine_darter": "Nine-darter",
               "leg_won": "Leg won",
               "set_won": "Set won",
-              "match_won": "Match won"
+              "match_won": "Match won",
+              "nine_marks": "Nine marks",
+              "shanghai": "Shanghai",
+              "killer": "Became killer",
+              "eliminated": "Player out",
+              "halved": "Score halved",
+              "hole_in_one": "Hole in one"
             }
           }
         }

@@ -1,10 +1,42 @@
 spiel_starten:
   name: Spiel starten
-  description: Startet ein lokales X01-Spiel. Ohne Angaben gelten die letzten Einstellungen.
+  description: Startet ein lokales Spiel (X01, Cricket, Training oder Partyspiel). Ohne Angaben gelten die letzten Einstellungen.
   fields:
+    spiel:
+      name: Spielart
+      description: x01, cricket, atc (Rund um die Uhr), bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball
+      example: cricket
+      selector:
+        select:
+          options: ["x01", "cricket", "atc", "bobs27", "doppel", "checkout121", "highscore", "shanghai", "killer", "halve_it", "golf", "baseball"]
+    variante:
+      name: Variante
+      description: "Cricket: standard, cut_throat, no_score. Rund um die Uhr: single, double, triple."
+      example: cut_throat
+      selector:
+        text:
+    zahlen:
+      name: Cricket-Zahlen
+      description: classic (15–20, Bull), tactics (10–20, Bull), random (6 zufällige Zahlen, Bull)
+      selector:
+        select:
+          options: ["classic", "tactics", "random"]
+    runden:
+      name: Runden
+      description: "Highscore und 121: Anzahl Runden. Shanghai: 7 oder 20. Golf: 9 oder 18 Löcher."
+      selector:
+        number:
+          min: 0
+          max: 30
+    leben:
+      name: Leben (Killer)
+      selector:
+        number:
+          min: 1
+          max: 9
     spieler:
       name: Spieler
-      description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler) und Bots als bot:55 (Average). Höchstens 6.
+      description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler) und Bots als bot:55 (Average). Höchstens 8.
       example: '["a1b2c3d4", "bot:55"]'
       selector:
         object:

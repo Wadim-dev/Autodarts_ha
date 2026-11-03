@@ -1,19 +1,19 @@
 """Kameras: die drei Board-Kameras und das Erkennungsbild.
 
-Standbild über aioautodarts, Live-Bild (nur beim Öffnen) über den MJPEG-Strom des Boards.
+Standbild über den Board-Client, Live-Bild (nur beim Öffnen) über den MJPEG-Strom des Boards.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from aioautodarts import Stream
 from aiohttp import ClientTimeout, web
 from homeassistant.components.camera import Camera
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_web, async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .board import Stream
 from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 

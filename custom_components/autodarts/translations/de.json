@@ -91,6 +91,9 @@
     },
     "light_rule": {
       "message": "Ungültige Lichtregel: {error}"
+    },
+    "no_update": {
+      "message": "Es wartet keine neue Version der Integration."
     }
   },
   "entity": {
@@ -211,6 +214,9 @@
     "update": {
       "board_software": {
         "name": "Board-Software"
+      },
+      "integration": {
+        "name": "Integration"
       }
     },
     "event": {

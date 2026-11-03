@@ -15,7 +15,7 @@ from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
 
-# Schlüssel, Übersetzungsschlüssel, Methode von aioautodarts, Kategorie (Symbole in icons.json)
+# Schlüssel, Übersetzungsschlüssel, Methode des Board-Clients, Kategorie (Symbole in icons.json)
 KNOEPFE = [
     ("start", "start_detection", "start", None),
     ("stop", "stop_detection", "stop", None),

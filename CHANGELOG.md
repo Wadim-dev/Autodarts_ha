@@ -3,6 +3,17 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.13.0
+
+- Private project from now on: the board client is built into the integration (`board.py`), nothing is installed from PyPI.
+- New update entity **Integration**: a new version placed in `custom_templates/autodarts_update` shows up under Settings → Updates, with release notes; installing restarts Home Assistant.
+- New game event `game_started` with the players (groundwork for walk-on songs and the caller).
+
+**Deutsch**
+- Ab jetzt privates Projekt: Die Board-Verbindung steckt direkt in der Integration (`board.py`), von PyPI wird nichts mehr installiert.
+- Neuer Update-Eintrag **Integration**: Eine neue Version im Ordner `custom_templates/autodarts_update` erscheint unter Einstellungen → Updates, mit Versionshinweisen; Installieren startet Home Assistant neu.
+- Neues Spielereignis `game_started` mit den Spielern (Grundlage für Walk-on-Songs und den Ansager).
+
 ## 1.12.0
 
 - New sidebar entry **Autodarts** with all cards as tabs (board, play, players, light effects, Board Manager). Nothing to set up.

@@ -14,13 +14,13 @@ import random
 from typing import Any
 import uuid
 
-from aioautodarts import AutodartsBoard, AutodartsError
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from . import auswertung, spielarten, turnier, x01
+from .board import AutodartsBoard, AutodartsError
 from .const import DOMAIN
 from .coordinator import ZustandKoordinator
 

@@ -5,12 +5,12 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 from typing import Any
 
-from aioautodarts import AutodartsError
 from homeassistant.config_entries import SOURCE_RECONFIGURE, ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
 import voluptuous as vol
 
 from .api import board_erstellen
+from .board import AutodartsError
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 
 SCHEMA = vol.Schema({

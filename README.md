@@ -212,18 +212,16 @@ One config entry is one board.
 
 ## Installation
 
-### HACS / Marketplace (recommended)
+> **Private project.** This repository is private and only meant for its owner's own Home Assistant. It is not published in HACS or any other store.
 
-[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=Autodarts_ha&category=integration)
+### Updates (since 1.13.0)
 
-1. Open HACS → three dots → **Custom repositories** → add `https://github.com/Wadim-dev/Autodarts_ha` as type **Integration**.
-2. Search for **Autodarts**, download it and restart Home Assistant.
+1. Put the new version of `custom_components/autodarts` into the folder `custom_templates/autodarts_update` of the Home Assistant configuration, `manifest.json` last. A file `_entfernen.txt` (one path per line) removes files of the old version; `CHANGELOG.md` there gives the release notes.
+2. **Settings → Updates** shows **Autodarts Board Integration**. Install restarts Home Assistant with the new version.
 
-### Manual
+### First install
 
-1. Download the latest [release](https://github.com/Wadim-dev/Autodarts_ha/releases).
-2. Copy `custom_components/autodarts` into the `custom_components` folder of your Home Assistant configuration.
-3. Restart Home Assistant.
+Copy `custom_components/autodarts` into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
 
 ## Configuration
 
@@ -476,12 +474,12 @@ actions:
 Board PC (Autodarts Board Manager, port 3180)
    │  GET /api/state every second · /api/system every 15 s · camera images on demand
    ▼
-Home Assistant ── Autodarts integration (via aioautodarts) ── entities, actions, local games (.storage)
+Home Assistant ── Autodarts integration (board.py) ── entities, actions, local games (.storage)
    ▼
 Dashboard cards (loaded automatically) · automations · voice assistants
 ```
 
-Only the documented local endpoints of the Board Manager are used. The connection itself lives in the typed async library [aioautodarts](https://github.com/Wadim-dev/aioautodarts) (on [PyPI](https://pypi.org/project/aioautodarts/)), which uses the web session of Home Assistant. Home Assistant installs it automatically. Camera images are only fetched while a card or the more-info dialog shows them.
+Only the documented local endpoints of the Board Manager are used. The connection itself is the small typed async client `board.py` inside the integration, which uses the web session of Home Assistant. Nothing extra is installed. Camera images are only fetched while a card or the more-info dialog shows them.
 
 ## Known limitations
 
@@ -525,12 +523,12 @@ logger:
 ## Removal
 
 1. **Settings → Devices & services → Autodarts → three dots → Delete.**
-2. If installed with HACS, remove it in HACS as well, then restart Home Assistant.
+2. Delete the folder `custom_components/autodarts`, then restart Home Assistant.
 3. Players, statistics and history are stored in `.storage/autodarts.spiel`; delete this file if you want to remove them too.
 
 ## Contributing
 
-Issues and pull requests are welcome. The integration meets all rules of the Home Assistant quality scale up to **Platinum** (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the HACS check and the test suite (98 % coverage), ruff and mypy --strict on every push. Board connection issues belong to [aioautodarts](https://github.com/Wadim-dev/aioautodarts).
+Private project, no outside contributions. The code follows the rules of the Home Assistant quality scale (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
 
 ## License
 
@@ -548,7 +546,7 @@ Issues and pull requests are welcome. The integration meets all rules of the Hom
 - Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
-- Qualitätsstufe Platinum der Home-Assistant-Quality-Scale; die Board-Verbindung steckt in der Bibliothek aioautodarts (PyPI), die Home Assistant selbst mitinstalliert
+- Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden
 - Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … blinken, aufblitzen, pulsieren, Farbe oder Regenbogen – danach zurück wie vorher
 - Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
@@ -557,7 +555,7 @@ Issues and pull requests are welcome. The integration meets all rules of the Hom
 - Fünf fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 
-**Installation:** HACS → Benutzerdefinierte Repositories → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → Autodarts herunterladen → Home Assistant neu starten.
+**Privates Projekt:** nur für das eigene Home Assistant, nicht veröffentlicht. **Updates:** neue Version in den Ordner `custom_templates/autodarts_update` legen (manifest.json zuletzt) → Einstellungen → Updates → „Autodarts Board Integration“ installieren (startet Home Assistant neu).
 **Einrichtung:** Boards mit Board Manager 2.x werden automatisch gefunden („Autodarts Board gefunden“ unter Geräte & Dienste, nur bestätigen). Sonst: Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein. Adresse später ändern: drei Punkte → Neu konfigurieren.
 
 > Kein offizielles Projekt von Autodarts. Der Name dient nur zur Beschreibung der Kompatibilität.

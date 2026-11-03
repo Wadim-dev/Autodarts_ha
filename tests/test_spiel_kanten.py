@@ -5,10 +5,10 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, patch
 
-from aioautodarts import AutodartsConnectionError
 from homeassistant.core import HomeAssistant
 
 from custom_components.autodarts import x01
+from custom_components.autodarts.board import AutodartsConnectionError
 
 from .test_spiel import SPIEL, _attr, _board, _dienst, _spieler
 

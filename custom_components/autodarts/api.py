@@ -1,14 +1,14 @@
-"""Connection to the Board Manager through the aioautodarts library."""
+"""Connection to the Board Manager (board.py)."""
 
 from __future__ import annotations
 
 from collections.abc import Awaitable
 
-from aioautodarts import AutodartsBoard, AutodartsConnectionError, AutodartsResponseError
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
+from .board import AutodartsBoard, AutodartsConnectionError, AutodartsResponseError
 from .const import DOMAIN
 
 

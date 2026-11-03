@@ -72,6 +72,8 @@ rules:
     comment: One config entry is exactly one board; the device is removed with the entry.
 
   # Platinum
-  async-dependency: done
+  async-dependency:
+    status: done
+    comment: Built-in async client board.py (aiohttp), no external library.
   inject-websession: done
   strict-typing: done

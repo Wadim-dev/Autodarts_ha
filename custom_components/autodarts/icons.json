@@ -118,6 +118,9 @@
     "update": {
       "board_software": {
         "default": "mdi:update"
+      },
+      "integration": {
+        "default": "mdi:package-up"
       }
     },
     "event": {

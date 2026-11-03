@@ -2,13 +2,19 @@
 
 from __future__ import annotations
 
-from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
+from typing import Any
+
+from homeassistant.components.websocket_api import async_register_command
+from homeassistant.components.websocket_api.connection import ActiveConnection
+from homeassistant.components.websocket_api.decorators import websocket_command
+from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 import voluptuous as vol
 
-from .const import DOMAIN
+from .const import DOMAIN, EREIGNISSE
 from .coordinator import DartsEntry
+from .lichter import EFFEKTE, REGEL
 from .spiel import EINSTELLUNGEN, Spielleiter
 from .spielarten import GRUPPEN
 
@@ -47,6 +53,8 @@ DIENSTE = {
         vol.Optional("name"): cv.string,
         vol.Optional("loeschen", default=False): cv.boolean,
     }),
+    "lichteffekte_setzen": vol.Schema({vol.Required("regeln"): [dict]}),
+    "lichteffekt_testen": vol.Schema({vol.Required("regel"): dict}),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
         vol.Optional("verlauf", default=False): cv.boolean,
@@ -61,8 +69,37 @@ def _leiter(hass: HomeAssistant) -> Spielleiter:
     raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_set_up")
 
 
+def _eintrag(hass: HomeAssistant) -> DartsEntry:
+    for eintrag in hass.config_entries.async_loaded_entries(DOMAIN):
+        return eintrag
+    raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_set_up")
+
+
+async def _lichter(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
+    show = _eintrag(hass).runtime_data.lichter
+    try:
+        if name == "lichteffekte_setzen":
+            await show.setzen(d["regeln"])
+        else:
+            show.abspielen(REGEL(d["regel"]))
+    except vol.Invalid as err:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN, translation_key="light_rule", translation_placeholders={"error": str(err)}
+        ) from err
+
+
+@websocket_command({vol.Required("type"): "autodarts/lichteffekte"})
+@callback
+def ws_lichteffekte(hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]) -> None:
+    """Rules of the light effects for the lights card."""
+    eintraege = hass.config_entries.async_loaded_entries(DOMAIN)
+    regeln = eintraege[0].runtime_data.lichter.regeln if eintraege else []
+    connection.send_result(msg["id"], {"regeln": regeln, "ereignisse": EREIGNISSE, "effekte": EFFEKTE})
+
+
 def async_setup_services(hass: HomeAssistant) -> None:
     """Register all actions of the integration."""
+    async_register_command(hass, ws_lichteffekte)
 
     async def ausfuehren(call: ServiceCall) -> ServiceResponse:
         s = _leiter(hass)
@@ -91,6 +128,8 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.spieler_aendern(d["id"], d.get("name"), d["loeschen"])
         elif name == "statistik_loeschen":
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
+        elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
+            await _lichter(hass, name, d)
         return None
 
     for name, schema in DIENSTE.items():

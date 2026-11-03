@@ -39,6 +39,8 @@
 - [Configuration](#configuration)
 - [Entities](#entities)
 - [Local games](#local-games)
+- [Light effects](#light-effects)
+- [Blueprints](#blueprints)
 - [Actions](#actions)
 - [Automation examples](#automation-examples)
 - [How it works](#how-it-works)
@@ -60,11 +62,13 @@
 | 🏟️ **Tournament** | Knockout for 3–16 players with bracket, byes, next-match button and champion celebration. |
 | 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score/finish, best leg, 180s, rating (Elo), hit map, trend, badges, streak, head to head, CSV export. |
 | ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
+| 💡 **Light effects** | Lights blink, flash, pulse, show a colour or a rainbow on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
+| 📘 **Blueprints** | Awtrix display, caller on a speaker and push notifications – import with one click, fill in a form. |
 | 👆 **Without cameras** | Tap the drawn board or type `T20` + Enter. |
 | 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo – also with an AI agent. |
 | 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
 | 🛠️ **Board Manager in HA** | Start/stop detection, reset, calibrate, restart, camera resolution / frame rate / standby, board software updates. |
-| 🧩 **Dashboard cards included** | Four polished cards are installed with the integration – no extra download, no resource to add. |
+| 🧩 **Dashboard cards included** | Five polished cards are installed with the integration – no extra download, no resource to add. |
 | 🔌 **Works with a smart plug** | Switch the board PC off whenever you like. The integration shows `Offline` and continues on its own when the board is back. |
 | 🌍 **English and German** | Entities, errors and cards follow your Home Assistant language. |
 
@@ -113,6 +117,14 @@ The cards are part of the integration and are loaded automatically in every dash
   <tr>
     <td><b>Cricket</b> – marks board, MPR, last visits and the target on the board.</td>
     <td><b>Tournament</b> – bracket with byes and the champion.</td>
+  </tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights.png" alt="Light effects card"></td>
+    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights-edit.png" alt="Edit a light effect"></td>
+  </tr>
+  <tr>
+    <td><b>Light effects</b> – one rule per event, test with ▶, switch on and off.</td>
+    <td><b>Edit a light effect</b> – event, effect, colour, brightness, duration and lights, all by click.</td>
   </tr>
 </table>
 
@@ -306,6 +318,26 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 - **Checkout suggestions** for up to three darts, respecting the check-out mode.
 - **Statistics** are added to each player when a game ends; undo after the end takes them back again.
 
+## Light effects
+
+Let your lights celebrate with you – no YAML needed.
+
+1. Add the card **Autodarts Light effects** (Edit dashboard → Add card → search "Autodarts").
+2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, rainbow, pulse**), colour, brightness and duration, and tick the lights.
+3. Tap **Test** to see it, then **Save**.
+
+Effects run in Home Assistant itself, also when no dashboard is open. Afterwards every light goes back to exactly how it was (on/off, brightness, colour). A new effect on the same light takes over smoothly. Colour lights show the colour, other lights just light up. The rules are stored by the integration and can also be set with the action `autodarts.lichteffekte_setzen`.
+
+## Blueprints
+
+Ready-made automations. Click the button, confirm in Home Assistant, then fill in the form (Settings → Automations → Blueprints).
+
+| Blueprint | What it does | |
+|---|---|---|
+| **Awtrix display** | Shows 180, checkout, bust, leg won … on an Awtrix 3 clock (Ulanzi TC001) via MQTT, rainbow for a 180. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fawtrix.yaml) |
+| **Caller on a speaker** | Announces the events on any speaker with text to speech ("One hundred and eighty!"). Sentences can be changed in the form. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fcaller.yaml) |
+| **Push on wins** | Push notification to your phone for match wins, tournament wins, nine-darters … | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fnotify.yaml) |
+
 ## Actions
 
 | Action | Description |
@@ -320,13 +352,15 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 | `autodarts.wurf_aendern` | Correct, add or delete a dart: `aufnahme` (visit index, empty = current), `dart` (0–2), `feld` (`T20`, `D16`, `25`, `Bull`, `M`; empty deletes). |
 | `autodarts.spieler_anlegen` | Create a player (`name`); returns `{"id": …}`. |
 | `autodarts.spieler_aendern` | Rename (`name`) or delete (`loeschen: true`) a player by `id`. |
+| `autodarts.lichteffekte_setzen` | Set all light effect rules at once (`regeln`: list of `ereignis`, `lichter`, `effekt`, `farbe`, `helligkeit`, `dauer`, `aktiv`). The light effects card does this for you. |
+| `autodarts.lichteffekt_testen` | Play one light effect (`regel`) once without saving it. |
 | `autodarts.statistik_loeschen` | Delete statistics of one player (`id`) or of all players; `verlauf: true` also clears the game history. |
 
 Player IDs are listed in the attributes of `sensor.autodarts_board_players`. Wrong input (unknown field, no game running …) returns a clear, translated error message.
 
 ## Automation examples
 
-**Flash the lights on a 180**
+**Flash the lights on a 180** (easier: the [light effects card](#light-effects))
 
 ```yaml
 triggers:
@@ -511,9 +545,11 @@ Issues and pull requests are welcome. The integration meets all rules of the Hom
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Qualitätsstufe Platinum der Home-Assistant-Quality-Scale; die Board-Verbindung steckt in der Bibliothek aioautodarts (PyPI), die Home Assistant selbst mitinstalliert
+- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … blinken, aufblitzen, pulsieren, Farbe oder Regenbogen – danach zurück wie vorher
+- Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
-- Vier fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
+- Fünf fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 
 **Installation:** HACS → Benutzerdefinierte Repositories → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → Autodarts herunterladen → Home Assistant neu starten.

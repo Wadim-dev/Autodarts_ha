@@ -21,6 +21,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from .const import DOMAIN
 
 if TYPE_CHECKING:
+    from .lichter import Lichtshow
     from .spiel import Spielleiter
 
 _LOGGER = logging.getLogger(__name__)
@@ -167,6 +168,7 @@ class DartsDaten:
     system: SystemKoordinator
     geraet: DeviceInfo
     spiel: Spielleiter
+    lichter: Lichtshow
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

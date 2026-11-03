@@ -1,0 +1,51 @@
+blueprint:
+  name: Autodarts – Push on wins and highlights
+  description: Sends a push notification for match wins, tournament wins, nine-darters or other events.
+  domain: automation
+  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/notify.yaml
+  input:
+    event_entity:
+      name: Game event
+      selector:
+        entity:
+          filter:
+            integration: autodarts
+            domain: event
+    phone:
+      name: Phone (Home Assistant app)
+      selector:
+        device:
+          filter:
+            integration: mobile_app
+    events:
+      name: Events
+      default: [match_won, tournament_won, nine_darter]
+      selector:
+        select:
+          multiple: true
+          options: [one_eighty, high_finish, nine_darter, leg_won, set_won, match_won, tournament_won]
+mode: queued
+triggers:
+  - trigger: state
+    entity_id: !input event_entity
+    not_from: unavailable
+    not_to: [unavailable, unknown]
+variables:
+  events: !input events
+  a: "{{ trigger.to_state.attributes }}"
+  titel:
+    one_eighty: "180!"
+    high_finish: High finish
+    nine_darter: Nine-darter!
+    leg_won: Leg won
+    set_won: Set won
+    match_won: Match won
+    tournament_won: Tournament won
+conditions:
+  - "{{ a.event_type in events }}"
+actions:
+  - domain: mobile_app
+    type: notify
+    device_id: !input phone
+    title: "🎯 {{ titel[a.event_type] }}"
+    message: "{{ a.player | default('') }}{{ (' · ' ~ a.finish) if a.finish is defined else '' }}{{ (' · ' ~ a.score) if a.score is defined else '' }}"

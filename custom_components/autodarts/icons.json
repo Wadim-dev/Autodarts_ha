@@ -159,6 +159,12 @@
     },
     "turnier_abbrechen": {
       "service": "mdi:trophy-broken"
+    },
+    "lichteffekte_setzen": {
+      "service": "mdi:lightbulb-group-outline"
+    },
+    "lichteffekt_testen": {
+      "service": "mdi:lightbulb-on-outline"
     }
   }
 }

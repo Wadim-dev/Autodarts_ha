@@ -88,6 +88,9 @@
     },
     "tournament_over": {
       "message": "Das Turnier ist schon entschieden."
+    },
+    "light_rule": {
+      "message": "Ungültige Lichtregel: {error}"
     }
   },
   "entity": {

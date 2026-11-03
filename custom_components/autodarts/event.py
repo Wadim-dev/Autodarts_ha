@@ -8,15 +8,11 @@ from homeassistant.components.event import EventEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .const import EREIGNISSE
 from .coordinator import DartsDaten, DartsEntry
 
 PARALLEL_UPDATES = 0
 
-EREIGNISSE = [
-    "dart", "triple", "bull", "bullseye", "visit", "ton", "ton_forty", "one_eighty", "no_score", "bust",
-    "three_in_a_bed", "checkout", "high_finish", "nine_darter", "leg_won", "set_won", "match_won",
-    "nine_marks", "shanghai", "killer", "eliminated", "halved", "hole_in_one", "tournament_won",
-]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:

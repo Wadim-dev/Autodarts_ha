@@ -153,3 +153,27 @@ statistik_loeschen:
       name: Spielverlauf auch löschen
       selector:
         boolean:
+lichteffekte_setzen:
+  name: Lichteffekte speichern
+  description: >-
+    Alle Regeln der Lichteffekte auf einmal setzen (ersetzt die bisherigen). Jede Regel:
+    ereignis (z. B. one_eighty, bust, checkout, leg_won), lichter (Liste light.*),
+    effekt (farbe, blinken, blitz, regenbogen, pulsieren), farbe [r, g, b], helligkeit 1–100,
+    dauer 1–60 s, aktiv. Die Karte „Autodarts Lichteffekte“ macht das per Klick.
+  fields:
+    regeln:
+      name: Regeln
+      required: true
+      example: '[{"ereignis": "one_eighty", "lichter": ["light.flur"], "effekt": "regenbogen", "dauer": 5}]'
+      selector:
+        object:
+lichteffekt_testen:
+  name: Lichteffekt testen
+  description: Einen Lichteffekt sofort einmal abspielen, ohne ihn zu speichern.
+  fields:
+    regel:
+      name: Regel
+      required: true
+      example: '{"ereignis": "one_eighty", "lichter": ["light.flur"], "effekt": "blinken", "farbe": [255, 200, 0]}'
+      selector:
+        object:

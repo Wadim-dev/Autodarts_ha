@@ -1,0 +1,82 @@
+blueprint:
+  name: Autodarts – Awtrix display
+  description: >-
+    Shows darts events (180, checkout, bust, leg won …) on an Awtrix 3 clock (Ulanzi TC001)
+    through MQTT. Needs the MQTT integration and Awtrix 3 firmware.
+  domain: automation
+  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/awtrix.yaml
+  input:
+    event_entity:
+      name: Game event
+      selector:
+        entity:
+          filter:
+            integration: autodarts
+            domain: event
+    prefix:
+      name: Awtrix MQTT prefix
+      description: As set in the Awtrix web interface, e.g. awtrix_1a2b3c
+      selector:
+        text:
+    events:
+      name: Events
+      default: [one_eighty, ton_forty, checkout, high_finish, bust, leg_won, match_won, tournament_won]
+      selector:
+        select:
+          multiple: true
+          options: [triple, bull, bullseye, ton, ton_forty, one_eighty, no_score, bust, three_in_a_bed, checkout, high_finish, nine_darter, leg_won, set_won, match_won, tournament_won]
+    duration:
+      name: Duration
+      default: 6
+      selector:
+        number:
+          min: 2
+          max: 30
+          unit_of_measurement: s
+mode: queued
+max: 5
+triggers:
+  - trigger: state
+    entity_id: !input event_entity
+    not_from: unavailable
+    not_to: [unavailable, unknown]
+variables:
+  events: !input events
+  prefix: !input prefix
+  duration: !input duration
+  typ: "{{ trigger.to_state.attributes.event_type }}"
+  spieler: "{{ trigger.to_state.attributes.player | default('') }}"
+  texte:
+    triple: "Triple {{ trigger.to_state.attributes.field | default('') }}"
+    bull: Bull
+    bullseye: Bullseye!
+    ton: "{{ trigger.to_state.attributes.score | default('') }}"
+    ton_forty: "{{ trigger.to_state.attributes.score | default('') }}!"
+    one_eighty: "180!"
+    no_score: No score
+    bust: Bust
+    three_in_a_bed: Three in a bed
+    checkout: "Checkout {{ trigger.to_state.attributes.finish | default('') }}"
+    high_finish: "High finish {{ trigger.to_state.attributes.finish | default('') }}"
+    nine_darter: NINE DARTER
+    leg_won: Leg
+    set_won: Set
+    match_won: Game shot
+    tournament_won: Champion
+  farben:
+    bust: "#E53935"
+    no_score: "#9E9E9E"
+    checkout: "#43A047"
+    high_finish: "#43A047"
+    match_won: "#FFC107"
+    tournament_won: "#FFC107"
+conditions:
+  - "{{ typ in events }}"
+actions:
+  - action: mqtt.publish
+    data:
+      topic: "{{ prefix }}/notify"
+      payload: >-
+        {{ {"text": (texte[typ] ~ ' ' ~ spieler) | trim, "color": farben.get(typ, '#03A9F4'),
+            "rainbow": typ in ['one_eighty', 'nine_darter', 'tournament_won'], "duration": duration | int,
+            "stack": true, "center": true} | to_json }}

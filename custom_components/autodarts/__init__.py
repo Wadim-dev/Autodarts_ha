@@ -21,6 +21,7 @@ from .api import board_erstellen
 from .assist import async_setup_assist
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
+from .lichter import Lichtshow
 from .services import async_setup_services
 from .spiel import Spielleiter
 
@@ -77,7 +78,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     )
     spiel = Spielleiter(hass, board, zustand)
     await spiel.laden()
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel)
+    lichter = Lichtshow(hass)
+    await lichter.laden()
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter)
+    entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
     entry.async_on_unload(zustand.async_add_listener(spiel.board_aenderung))
     if abmelden := async_setup_assist(hass, lambda: entry.runtime_data.spiel):
         entry.async_on_unload(abmelden)
@@ -90,4 +94,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if ok and entry.runtime_data.spiel:
         await entry.runtime_data.spiel.beenden()
+        await entry.runtime_data.lichter.beenden()
     return ok

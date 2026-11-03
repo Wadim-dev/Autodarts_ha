@@ -4,7 +4,9 @@
   "after_dependencies": [
     "conversation",
     "frontend",
-    "http"
+    "http",
+    "light",
+    "websocket_api"
   ],
   "codeowners": [
     "@Wadim-dev"
@@ -21,7 +23,7 @@
   "requirements": [
     "aioautodarts==0.1.1"
   ],
-  "version": "1.10.0",
+  "version": "1.11.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

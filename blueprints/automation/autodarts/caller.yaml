@@ -1,0 +1,62 @@
+blueprint:
+  name: Autodarts – Caller on a speaker
+  description: >-
+    Announces darts events (180, bust, checkout, game shot …) on a speaker with text to speech,
+    like a real caller. The sentences can be changed.
+  domain: automation
+  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/caller.yaml
+  input:
+    event_entity:
+      name: Game event
+      selector:
+        entity:
+          filter:
+            integration: autodarts
+            domain: event
+    tts:
+      name: Text to speech
+      selector:
+        entity:
+          filter:
+            domain: tts
+    speaker:
+      name: Speaker
+      selector:
+        entity:
+          filter:
+            domain: media_player
+    sentences:
+      name: Sentences
+      description: Event → sentence. {player}, {score} and {finish} are replaced.
+      default:
+        one_eighty: One hundred and eighty!
+        ton_forty: "{score}"
+        bust: Bust
+        checkout: Game shot, {player}!
+        match_won: Game shot, and the match, {player}!
+        nine_darter: Nine darter! Unbelievable, {player}!
+      selector:
+        object:
+mode: queued
+max: 3
+triggers:
+  - trigger: state
+    entity_id: !input event_entity
+    not_from: unavailable
+    not_to: [unavailable, unknown]
+variables:
+  saetze: !input sentences
+  a: "{{ trigger.to_state.attributes }}"
+  typ: "{{ a.event_type }}"
+conditions:
+  - "{{ typ in saetze }}"
+actions:
+  - action: tts.speak
+    target:
+      entity_id: !input tts
+    data:
+      media_player_entity_id: !input speaker
+      cache: true
+      message: >-
+        {{ saetze[typ] | replace('{player}', a.player | default('')) | replace('{score}', a.score | default('') | string)
+           | replace('{finish}', a.finish | default('') | string) }}

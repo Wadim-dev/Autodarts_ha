@@ -88,6 +88,9 @@
     },
     "tournament_over": {
       "message": "The tournament is already decided."
+    },
+    "light_rule": {
+      "message": "Invalid light rule: {error}"
     }
   },
   "entity": {

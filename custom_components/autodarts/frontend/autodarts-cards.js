@@ -3,6 +3,7 @@
    custom:autodarts-game-card      Local X01 game: lobby, bull-off, match, result, corrections, caller
    custom:autodarts-manager-card   Board Manager: cameras with calibration grid, controls, system values, settings
    custom:autodarts-players-card   Players, overall statistics, recent games
+   custom:autodarts-lights-card    Light effects on game events
    Entities are found automatically (platform "autodarts"), texts follow the HA language (English/German).
    Animations are CSS only and pause when the card is not visible; camera images load only while visible. */
 (() => {
@@ -76,7 +77,7 @@
       ranking_elo: 'Ranking', wins_losses: '{w} wins · {l} losses', gold: 'Gold', silver: 'Silver', bronze: 'Bronze', next_at: 'next at {n}', points_hint: 'Only darts detected by the board have a position.',
       b_n180: '180s', b_ton: '100+ visits', b_high_finish: 'High finish', b_kurzes_leg: 'Short leg (darts)', b_average: 'Best average', b_siege: 'Wins', b_spiele: 'Games', b_darts: 'Darts thrown',
       b_serie: 'Days in a row', b_nine_marks: 'Nine marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in one', b_allrounder: 'Allrounder (game types)',
-      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games'
+      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games', d_lights: 'Light effects on game events (180, bust, checkout …)', lights_title: 'Light effects', n_rules: '{n} rules', no_rules: 'No light effect yet. Choose an event, lights and an effect – the lights go back to how they were afterwards.', new_rule: 'New light effect', edit_rule: 'Edit light effect', trigger: 'Event', effect: 'Effect', color: 'Colour', brightness: 'Brightness', duration: 'Duration', seconds: '{n} s', lights: 'Lights', search: 'Search …', test: 'Test', active: 'active', inactive: 'off', delete: 'Delete', no_lights: 'Choose at least one light.', n_lights: '{n} lights', e_farbe: 'Colour', e_blinken: 'Blink', e_blitz: 'Flash', e_regenbogen: 'Rainbow', e_pulsieren: 'Pulse', lights_hint: 'Effects run in Home Assistant, also when the dashboard is closed. Colour lights show the colour, others only light up.', ev_dart: 'Every dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Every visit', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'No score', ev_bust: 'Bust', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High finish (100+)', ev_nine_darter: 'Nine-darter', ev_leg_won: 'Leg won', ev_set_won: 'Set won', ev_match_won: 'Match won', ev_nine_marks: 'Nine marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Becomes killer', ev_eliminated: 'Player out', ev_halved: 'Halved (Halve-It)', ev_hole_in_one: 'Hole in one', ev_tournament_won: 'Tournament won'
     },
     de: {
       dart: 'Dart', visit: 'Aufnahme', on: 'Einschalten', off: 'Ausschalten', off_q: 'Wirklich aus?', play: 'Spielen', manager: 'Board Manager', players: 'Spieler',
@@ -144,7 +145,7 @@
       ranking_elo: 'Rangliste', wins_losses: '{w} Siege · {l} Niederlagen', gold: 'Gold', silver: 'Silber', bronze: 'Bronze', next_at: 'nächste Stufe bei {n}', points_hint: 'Nur vom Board erkannte Darts haben eine Position.',
       b_n180: '180er', b_ton: '100+-Aufnahmen', b_high_finish: 'High Finish', b_kurzes_leg: 'Kurzes Leg (Darts)', b_average: 'Bester Average', b_siege: 'Siege', b_spiele: 'Spiele', b_darts: 'Geworfene Darts',
       b_serie: 'Tage in Folge', b_nine_marks: 'Neun Marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in One', b_allrounder: 'Allrounder (Spielarten)',
-      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele'
+      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele', d_lights: 'Lichteffekte bei Spielereignissen (180, Überworfen, Checkout …)', lights_title: 'Lichteffekte', n_rules: '{n} Regeln', no_rules: 'Noch kein Lichteffekt. Wähle ein Ereignis, Lampen und einen Effekt – danach gehen die Lampen zurück, wie sie waren.', new_rule: 'Neuer Lichteffekt', edit_rule: 'Lichteffekt ändern', trigger: 'Ereignis', effect: 'Effekt', color: 'Farbe', brightness: 'Helligkeit', duration: 'Dauer', seconds: '{n} s', lights: 'Lampen', search: 'Suchen …', test: 'Testen', active: 'an', inactive: 'aus', delete: 'Löschen', no_lights: 'Wähle mindestens eine Lampe.', n_lights: '{n} Lampen', e_farbe: 'Farbe', e_blinken: 'Blinken', e_blitz: 'Aufblitzen', e_regenbogen: 'Regenbogen', e_pulsieren: 'Pulsieren', lights_hint: 'Die Effekte laufen in Home Assistant, auch wenn das Dashboard zu ist. Farblampen zeigen die Farbe, andere leuchten nur auf.', ev_dart: 'Jeder Dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Jede Aufnahme', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'Kein Treffer', ev_bust: 'Überworfen', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High Finish (100+)', ev_nine_darter: 'Neun-Darter', ev_leg_won: 'Leg gewonnen', ev_set_won: 'Satz gewonnen', ev_match_won: 'Spiel gewonnen', ev_nine_marks: 'Neun Marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Wird Killer', ev_eliminated: 'Spieler raus', ev_halved: 'Halbiert (Halve-It)', ev_hole_in_one: 'Hole in One', ev_tournament_won: 'Turnier gewonnen'
     }
   };
   const sprache = h => { const l = String((h && ((h.locale && h.locale.language) || h.language)) || navigator.language || 'en'); return l.slice(0, 2) === 'de' ? 'de' : 'en'; };
@@ -1955,13 +1956,122 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-players-card', AutodartsPlayersCard);
 
+  /* ---------- Light effects card ---------- */
+  const LICHT_CSS = `
+.lr{display:flex;align-items:center;gap:10px;border-radius:16px;padding:10px 12px;margin-bottom:8px}
+.lr .pk{width:30px;height:30px;border-radius:50%;flex:none;box-shadow:0 0 12px var(--lf,transparent);border:2px solid color-mix(in srgb,var(--primary-text-color) 15%,transparent)}
+.lr .pk.rb{background:conic-gradient(red,#ff0,lime,cyan,blue,#f0f,red)}
+.lr .tx{flex:1;min-width:0}.lr b{display:block;font-size:14.5px}.lr small{display:block;color:var(--secondary-text-color);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr.aus{opacity:.5}
+.lr button{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:transparent;flex:none;--sr-f:var(--red-color,#e53935)}
+.lr button ha-icon{--mdc-icon-size:20px}
+.mbox label{display:block;font-size:12.5px;font-weight:700;color:var(--secondary-text-color);margin:12px 2px 6px}
+.mbox select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:14px;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 7%,transparent);border:1px solid color-mix(in srgb,var(--primary-text-color) 18%,transparent)}
+.mbox select option{color:#000}
+.fz{display:flex;align-items:center;gap:12px}
+.fz input[type=color]{width:54px;height:40px;padding:0;border:none;border-radius:12px;background:none;cursor:pointer}
+.fz input[type=range]{flex:1;accent-color:var(--primary-color)}
+.fz b{min-width:46px;text-align:right}
+.ll{max-height:220px;overflow:auto;border-radius:14px;padding:4px}
+.ll label{display:flex;align-items:center;gap:10px;margin:0;padding:8px;border-radius:10px;font-size:14px;font-weight:500;color:var(--primary-text-color);cursor:pointer}
+.ll label:hover{background:color-mix(in srgb,var(--primary-text-color) 6%,transparent)}
+.ll input{width:18px;height:18px;accent-color:var(--primary-color)}
+.ll small{margin-left:auto;color:var(--secondary-text-color);font-size:11.5px}`;
+  const LICHT_FX = { farbe: 'mdi:palette', blinken: 'mdi:alarm-light-outline', blitz: 'mdi:flash', regenbogen: 'mdi:looks', pulsieren: 'mdi:heart-pulse' };
+  const hex = c => '#' + (c || [255, 0, 0]).map(x => ('0' + (+x).toString(16)).slice(-2)).join('');
+  const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  class AutodartsLightsCard extends DartsSeite {
+    static get CSS() { return LICHT_CSS; }
+    getCardSize() { return 6; }
+    async _laden() {
+      try { this._daten = await this._h.callWS({ type: 'autodarts/lichteffekte' }); } catch (e) { this._daten = { regeln: [], ereignisse: [], effekte: [] }; }
+      this._alt = null; this._zeichnen();
+    }
+    _name(id) { const s = st(this._h, id); return (s && s.attributes.friendly_name) || id; }
+    _zeichnen() {
+      if (this._fehlt()) return;
+      if (!this._daten) { if (!this._lade) { this._lade = true; this._laden(); } return; }
+      const r = this._daten.regeln || [];
+      this._kopf(t('lights_title'), t('n_rules', { n: r.length }));
+      let s = '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:0 0 12px" data-act="neu"><ha-icon icon="mdi:lightbulb-auto-outline"></ha-icon>' + t('new_rule') + '</button>';
+      if (!r.length) s += '<div class="leer">' + t('no_rules') + '</div>';
+      r.forEach((x, i) => {
+        const rb = x.effekt === 'regenbogen', f = hex(x.farbe);
+        s += '<div class="lr feld' + (x.aktiv ? '' : ' aus') + '"><span class="pk' + (rb ? ' rb' : '') + '" style="' + (rb ? '' : 'background:' + f + ';--lf:' + f) + '"></span><span class="tx"><b>' + esc(t('ev_' + x.ereignis)) + '</b><small><ha-icon icon="' + LICHT_FX[x.effekt] + '" style="--mdc-icon-size:14px"></ha-icon> ' + t('e_' + x.effekt) + ' · ' + t('seconds', { n: x.dauer }) + ' · ' +
+          esc(x.lichter.map(l => this._name(l)).join(', ')) + '</small></span>' +
+          '<button data-act="test" data-i="' + i + '" title="' + t('test') + '"><ha-icon icon="mdi:play"></ha-icon></button>' +
+          '<button data-act="aktiv" data-i="' + i + '" title="' + (x.aktiv ? t('active') : t('inactive')) + '"><ha-icon icon="' + (x.aktiv ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon></button>' +
+          '<button data-act="bearb" data-i="' + i + '" title="' + t('edit_rule') + '"><ha-icon icon="mdi:pencil"></ha-icon></button></div>';
+      });
+      s += '<div class="klein">' + t('lights_hint') + '</div>';
+      this._setze(s);
+    }
+    async _speichern(regeln) {
+      await this._h.callService('autodarts', 'lichteffekte_setzen', { regeln: regeln.map(r => { const x = Object.assign({}, r); return x; }) });
+      await this._laden();
+    }
+    _editor() {
+      const e = this._ed, ev = this._daten.ereignisse || [], fx = this._daten.effekte || [];
+      const alle = Object.keys(this._h.states).filter(id => id.startsWith('light.') && this._h.states[id].state !== 'unavailable')
+        .sort((a, b) => (e.lichter.includes(b) - e.lichter.includes(a)) || this._name(a).localeCompare(this._name(b)));
+      const such = (this._such || '').toLowerCase();
+      const liste = alle.filter(id => !such || e.lichter.includes(id) || this._name(id).toLowerCase().includes(such) || id.includes(such));
+      this._modal('<h3>' + (e.i == null ? t('new_rule') : t('edit_rule')) + '</h3>' +
+        '<label>' + t('trigger') + '</label><select data-f="ereignis">' + ev.map(x => '<option value="' + x + '"' + (x === e.ereignis ? ' selected' : '') + '>' + esc(t('ev_' + x)) + '</option>').join('') + '</select>' +
+        '<label>' + t('effect') + '</label><div class="seg">' + fx.map(x => '<button class="feld' + (x === e.effekt ? ' an' : '') + '" data-act="fx" data-v="' + x + '"><ha-icon icon="' + LICHT_FX[x] + '" style="--mdc-icon-size:18px"></ha-icon> ' + t('e_' + x) + '</button>').join('') + '</div>' +
+        '<label>' + (e.effekt === 'regenbogen' ? t('brightness') : t('color') + ' · ' + t('brightness')) + '</label><div class="fz">' + (e.effekt === 'regenbogen' ? '' : '<input type="color" data-f="farbe" value="' + hex(e.farbe) + '">') +
+        '<input type="range" min="1" max="100" data-f="helligkeit" value="' + e.helligkeit + '"><b class="hw">' + e.helligkeit + ' %</b></div>' +
+        '<label>' + t('duration') + '</label><div class="stepper"><button class="feld" data-act="dauer" data-v="-1">−</button><b>' + t('seconds', { n: e.dauer }) + '</b><button class="feld" data-act="dauer" data-v="1">+</button></div>' +
+        '<label>' + t('lights') + ' · ' + t('n_lights', { n: e.lichter.length }) + '</label><input type="search" data-f="such" placeholder="' + t('search') + '" value="' + esc(this._such || '') + '">' +
+        '<div class="ll feld" style="margin-top:6px">' + liste.map(id => '<label><input type="checkbox" data-l="' + id + '"' + (e.lichter.includes(id) ? ' checked' : '') + '>' + esc(this._name(id)) + '<small>' + id.slice(6) + '</small></label>').join('') + '</div>' +
+        (this._edFehler ? '<div class="klein" style="color:var(--red-color,#e53935)">' + t('no_lights') + '</div>' : '') +
+        '<div class="mknoepfe">' + (e.i != null ? '<button class="feld" data-act="weg" data-lbl="' + t('delete') + '" style="margin-right:auto;--sr-f:var(--red-color,#e53935)"><span class="lbl">' + t('delete') + '</span></button>' : '') +
+        '<button class="feld" data-act="edtest"><ha-icon icon="mdi:play" style="--mdc-icon-size:18px"></ha-icon> ' + t('test') + '</button><button class="feld" data-act="mzu">' + t('cancel') + '</button><button class="ja" data-act="edok">' + t('save') + '</button></div>');
+      const box = this._r.querySelector('.mbox');
+      box.querySelectorAll('[data-f]').forEach(f => f.addEventListener('input', () => {
+        const k = f.dataset.f;
+        if (k === 'farbe') e.farbe = rgb(f.value);
+        else if (k === 'helligkeit') { e.helligkeit = +f.value; box.querySelector('.hw').textContent = f.value + ' %'; }
+        else if (k === 'ereignis') e.ereignis = f.value;
+        else if (k === 'such') { this._such = f.value; clearTimeout(this._sw); this._sw = setTimeout(() => { this._editor(); const i = this._r.querySelector('[data-f=such]'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 250); }
+      }));
+      box.querySelectorAll('[data-l]').forEach(c => c.addEventListener('change', () => {
+        const id = c.dataset.l; e.lichter = c.checked ? e.lichter.concat(id) : e.lichter.filter(x => x !== id);
+        box.querySelector('.ll').previousElementSibling.previousElementSibling.textContent = t('lights') + ' · ' + t('n_lights', { n: e.lichter.length });
+      }));
+    }
+    _regel(e) { return { id: e.id, ereignis: e.ereignis, lichter: e.lichter, effekt: e.effekt, farbe: e.farbe, helligkeit: e.helligkeit, dauer: e.dauer, aktiv: e.aktiv !== false }; }
+    _klick(act, b) {
+      const r = (this._daten && this._daten.regeln) || [];
+      if (act === 'neu' || act === 'bearb') {
+        const x = act === 'bearb' ? r[+b.dataset.i] : null;
+        this._ed = x ? Object.assign({ i: +b.dataset.i }, JSON.parse(JSON.stringify(x))) : { ereignis: 'one_eighty', effekt: 'regenbogen', farbe: [255, 170, 0], helligkeit: 100, dauer: 5, lichter: [], aktiv: true };
+        this._such = ''; this._edFehler = false; this._editor(); return;
+      }
+      if (act === 'test') { this._h.callService('autodarts', 'lichteffekt_testen', { regel: this._regel(r[+b.dataset.i]) }); return; }
+      if (act === 'aktiv') { const n = r.map((x, i) => i === +b.dataset.i ? Object.assign({}, x, { aktiv: !x.aktiv }) : x); this._speichern(n); return; }
+      const e = this._ed; if (!e) return;
+      if (act === 'fx') { e.effekt = b.dataset.v; this._editor(); return; }
+      if (act === 'dauer') { e.dauer = Math.max(1, Math.min(30, e.dauer + +b.dataset.v)); this._editor(); return; }
+      if (act === 'edtest' || act === 'edok') {
+        if (!e.lichter.length) { this._edFehler = true; this._editor(); return; }
+        if (act === 'edtest') { this._h.callService('autodarts', 'lichteffekt_testen', { regel: this._regel(e) }); return; }
+        const n = r.slice(); if (e.i == null) n.push(this._regel(e)); else n[e.i] = this._regel(e);
+        this._ed = null; this._modal(null); this._speichern(n); return;
+      }
+      if (act === 'weg') zweimal(this, b, t('really_del'), () => { const n = r.filter((x, i) => i !== e.i); this._ed = null; this._modal(null); this._speichern(n); });
+    }
+  }
+  customElements.define('autodarts-lights-card', AutodartsLightsCard);
+
   SPR = sprache(document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
   window.customCards = window.customCards || [];
   window.customCards.push(
     { type: 'autodarts-overview-card', name: 'Autodarts Overview', description: t('d_overview'), preview: true },
     { type: 'autodarts-game-card', name: 'Autodarts Game', description: t('d_game') },
     { type: 'autodarts-manager-card', name: 'Autodarts Board Manager', description: t('d_manager') },
-    { type: 'autodarts-players-card', name: 'Autodarts Players', description: t('d_players') }
+    { type: 'autodarts-players-card', name: 'Autodarts Players', description: t('d_players') },
+    { type: 'autodarts-lights-card', name: 'Autodarts Light effects', description: t('d_lights') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

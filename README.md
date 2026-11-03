@@ -325,10 +325,18 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 Let your lights celebrate with you – no YAML needed.
 
 1. Open **Autodarts → Light effects** in the sidebar (or add the card **Autodarts Light effects** to a dashboard).
-2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, rainbow, pulse**), colour, brightness and duration, and tick the lights.
+2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, rainbow, pulse, light effect, WLED preset**), colour, brightness and duration, and tick the lights.
 3. Tap **Test** to see it, then **Save**.
 
 Effects run in Home Assistant itself, also when no dashboard is open. Afterwards every light goes back to exactly how it was (on/off, brightness, colour). A new effect on the same light takes over smoothly. Colour lights show the colour, other lights just light up. The rules are stored by the integration and can also be set with the action `autodarts.lichteffekte_setzen`.
+
+### WLED and lights with their own effects
+
+- **Light effect** uses the effects built into a light – e.g. WLED *Fireworks*, *Chase*, *Twinkle* or the Hue effects. Only lights that have effects are offered, and the list shows the effects of the ticked lights. For WLED, **speed** and **intensity** sliders appear.
+- **WLED preset** plays a preset you saved in WLED (e.g. a "Champion" animation for a match win). Only WLED lights are offered.
+- Add WLED as usual under **Settings → Devices & services → WLED**; the strip shows up in the editor by itself. Afterwards the light, its effect, speed and intensity go back to how they were.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights-wled.png" alt="WLED preset" width="420"></p>
 
 ## Blueprints
 
@@ -547,7 +555,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden
-- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … blinken, aufblitzen, pulsieren, Farbe oder Regenbogen – danach zurück wie vorher
+- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … blinken, aufblitzen, pulsieren, Farbe, Regenbogen, Effekte der Lampe (WLED, Hue, mit Tempo und Stärke) oder WLED-Presets – danach zurück wie vorher
 - Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn

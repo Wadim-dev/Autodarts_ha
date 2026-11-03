@@ -14,7 +14,7 @@ import voluptuous as vol
 
 from .const import DOMAIN, EREIGNISSE
 from .coordinator import DartsEntry
-from .lichter import EFFEKTE, REGEL
+from .lichter import EFFEKTE, REGEL, wled_uebersicht
 from .spiel import EINSTELLUNGEN, Spielleiter
 from .spielarten import GRUPPEN
 
@@ -94,7 +94,7 @@ def ws_lichteffekte(hass: HomeAssistant, connection: ActiveConnection, msg: dict
     """Rules of the light effects for the lights card."""
     eintraege = hass.config_entries.async_loaded_entries(DOMAIN)
     regeln = eintraege[0].runtime_data.lichter.regeln if eintraege else []
-    connection.send_result(msg["id"], {"regeln": regeln, "ereignisse": EREIGNISSE, "effekte": EFFEKTE})
+    connection.send_result(msg["id"], {"regeln": regeln, "ereignisse": EREIGNISSE, "effekte": EFFEKTE, "wled": wled_uebersicht(hass)})
 
 
 def async_setup_services(hass: HomeAssistant) -> None:

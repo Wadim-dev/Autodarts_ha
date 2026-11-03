@@ -3,6 +3,17 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.14.0
+
+- Light effects: new effect **Light effect** uses the light's own effects (WLED *Fireworks*, *Chase* …, Hue effects) with speed and intensity for WLED.
+- New effect **WLED preset** plays a preset saved in WLED.
+- Afterwards effect, speed and intensity go back to how they were. The editor only offers lights that fit the chosen effect.
+
+**Deutsch**
+- Lichteffekte: neuer Effekt **Lampen-Effekt** nutzt die eigenen Effekte der Lampe (WLED *Fireworks*, *Chase* …, Hue-Effekte), bei WLED mit Tempo und Stärke.
+- Neuer Effekt **WLED-Preset** spielt ein in WLED gespeichertes Preset ab.
+- Danach kommen Effekt, Tempo und Stärke zurück wie vorher. Der Editor zeigt nur Lampen, die zum gewählten Effekt passen.
+
 ## 1.13.0
 
 - Private project from now on: the board client is built into the integration (`board.py`), nothing is installed from PyPI.

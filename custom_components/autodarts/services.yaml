@@ -158,8 +158,8 @@ lichteffekte_setzen:
   description: >-
     Alle Regeln der Lichteffekte auf einmal setzen (ersetzt die bisherigen). Jede Regel:
     ereignis (z. B. one_eighty, bust, checkout, leg_won), lichter (Liste light.*),
-    effekt (farbe, blinken, blitz, regenbogen, pulsieren), farbe [r, g, b], helligkeit 1–100,
-    dauer 1–60 s, aktiv. Die Karte „Autodarts Lichteffekte“ macht das per Klick.
+    effekt (farbe, blinken, blitz, regenbogen, pulsieren, lampe, preset), farbe [r, g, b], helligkeit 1–100,
+    dauer 1–60 s, aktiv; bei lampe lampen_effekt, tempo/staerke 0–255 (WLED), bei preset preset. Die Karte „Autodarts Lichteffekte“ macht das per Klick.
   fields:
     regeln:
       name: Regeln

@@ -19,7 +19,8 @@ async def test_180_und_checkout(hass: HomeAssistant, geladen) -> None:
     anna, ben = await _spieler(hass, "Anna", "Ben")
     liste = _sammeln(geladen)
     await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=301, auswurf="double")
-    assert liste == []
+    assert liste == [("game_started", {"players": ["Anna", "Ben"], "player_ids": [anna, ben]})]
+    liste.clear()
     _board(hass, geladen, [])
     _board(hass, geladen, ["T20"])
     _board(hass, geladen, ["T20", "T20", "T20"])

@@ -219,6 +219,7 @@
         "state_attributes": {
           "event_type": {
             "state": {
+              "game_started": "Spiel gestartet",
               "dart": "Dart",
               "triple": "Triple",
               "bull": "Bull (25)",

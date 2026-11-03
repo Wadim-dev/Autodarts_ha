@@ -504,6 +504,7 @@ class Spielleiter:
         await self._board_leeren()
         await self._erkennung_an()
         self._neu_rechnen()
+        self._ereignis("game_started", {"players": [s["name"] for s in spieler], "player_ids": [s.get("id") for s in spieler]})
 
     async def _erkennung_an(self) -> None:
         """Board an, aber Erkennung gestoppt (z. B. Stop gedrückt): zum Spielstart wieder starten."""

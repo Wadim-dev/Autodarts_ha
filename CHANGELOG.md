@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.17.0
+
+- **Keypad** in the game card: while the board is offline a keypad replaces the drawn board by itself (Double/Triple + 1–20, 25, Bull, Miss); for X01 also **Total** for the whole visit. When the board is back online the camera returns. Keys, Total, Board and Camera can be switched above the keypad.
+
+**Deutsch**
+- **Tastenfeld** in der Spielkarte: Ist das Board offline, ersetzt ein Tastenfeld von selbst die gezeichnete Scheibe (Double/Triple + 1–20, 25, Bull, Daneben); bei X01 auch **Summe** für die ganze Aufnahme. Ist das Board wieder online, kommt die Kamera zurück. Über dem Tastenfeld umschaltbar: Tasten, Summe, Scheibe, Kamera.
+
 ## 1.16.1
 
 - Overview card: new options `manager_label` and `manager_icon` give the Board Manager button its own text and icon (e.g. "Settings" for a page with Board Manager, light effects and caller).

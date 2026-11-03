@@ -157,6 +157,9 @@
   // texts of tournaments up to 32 and the league (1.16)
   Object.assign(TEXTE.en, { tour_ko: 'Knockout', tour_liga: 'League', tour_hint: 'Knockout for 3–32 players, byes are drawn automatically. Every match uses the settings below.', liga_hint: 'League for 3–10 players: everyone plays everyone once. Win = 2 points, then leg difference.', of16: '{n} of {m}', t_last32: 'Round of 32', liga: 'League', liga_match: 'Match {n} of {m}', table: 'Table', fixtures: 'Matches', t_pl: 'P', t_w: 'W', t_pts: 'Pts', t_legs: 'Legs' });
   Object.assign(TEXTE.de, { tour_ko: 'K.-o.', tour_liga: 'Liga', tour_hint: 'K.-o. für 3–32 Spieler, Freilose werden automatisch verteilt. Jedes Match nutzt die Einstellungen unten.', liga_hint: 'Liga für 3–10 Spieler: jeder spielt einmal gegen jeden. Sieg = 2 Punkte, danach zählt die Leg-Differenz.', of16: '{n} von {m}', t_last32: 'Sechzehntelfinale', liga: 'Liga', liga_match: 'Spiel {n} von {m}', table: 'Tabelle', fixtures: 'Spiele', t_pl: 'Sp', t_w: 'S', t_pts: 'Pkt', t_legs: 'Legs' });
+  // keypad (1.17)
+  Object.assign(TEXTE.en, { kp_keys: 'Keys', kp_sum: 'Total', kp_board: 'Board', kp_cam: 'Camera', kp_miss: 'Miss', kp_sum_hint: 'points of the visit' });
+  Object.assign(TEXTE.de, { kp_keys: 'Tasten', kp_sum: 'Summe', kp_board: 'Scheibe', kp_cam: 'Kamera', kp_miss: 'Daneben', kp_sum_hint: 'Punkte der Aufnahme' });
   // aim map (1.16)
   Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
   Object.assign(TEXTE.de, { t_aim: 'Zielen', aim_best: 'Bester Zielpunkt', aim_avg: 'etwa Ø {n} pro Aufnahme', aim_vs: 'Auf T20 Ø {n} – hier {d} mehr.', aim_t20: 'T20 ist für dich das richtige Ziel.', aim_hint: 'Berechnet aus deinem Average (Ø {a}, Streuung etwa {s} mm). Rot = die meisten Punkte.', aim_no_avg: 'Spiele zuerst ein X01-Spiel.' });
@@ -866,6 +869,12 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .brett.tippen{cursor:crosshair;position:relative}.brett.tippen svg{width:min(100%,440px);touch-action:manipulation}
 .brett .tipp{position:absolute;left:4px;bottom:4px;display:flex;align-items:center;gap:4px;border-radius:10px;padding:4px 9px;font-size:12px;font-weight:700;background:rgba(0,0,0,.55);color:#fff;border:0;cursor:pointer;z-index:2}
 .brett .tipp ha-icon{--mdc-icon-size:16px}.brett .tipp.an{background:var(--primary-color)}
+.kseg{display:flex;gap:6px;margin:0 auto 8px;width:100%;max-width:460px}.kseg button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:8px 4px;border-radius:12px;font:inherit;font-size:13px;font-weight:700;color:inherit;cursor:pointer;min-width:0}
+.kseg button ha-icon{--mdc-icon-size:17px}.kseg button.an,.kp .k.an{background:var(--primary-color);color:#fff;border-color:var(--primary-color)}
+.kp{display:grid;gap:7px;width:100%;max-width:460px;margin:0 auto}.kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.kgrid.k2{grid-template-columns:1fr 1fr}.kgrid.k3{grid-template-columns:repeat(3,1fr)}
+.kp .k{min-height:54px;border-radius:14px;font:inherit;font-size:21px;font-weight:800;color:inherit;cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center;gap:1px;font-variant-numeric:tabular-nums}
+.kp .k i{font-style:normal;font-size:13px;opacity:.7}.kp .k:disabled{opacity:.35;cursor:default}.kp .k.miss{color:var(--red-color,#e53935)}.kp .k.ok{background:var(--primary-color);color:#fff;border:0}
+.ksum{display:flex;align-items:baseline;justify-content:center;gap:10px;border-radius:14px;padding:10px}.ksum b{font-size:40px;font-weight:800;line-height:1}.ksum small{font-size:12.5px;color:var(--secondary-text-color)}
 .tasten{position:absolute;right:4px;bottom:4px;border-radius:10px;padding:4px 10px;font-size:15px;font-weight:800;background:var(--primary-color);color:#fff;z-index:2;letter-spacing:.04em}
 .lvh,.lv{position:absolute;inset:0}
 .lv img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;display:block}
@@ -1119,13 +1128,37 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const id = this._ansicht(), h = this._h;
       return id && id !== 'grafik' && phase(att(h, this._spiel)) === 'running' && boardOnline(h) && an(h, E(h, 'binary_sensor.detection_running')) && !!entzerrung(att(h, id).kalibrierung);
     }
-    _tippAn() { let v = null; try { v = localStorage.getItem('autodarts_tap'); } catch (e) {} return v === '1' || (v === null && !boardOnline(this._h)); }
+    // switches by itself: board offline = keypad, board online = camera; a manual choice holds until the board state changes
+    _tippAn() { const on = boardOnline(this._h); if (this._onAlt !== on) { this._onAlt = on; this._tapHand = null; } return this._tapHand != null ? this._tapHand : !on; }
     _toast(message) { this.dispatchEvent(new CustomEvent('hass-notification', { detail: { message }, bubbles: true, composed: true })); }
-    _brettHtml(darts, ziel) {
+    // keypad instead of the drawn board (default while the board is offline): keys like a dart machine, or the total of a visit (X01)
+    _tmod(x01) { let v = 'k'; try { v = localStorage.getItem('autodarts_tapmode') || v; } catch (e) {} return v === 's' && !x01 ? 'k' : v; }
+    _kseg(m, x01) {
+      const w = [['k', 'mdi:dialpad', t('kp_keys')]].concat(x01 ? [['s', 'mdi:numeric', t('kp_sum')]] : [], [['b', 'mdi:bullseye', t('kp_board')]], boardOnline(this._h) ? [['c', 'mdi:cctv', t('kp_cam')]] : []);
+      return '<div class="kseg">' + w.map(([v, ic, x]) => '<button class="feld' + (v === m ? ' an' : '') + '" data-act="kmod" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon>' + x + '</button>').join('') + '</div>';
+    }
+    _tastenfeld(m, n) {
+      const voll = n >= 3 ? ' disabled' : '';
+      if (m === 's') {
+        const z = this._summe || '';
+        return '<div class="kp"><div class="ksum feld"><b>' + (z || '0') + '</b><small>' + t('kp_sum_hint') + '</small></div><div class="kgrid k3">' +
+          ['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(d => '<button class="k feld" data-act="kzif" data-v="' + d + '">' + d + '</button>').join('') +
+          '<button class="k feld" data-act="kzif" data-v="&lt;"><ha-icon icon="mdi:backspace-outline"></ha-icon></button><button class="k feld" data-act="kzif" data-v="0">0</button>' +
+          '<button class="k ok" data-act="ksum"' + (z === '' ? ' disabled' : '') + '>OK</button></div></div>';
+      }
+      const mo = this._mod || '';
+      return '<div class="kp"><div class="kgrid k2"><button class="k feld' + (mo === 'D' ? ' an' : '') + '" data-act="kmodi" data-v="D">Double</button><button class="k feld' + (mo === 'T' ? ' an' : '') + '" data-act="kmodi" data-v="T">Triple</button></div>' +
+        '<div class="kgrid">' + Array.from({ length: 20 }, (_, i) => '<button class="k feld" data-act="kz" data-v="' + (i + 1) + '"' + voll + '>' + (mo ? '<i>' + mo + '</i>' : '') + (i + 1) + '</button>').join('') + '</div>' +
+        '<div class="kgrid k3"><button class="k feld" data-act="kz" data-v="25"' + voll + '>25</button><button class="k feld" data-act="kz" data-v="50"' + voll + '>Bull</button><button class="k feld miss" data-act="kz" data-v="0"' + voll + '>' + t('kp_miss') + '</button></div></div>';
+    }
+    _brettHtml(darts, ziel, x01) {
       const id = this._ansicht(), nr = this._ansichtNr();
       const tk = '<button class="tipp' + (this._tippAn() ? ' an' : '') + '" data-act="tipp" title="' + t('tap_on') + '"><ha-icon icon="mdi:gesture-tap"></ha-icon>' + t('tap_mode') + '</button>' +
         (this._tb ? '<span class="tasten">' + esc(this._tb) + '</span>' : '');
-      if (this._tippAn()) return '<div class="brett tippen" data-act="tippen" data-n="' + (darts || []).length + '">' + brett(darts, ziel) + tk + '</div>';
+      if (this._tippAn()) {
+        const m = this._tmod(x01);
+        return this._kseg(m, x01) + (m === 'b' ? '<div class="brett tippen" data-act="tippen" data-n="' + (darts || []).length + '">' + brett(darts, ziel) + (this._tb ? '<span class="tasten">' + esc(this._tb) + '</span>' : '') + '</div>' : this._tastenfeld(m, (darts || []).length));
+      }
       if (!this._lvSoll()) return '<div class="brett grafik" data-act="ansicht" title="' + t('tap_view') + '">' + brett(darts, ziel) + tk + (id !== 'grafik' ? '<div class="bk"><span>' + (boardOnline(this._h) ? t('cams_off') : t('sc_off')) + ' – ' + t('graphic') + '</span></div>' : '') + '</div>';
       const netz = this._netzAn();
       const pf = (darts || []).map((d, i) => { const [x, y] = dartMM(d, i); return '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><circle r="15" fill="' + ['#ff5252', '#40c4ff', '#ffd740'][i] + '"/><text y="6.5">' + (i + 1) + '</text></g>'; }).join('');
@@ -1482,7 +1515,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
       let s = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + tiles + '</div><div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
         '<div class="summe"><b>' + au.summe + '</b><span>' + t('rest', { n: wer.rest }) + '</span></div>' + weg + this._vorige(a) + '</div>' +
-        this._brettHtml(au.darts) + '</div>' +
+        this._brettHtml(au.darts, undefined, true) + '</div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
         '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
       s += auf('verlauf', this._auf.verlauf, 'mdi:history', t('visits'), t('leg') + ' ' + a.leg + (e.sets ? ' · ' + t('set') + ' ' + a.set : ''));
@@ -1682,9 +1715,28 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'fx': { const ein = !this._fxAn(); try { localStorage.setItem('autodarts_fx', ein ? '1' : '0'); } catch (e) {} this._kxAlt = null; this._zeichnen(); break; }
         case 'ansicht': { const f = ['1', '2', '3', 'g'], n = f[(f.indexOf(this._ansichtNr()) + 1) % 4]; try { localStorage.setItem('autodarts_view', n); } catch (e) {} neu(); break; }
         case 'tipp': {
-          const ein = !this._tippAn(); try { localStorage.setItem('autodarts_tap', ein ? '1' : '0'); } catch (e) {}
+          const ein = !this._tippAn(); this._tapHand = ein;
           if (ein) this._toast(t('tap_on')); neu(); break;
         }
+        case 'kmod': {
+          const v = b.dataset.v;
+          if (v === 'c') this._tapHand = false; else try { localStorage.setItem('autodarts_tapmode', v); } catch (e) {}
+          this._mod = ''; this._summe = ''; neu(); break;
+        }
+        case 'kmodi': this._mod = this._mod === b.dataset.v ? '' : b.dataset.v; neu(); break;
+        case 'kz': {
+          const z = +b.dataset.v, mo = this._mod || 'S', n = att(h, this._spiel).aufnahme;
+          const f = z === 0 ? 'M' : z === 50 ? 'D25' : z === 25 ? (mo === 'D' ? 'D25' : 'S25') : mo + z;
+          if (z === 25 && mo === 'T') break;
+          const anz = ((n && n.darts) || []).length;
+          if (anz >= 3) { this._toast(t('tap_full')); break; }
+          this._dienst('wurf_aendern', { dart: anz, feld: f }); this._mod = ''; neu(); break;
+        }
+        case 'kzif': {
+          const z = this._summe || '', v = b.dataset.v;
+          this._summe = v === '<' ? z.slice(0, -1) : (+(z + v) <= 180 ? String(+(z + v)) : z); neu(); break;
+        }
+        case 'ksum': if (this._summe !== '' && this._summe != null) { this._dienst('aufnahme_eintragen', { punkte: +this._summe }); this._summe = ''; neu(); } break;
         case 'tippen': {
           if (+b.dataset.n >= 3) { this._toast(t('tap_full')); break; }
           const svg = b.querySelector('svg'); if (!svg || !e) break;

@@ -65,7 +65,7 @@
 | ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
 | 💡 **Light effects** | 18 effects – blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, WLED effects and presets – on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
 | 📘 **Blueprints** | Awtrix display, caller on a speaker and push notifications – import with one click, fill in a form. |
-| 👆 **Without cameras** | Tap the drawn board or type `T20` + Enter. |
+| 👆 **Without cameras** | A keypad appears by itself while the board is offline: Double/Triple + number, or the whole visit as a total. Tap the drawn board or type `T20` + Enter also works. |
 | 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo and **scores by voice** ("Alex 140") – also with an AI agent. |
 | 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
 | 🛠️ **Board Manager in HA** | Start/stop detection, reset, calibrate, restart, camera resolution / frame rate / standby, board software updates. |
@@ -301,7 +301,16 @@ Every game can be played as first to N legs.
 
 ### Without cameras: tap or type
 
-Tap **Tap the board** under the board in the game card and tap the spot where the dart landed (outside the double ring = miss). It switches on by itself while the board is offline and is remembered per device. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
+While the board is offline the game card shows a **keypad** instead of the board by itself; when the board is back online the camera image returns. Above the keypad you choose how to enter:
+
+- **Keys**: tap Double or Triple, then the number (1–20), or 25, Bull or Miss.
+- **Total** (X01 only): type the points of the whole visit, e.g. `140`, and press OK.
+- **Board**: tap the spot on the drawn board (outside the double ring = miss).
+- **Camera** (only while the board is online): back to the camera image.
+
+Your choice of Keys/Total/Board is remembered per device. **Tap the board** under the camera image switches to tapping while the board is online. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
+
+![Keypad](docs/images/keypad.png)
 
 ### Voice (Assist)
 
@@ -587,7 +596,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 
 - Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
 - Lokale Spiele für 1–8 Spieler, mit Bots: X01 (Double/Master In und Out, Legs und Sets), Cricket (Standard, Cut-Throat, ohne Punkte; 15–20, 10–20, Zufall), Training (Rund um die Uhr, Bob's 27, Doppel, 121 Checkout, Highscore) und Partyspiele (Shanghai, Killer, Halve-It, Golf, Baseball) – mit Regeltext, Ziel auf der Scheibe, Bull-Off, Korrekturen und Statistik
-- Eingabe ohne Kameras: Scheibe antippen oder per Tastatur (T20 + Enter)
+- Eingabe ohne Kameras: Tastenfeld erscheint von selbst, wenn das Board offline ist (Double/Triple + Zahl oder Summe der Aufnahme), dazu Scheibe antippen oder Tastatur (T20 + Enter)
 - Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier: K.-o. für 3–32 Spieler mit Turnierbaum, Freilosen und Siegerfeier, oder Liga für 3–10 Spieler mit Tabelle
 - Ansager über die Lautsprecher: Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme

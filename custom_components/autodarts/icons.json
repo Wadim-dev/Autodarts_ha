@@ -168,6 +168,15 @@
     },
     "lichteffekt_testen": {
       "service": "mdi:lightbulb-on-outline"
+    },
+    "ansager_setzen": {
+      "service": "mdi:account-voice"
+    },
+    "ansager_testen": {
+      "service": "mdi:bullhorn-outline"
+    },
+    "aufnahme_eintragen": {
+      "service": "mdi:numeric"
     }
   }
 }

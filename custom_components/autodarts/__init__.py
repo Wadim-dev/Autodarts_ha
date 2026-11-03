@@ -18,6 +18,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 
+from .ansager import Ansager
 from .api import board_erstellen
 from .assist import async_setup_assist
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
@@ -88,8 +89,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     await spiel.laden()
     lichter = Lichtshow(hass)
     await lichter.laden()
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter)
+    ansager = Ansager(hass, lambda: spiel.stand)
+    await ansager.laden()
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager)
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
+    entry.async_on_unload(spiel.ereignis_hoerer(ansager.ereignis))
     entry.async_on_unload(zustand.async_add_listener(spiel.board_aenderung))
     if abmelden := async_setup_assist(hass, lambda: entry.runtime_data.spiel):
         entry.async_on_unload(abmelden)
@@ -103,4 +107,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     if ok and entry.runtime_data.spiel:
         await entry.runtime_data.spiel.beenden()
         await entry.runtime_data.lichter.beenden()
+        await entry.runtime_data.ansager.beenden()
     return ok

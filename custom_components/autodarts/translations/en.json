@@ -81,7 +81,7 @@
       "message": "Unknown game. Use x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf or baseball."
     },
     "tournament_players": {
-      "message": "A tournament needs 3 to 16 players."
+      "message": "A tournament needs 3 to {max} players."
     },
     "no_tournament": {
       "message": "No tournament is running."
@@ -97,6 +97,18 @@
     },
     "update_failed": {
       "message": "The update could not be installed (a file does not fit). Nothing was changed."
+    },
+    "caller_settings": {
+      "message": "Invalid caller settings: {error}"
+    },
+    "score_x01_only": {
+      "message": "Scores can only be entered in X01 games."
+    },
+    "not_your_turn": {
+      "message": "It is {player}'s turn."
+    },
+    "invalid_score": {
+      "message": "{score} cannot be thrown with three darts."
     }
   },
   "entity": {

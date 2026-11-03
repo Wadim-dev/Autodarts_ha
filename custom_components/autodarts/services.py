@@ -6,7 +6,7 @@ from typing import Any
 
 from homeassistant.components.websocket_api import async_register_command
 from homeassistant.components.websocket_api.connection import ActiveConnection
-from homeassistant.components.websocket_api.decorators import websocket_command
+from homeassistant.components.websocket_api.decorators import async_response, websocket_command
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
@@ -36,7 +36,7 @@ START = {
 
 DIENSTE = {
     "spiel_starten": vol.Schema(START),
-    "turnier_starten": vol.Schema(START),
+    "turnier_starten": vol.Schema({**START, vol.Optional("turnier_modus", default="ko"): vol.In(["ko", "liga"])}),
     "spiel_abbrechen": vol.Schema({}),
     "turnier_weiter": vol.Schema({}),
     "turnier_abbrechen": vol.Schema({}),
@@ -55,6 +55,12 @@ DIENSTE = {
     }),
     "lichteffekte_setzen": vol.Schema({vol.Required("regeln"): [dict]}),
     "lichteffekt_testen": vol.Schema({vol.Required("regel"): dict}),
+    "aufnahme_eintragen": vol.Schema({
+        vol.Optional("spieler"): cv.string,
+        vol.Required("punkte"): vol.All(vol.Coerce(int), vol.Range(0, 180)),
+    }),
+    "ansager_setzen": vol.Schema({vol.Required("einstellungen"): dict}),
+    "ansager_testen": vol.Schema({vol.Optional("text"): cv.string}),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
         vol.Optional("verlauf", default=False): cv.boolean,
@@ -97,9 +103,34 @@ def ws_lichteffekte(hass: HomeAssistant, connection: ActiveConnection, msg: dict
     connection.send_result(msg["id"], {"regeln": regeln, "ereignisse": EREIGNISSE, "effekte": EFFEKTE, "wled": wled_uebersicht(hass)})
 
 
+@websocket_command({vol.Required("type"): "autodarts/ansager"})
+@async_response
+async def ws_ansager(hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]) -> None:
+    """Caller settings, voices, sound packs and walk-on songs for the caller card."""
+    eintraege = hass.config_entries.async_loaded_entries(DOMAIN)
+    if not eintraege:
+        connection.send_result(msg["id"], {"einstellungen": {}, "stimmen": [], "packs": {}, "songs": []})
+        return
+    connection.send_result(msg["id"], await eintraege[0].runtime_data.ansager.uebersicht())
+
+
+async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
+    ansager = _eintrag(hass).runtime_data.ansager
+    if name == "ansager_testen":
+        await ansager.testen(d.get("text"))
+        return
+    try:
+        await ansager.setzen(d["einstellungen"])
+    except vol.Invalid as err:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN, translation_key="caller_settings", translation_placeholders={"error": str(err)}
+        ) from err
+
+
 def async_setup_services(hass: HomeAssistant) -> None:
     """Register all actions of the integration."""
     async_register_command(hass, ws_lichteffekte)
+    async_register_command(hass, ws_ansager)
 
     async def ausfuehren(call: ServiceCall) -> ServiceResponse:
         s = _leiter(hass)
@@ -108,7 +139,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
         if name == "spiel_starten":
             await s.starten(d.get("spieler"), {k: d.get(k) for k in EINSTELLUNGEN})
         elif name == "turnier_starten":
-            await s.turnier_starten(d.get("spieler"), {k: d.get(k) for k in EINSTELLUNGEN})
+            await s.turnier_starten(d.get("spieler"), {k: d.get(k) for k in EINSTELLUNGEN}, d["turnier_modus"])
         elif name == "turnier_weiter":
             await s.turnier_weiter()
         elif name == "turnier_abbrechen":
@@ -121,6 +152,8 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.rueckgaengig()
         elif name == "wurf_aendern":
             await s.wurf_aendern(d.get("aufnahme"), d["dart"], d.get("feld", ""))
+        elif name == "aufnahme_eintragen":
+            await s.aufnahme_eintragen(d.get("spieler"), d["punkte"])
         elif name == "spieler_anlegen":
             sid = await s.spieler_anlegen(d["name"])
             return {"id": sid} if call.return_response else None
@@ -130,6 +163,8 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
+        elif name in ("ansager_setzen", "ansager_testen"):
+            await _ansager(hass, name, d)
         return None
 
     for name, schema in DIENSTE.items():

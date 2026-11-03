@@ -88,3 +88,43 @@ async def test_turnier_im_spiel(hass: HomeAssistant, geladen) -> None:
     assert len(geladen.runtime_data.spiel.daten["letzte"]["spieler"]) == 3
     await _dienst(hass, "turnier_abbrechen")
     assert "turnier" not in hass.states.get(SPIEL).attributes
+
+
+def test_32_spieler_ko() -> None:
+    t = _t([f"S{i}" for i in range(32)])
+    b = turnier.baum(t)
+    assert len(b) == 5 and len(b[0]) == 16 and not any(x["freilos"] for x in b[0])
+    assert turnier.naechstes(t)[:2] == (0, 0)
+
+
+def test_liga_spielplan_und_tabelle() -> None:
+    for n in range(3, turnier.LIGA_MAX + 1):
+        paare = [tuple(sorted(p)) for runde in turnier.liga_runden(n) for p in runde]
+        assert len(paare) == n * (n - 1) // 2 == len(set(paare))
+    t = {**_t(["A", "B", "C"]), "modus": "liga"}
+    spiele = [p for runde in turnier.liga_runden(3) for p in runde]
+    assert turnier.champion(t) is None
+    for r, runde in enumerate(turnier.liga_runden(3)):
+        for m, (a, b) in enumerate(runde):
+            sieger = min(a, b) if 2 not in (a, b) else 2  # C wins everything, then A beats B
+            t["ergebnisse"][f"{r}-{m}"] = sieger
+            t.setdefault("legs", {})[f"{r}-{m}"] = [2, 1] if sieger == a else [0, 2]
+    assert turnier.naechstes(t) is None and turnier.champion(t) == 2
+    v = turnier.ansicht(t, None)
+    assert v["modus"] == "liga" and v["sieger"] == "C" and len(v["spiele"]) == len(spiele) == 3
+    assert [z["name"] for z in v["tabelle"]] == ["C", "A", "B"] and v["tabelle"][0]["punkte"] == 4
+
+
+async def test_liga_im_spiel(hass: HomeAssistant, geladen) -> None:
+    anna, ben, cem = await _spieler(hass, "Anna", "Ben", "Cem")
+    await _dienst(hass, "turnier_starten", spieler=[anna, ben, cem], spiel="highscore", runden=1, turnier_modus="liga")
+    tur = _attr(hass, "turnier")
+    assert tur["modus"] == "liga" and tur["match_nr"][1:3] == [1, 3]
+    await _highscore_match(hass, 0)
+    assert geladen.runtime_data.spiel.daten["turnier"]["legs"]["0-0"] == [1, 0]
+    tur = _attr(hass, "turnier")
+    assert tur["tabelle"][0]["siege"] == 1 and tur["naechstes"]
+    await _dienst(hass, "turnier_abbrechen")
+    zehn = [x for x in await _spieler(hass, *[f"P{i}" for i in range(8)])] + [anna, ben, cem]
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "turnier_starten", spieler=zehn, spiel="highscore", runden=1, turnier_modus="liga")

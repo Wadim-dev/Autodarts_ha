@@ -74,7 +74,7 @@ spiel_starten:
         boolean:
 turnier_starten:
   name: Turnier starten
-  description: K.-o.-Turnier mit 3–16 Spielern (Bots erlaubt). Gleiche Felder wie beim Spiel; jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt.
+  description: K.-o.-Turnier mit 3–32 Spielern oder Liga (jeder gegen jeden) mit 3–10 Spielern, Bots erlaubt. Gleiche Felder wie beim Spiel, dazu turnier_modus ko oder liga; jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt.
   fields: *startfelder
 turnier_weiter:
   name: Turnier weiter
@@ -177,3 +177,45 @@ lichteffekt_testen:
       example: '{"ereignis": "one_eighty", "lichter": ["light.flur"], "effekt": "blinken", "farbe": [255, 200, 0]}'
       selector:
         object:
+ansager_setzen:
+  name: Ansager einstellen
+  description: >-
+    Einstellungen des Ansagers speichern: aktiv, lautsprecher (Liste media_player.*), stimme (tts.*),
+    pack (Ordner unter Medien autodarts/caller), punkte, rest, ende, besondere, game_on, walkon,
+    walkon_sekunden 5–60, songs (Spieler-ID → Datei in autodarts/walkon). Die Karte „Autodarts Ansager“ macht das per Klick.
+  fields:
+    einstellungen:
+      name: Einstellungen
+      required: true
+      example: '{"aktiv": true, "lautsprecher": ["media_player.kueche"]}'
+      selector:
+        object:
+ansager_testen:
+  name: Ansager testen
+  description: Einmal etwas über die gewählten Lautsprecher ansagen.
+  fields:
+    text:
+      name: Text
+      example: Einhundertachtzig!
+      selector:
+        text:
+aufnahme_eintragen:
+  name: Aufnahme eintragen
+  description: >-
+    Eine ganze Aufnahme mit ihrer Punktzahl eintragen (nur X01), z. B. per Sprache „Alex hat 140“.
+    Ist die Zahl genau der Rest, gilt sie als Checkout.
+  fields:
+    spieler:
+      name: Spieler
+      description: Name des Spielers, der dran ist (leer = wer dran ist).
+      example: Alex
+      selector:
+        text:
+    punkte:
+      name: Punkte
+      required: true
+      example: 140
+      selector:
+        number:
+          min: 0
+          max: 180

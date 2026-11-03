@@ -21,6 +21,7 @@ from .board import AutodartsBoard, AutodartsError
 from .const import DOMAIN
 
 if TYPE_CHECKING:
+    from .ansager import Ansager
     from .lichter import Lichtshow
     from .spiel import Spielleiter
 
@@ -169,6 +170,7 @@ class DartsDaten:
     geraet: DeviceInfo
     spiel: Spielleiter
     lichter: Lichtshow
+    ansager: Ansager
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

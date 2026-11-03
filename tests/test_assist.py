@@ -7,7 +7,7 @@ from homeassistant.core import Context, HomeAssistant
 from homeassistant.setup import async_setup_component
 import pytest
 
-from custom_components.autodarts.assist import spiel_aus_text
+from custom_components.autodarts.assist import punkte_lesen, spiel_aus_text
 
 from .conftest import board_mock
 from .test_spiel import _dienst, _spieler
@@ -76,5 +76,37 @@ async def test_neue_schnittstelle(hass: HomeAssistant, monkeypatch) -> None:
     monkeypatch.setattr(agent_manager, "get_agent_manager", lambda _hass: Manager())
     hass.config.components.add("conversation")
     abmelden = async_setup_assist(hass, lambda: None)
-    assert abmelden is not None and len(gemeldet) == 18
+    assert abmelden is not None and len(gemeldet) == 19
     abmelden()
+
+
+def test_punkte_lesen() -> None:
+    assert punkte_lesen("Alex hat 140", ["Alex", "Al"]) == ("Alex", 140)
+    assert punkte_lesen("darts null", ["Alex"]) == (None, 0)
+    assert punkte_lesen("Alex hat", ["Alex"]) == ("Alex", None)
+
+
+async def test_punkte_per_sprache(hass: HomeAssistant, mit_assist) -> None:
+    assert await _sag(hass, "darts 60") == "Gerade läuft kein Darts-Spiel."
+    anna, ben = await _spieler(hass, "Anna", "Ben")
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=301)
+    # the new names are in the sentences right away
+    assert await _sag(hass, "Anna hat 140") == "Anna 140. Anna 161 Rest, Ben 301 Rest. Ben ist dran."
+    assert await _sag(hass, "Anna hat 60") == "Ben ist dran."
+    assert await _sag(hass, "ben scored 179", "en") == "179 cannot be thrown with three darts."
+    assert (await _sag(hass, "дартс 0", "ru")).startswith("Ben 0.")
+    assert await _sag(hass, "Anna 161") == "Anna 161. Anna hat gewonnen."
+
+
+async def test_aufnahme_eintragen_dienst(hass: HomeAssistant, mit_assist) -> None:
+    from homeassistant.exceptions import ServiceValidationError
+
+    anna, ben = await _spieler(hass, "Anna", "Ben")
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=101, auswurf="double")
+    await _dienst(hass, "aufnahme_eintragen", punkte=99)
+    await _dienst(hass, "aufnahme_eintragen", spieler="ben", punkte=101)  # checkout T20 T17 D5 ... counts
+    st = mit_assist.runtime_data.spiel.stand
+    assert st["gewinner"] == 1
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], spiel="cricket")
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "aufnahme_eintragen", punkte=60)

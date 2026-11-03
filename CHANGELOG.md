@@ -3,6 +3,19 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.16.0
+
+- **Caller**: new card and sidebar tab. Announces scores, "you require …", game shot, specials and "Game on" on any speakers; own sound packs by upload (Media → autodarts → caller), missing sounds are spoken. Walk-on song per player at the start of a game.
+- **Scores by voice**: "Alex hat 140", "Darts 60", "Sam scored 100" enters a whole X01 visit for the player whose turn it is. New action `autodarts.aufnahme_eintragen`.
+- **Tournaments**: knockout now for up to 32 players, new **league** for 3–10 players (everyone against everyone, table with points and leg difference).
+- **Aim map** on the players card: best aim point for the player's own average and spread.
+
+**Deutsch**
+- **Ansager**: neue Karte und neuer Reiter. Sagt Punkte, „du brauchst …“, Game shot, Besonderes und „Game on“ über beliebige Lautsprecher an; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme. Einlaufmusik je Spieler zum Spielbeginn.
+- **Punkte per Sprache**: „Alex hat 140“, „Darts 60“ trägt eine ganze X01-Aufnahme für den Spieler am Zug ein. Neue Aktion `autodarts.aufnahme_eintragen`.
+- **Turniere**: K.-o. jetzt bis 32 Spieler, neu **Liga** für 3–10 Spieler (jeder gegen jeden, Tabelle mit Punkten und Leg-Differenz).
+- **Zielhilfe** auf der Spielerseite: bester Zielpunkt für den eigenen Average und die eigene Streuung.
+
 ## 1.15.0
 
 - Eleven new light effects: heartbeat, strobe, fade out, two colours, rainbow wave, confetti, chaser, sparkle, police, fire and thunderstorm. Wave, chaser, sparkle and police spread over several lights. The effect buttons are now a tidy grid.

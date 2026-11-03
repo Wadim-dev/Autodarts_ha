@@ -81,7 +81,7 @@
       "message": "Unbekannte Spielart. Möglich: x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball."
     },
     "tournament_players": {
-      "message": "Für ein Turnier braucht es 3 bis 16 Spieler."
+      "message": "Ein Turnier braucht 3 bis {max} Spieler."
     },
     "no_tournament": {
       "message": "Es läuft kein Turnier."
@@ -97,6 +97,18 @@
     },
     "update_failed": {
       "message": "Das Update ließ sich nicht installieren (eine Datei passt nicht). Es wurde nichts geändert."
+    },
+    "caller_settings": {
+      "message": "Ungültige Ansager-Einstellungen: {error}"
+    },
+    "score_x01_only": {
+      "message": "Punkte lassen sich nur in X01-Spielen so eintragen."
+    },
+    "not_your_turn": {
+      "message": "{player} ist dran."
+    },
+    "invalid_score": {
+      "message": "{score} kann man mit drei Darts nicht werfen."
     }
   },
   "entity": {

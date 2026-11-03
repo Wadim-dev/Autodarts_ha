@@ -1,7 +1,8 @@
-"""K.-o.-Turnier (ohne Home Assistant): Baum aus Teilnehmern und Ergebnissen.
+"""Tournaments (without Home Assistant): knockout up to 32 players or league (everyone against everyone).
 
-Gespeichert werden nur die Teilnehmer und je Match der Sieger. Der Baum mit
-Freilosen und den späteren Runden wird daraus jedes Mal neu gebaut.
+Only the participants and the winner of each match are stored (league: also the legs).
+The bracket with byes and later rounds, or the league fixtures and table, are built
+from that every time.
 """
 
 from __future__ import annotations
@@ -9,7 +10,9 @@ from __future__ import annotations
 from typing import Any
 
 MIN_SPIELER = 3
-MAX_SPIELER = 16
+MAX_SPIELER = 32
+LIGA_MAX = 10  # a league of 10 already has 45 matches
+MODI = ("ko", "liga")
 FREI = -1  # Freilos
 
 
@@ -62,16 +65,55 @@ def _verzahnt(n: int) -> list[int]:
     return reihe
 
 
+def liga_runden(n: int) -> list[list[tuple[int, int]]]:
+    """Fixtures of a league (circle method): every player meets every other once, one match after the other."""
+    plaetze: list[int] = list(range(n)) + ([FREI] if n % 2 else [])
+    k = len(plaetze)
+    runden = []
+    for _ in range(k - 1):
+        runden.append([(plaetze[i], plaetze[k - 1 - i]) for i in range(k // 2) if FREI not in (plaetze[i], plaetze[k - 1 - i])])
+        plaetze = [plaetze[0], plaetze[-1], *plaetze[1:-1]]
+    return runden
+
+
+def tabelle(t: dict[str, Any]) -> list[dict[str, Any]]:
+    """League table: wins (2 points each), then leg difference, then legs won."""
+    zeilen = [{"i": i, "spiele": 0, "siege": 0, "legs": 0, "gegen": 0} for i in range(len(t["teilnehmer"]))]
+    ergebnisse: dict[str, int] = t.get("ergebnisse") or {}
+    legs: dict[str, list[int]] = t.get("legs") or {}
+    for r, runde in enumerate(liga_runden(len(t["teilnehmer"]))):
+        for m, (a, b) in enumerate(runde):
+            k = f"{r}-{m}"
+            if k not in ergebnisse:
+                continue
+            la, lb = legs.get(k) or ([1, 0] if ergebnisse[k] == a else [0, 1])
+            for x, eigen, fremd in ((a, la, lb), (b, lb, la)):
+                z = zeilen[x]
+                z["spiele"] += 1
+                z["legs"] += eigen
+                z["gegen"] += fremd
+            zeilen[ergebnisse[k]]["siege"] += 1
+    return sorted(zeilen, key=lambda z: (-z["siege"], z["gegen"] - z["legs"], -z["legs"], z["i"]))
+
+
 def naechstes(t: dict[str, Any]) -> tuple[int, int, int, int] | None:
     """(Runde, Match, a, b) des nächsten offenen Matches oder None."""
-    for r, runde in enumerate(baum(t)):
-        for m, x in enumerate(runde):
+    if t.get("modus") == "liga":
+        for r, runde in enumerate(liga_runden(len(t["teilnehmer"]))):
+            for m, (a, b) in enumerate(runde):
+                if f"{r}-{m}" not in (t.get("ergebnisse") or {}):
+                    return r, m, a, b
+        return None
+    for r, spiele in enumerate(baum(t)):
+        for m, x in enumerate(spiele):
             if x["sieger"] is None and x["a"] is not None and x["b"] is not None and not x["freilos"]:
                 return r, m, x["a"], x["b"]
     return None
 
 
 def champion(t: dict[str, Any]) -> int | None:
+    if t.get("modus") == "liga":
+        return None if naechstes(t) else int(tabelle(t)[0]["i"])
     sieger: int | None = baum(t)[-1][0]["sieger"]
     return sieger
 
@@ -79,10 +121,26 @@ def champion(t: dict[str, Any]) -> int | None:
 def ansicht(t: dict[str, Any], aktiv: tuple[int, int] | None) -> dict[str, Any]:
     """Für die Karte: Namen statt Indizes, nächstes Match, Sieger."""
     namen = t["namen"]
-    b = baum(t)
     n = naechstes(t)
     ch = champion(t)
+    if t.get("modus") == "liga":
+        erg = t.get("ergebnisse") or {}
+        spiele = [{"a": namen[a], "b": namen[b], "sieger": None if f"{r}-{m}" not in erg else (0 if erg[f"{r}-{m}"] == a else 1),
+                   "legs": (t.get("legs") or {}).get(f"{r}-{m}"), "aktiv": aktiv == (r, m)}
+                  for r, runde in enumerate(liga_runden(len(namen))) for m, (a, b) in enumerate(runde)]
+        nr = next((i for i, x in enumerate(spiele) if x["aktiv"]), 0)
+        return {
+            "id": t["id"], "modus": "liga", "spiele": spiele,
+            "tabelle": [{"name": namen[z["i"]], "spiele": z["spiele"], "siege": z["siege"], "punkte": z["siege"] * 2,
+                         "legs": z["legs"], "gegen": z["gegen"]} for z in tabelle(t)],
+            "naechstes": {"runde": n[0], "match": n[1], "a": namen[n[2]], "b": namen[n[3]]} if n else None,
+            "sieger": namen[ch] if ch is not None else None,
+            "aktiv": list(aktiv) if aktiv else None,
+            "match_nr": [0, nr + 1, len(spiele), 0] if aktiv else None,
+        }
+    b = baum(t)
     return {
+        "modus": "ko",
         "id": t["id"],
         "runden": [[{"a": _name(namen, x["a"]), "b": _name(namen, x["b"]),
                      "sieger": None if x["sieger"] is None else (0 if x["sieger"] == x["a"] else 1), "freilos": x["freilos"],

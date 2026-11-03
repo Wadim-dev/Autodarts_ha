@@ -151,6 +151,15 @@
   // texts of the further light effects (1.15)
   Object.assign(TEXTE.en, {e_herzschlag: 'Heartbeat', e_stroboskop: 'Strobe', e_ausblenden: 'Fade out', e_wechsel: 'Two colours', e_welle: 'Rainbow wave', e_konfetti: 'Confetti', e_lauflicht: 'Chaser', e_funkeln: 'Sparkle', e_polizei: 'Police', e_feuer: 'Fire', e_gewitter: 'Thunderstorm', color2: 'Second colour', fx_more: 'Several lights: wave, chaser, sparkle and police spread over them.' });
   Object.assign(TEXTE.de, {e_herzschlag: 'Herzschlag', e_stroboskop: 'Stroboskop', e_ausblenden: 'Ausblenden', e_wechsel: 'Zwei Farben', e_welle: 'Regenbogen-Welle', e_konfetti: 'Konfetti', e_lauflicht: 'Lauflicht', e_funkeln: 'Funkeln', e_polizei: 'Polizei', e_feuer: 'Feuer', e_gewitter: 'Gewitter', color2: 'Zweite Farbe', fx_more: 'Mehrere Lampen: Welle, Lauflicht, Funkeln und Polizei verteilen sich auf sie.' });
+  // texts of the caller card (1.16)
+  Object.assign(TEXTE.en, { caller_title: 'Caller', d_caller: 'Announces scores, checkouts and walk-on songs on your speakers', caller_off_hint: 'Off', caller_on_hint: 'On', caller_run: 'Caller on', speakers: 'Speakers', voice: 'Voice', no_voice: 'No voice yet. Add one under Settings → Voice assistants (e.g. Piper, Google Translate).', pack: 'Sound pack', only_voice: 'Voice only', n_files: '{n} sounds', pack_hint: 'Own packs: Media → My media → autodarts → caller → new folder, upload sounds named like 180.mp3, 140.mp3, bust.mp3, leg.mp3, match.mp3, game_on.mp3. Missing sounds are spoken.', say_what: 'Announce', c_punkte: 'Scores', c_rest: 'You require …', c_ende: 'Game shot', c_besondere: 'Specials (9-darter, Shanghai …)', c_game_on: 'Game on', c_walkon: 'Walk-on songs', walkons: 'Walk-on songs', walk_secs: 'Play time', no_song: 'none', songs_hint: 'Songs: Media → My media → autodarts → walkon → upload music files. They play at the start of a game, then "Game on".', no_songs: 'No songs yet.', no_players_yet: 'Create players first.', no_speakers: 'Choose at least one speaker.', test_caller: 'Test', saved: 'Saved' });
+  Object.assign(TEXTE.de, { caller_title: 'Ansager', d_caller: 'Sagt Punkte, Checkouts und Einlaufmusik über deine Lautsprecher an', caller_off_hint: 'Aus', caller_on_hint: 'An', caller_run: 'Ansager an', speakers: 'Lautsprecher', voice: 'Stimme', no_voice: 'Noch keine Stimme. Unter Einstellungen → Sprachassistenten eine hinzufügen (z. B. Piper, Google Translate).', pack: 'Sound-Pack', only_voice: 'Nur Stimme', n_files: '{n} Töne', pack_hint: 'Eigene Packs: Medien → Meine Medien → autodarts → caller → neuer Ordner, Töne hochladen mit Namen wie 180.mp3, 140.mp3, bust.mp3, leg.mp3, match.mp3, game_on.mp3. Was fehlt, spricht die Stimme.', say_what: 'Was ansagen', c_punkte: 'Punkte', c_rest: 'Du brauchst …', c_ende: 'Game shot', c_besondere: 'Besonderes (9-Darter, Shanghai …)', c_game_on: 'Game on', c_walkon: 'Einlaufmusik', walkons: 'Einlaufmusik', walk_secs: 'Spieldauer', no_song: 'keine', songs_hint: 'Lieder: Medien → Meine Medien → autodarts → walkon → Musikdateien hochladen. Sie laufen zum Spielbeginn, danach „Game on“.', no_songs: 'Noch keine Lieder.', no_players_yet: 'Lege zuerst Spieler an.', no_speakers: 'Wähle mindestens einen Lautsprecher.', test_caller: 'Testen', saved: 'Gespeichert' });
+  // texts of tournaments up to 32 and the league (1.16)
+  Object.assign(TEXTE.en, { tour_ko: 'Knockout', tour_liga: 'League', tour_hint: 'Knockout for 3–32 players, byes are drawn automatically. Every match uses the settings below.', liga_hint: 'League for 3–10 players: everyone plays everyone once. Win = 2 points, then leg difference.', of16: '{n} of {m}', t_last32: 'Round of 32', liga: 'League', liga_match: 'Match {n} of {m}', table: 'Table', fixtures: 'Matches', t_pl: 'P', t_w: 'W', t_pts: 'Pts', t_legs: 'Legs' });
+  Object.assign(TEXTE.de, { tour_ko: 'K.-o.', tour_liga: 'Liga', tour_hint: 'K.-o. für 3–32 Spieler, Freilose werden automatisch verteilt. Jedes Match nutzt die Einstellungen unten.', liga_hint: 'Liga für 3–10 Spieler: jeder spielt einmal gegen jeden. Sieg = 2 Punkte, danach zählt die Leg-Differenz.', of16: '{n} von {m}', t_last32: 'Sechzehntelfinale', liga: 'Liga', liga_match: 'Spiel {n} von {m}', table: 'Tabelle', fixtures: 'Spiele', t_pl: 'Sp', t_w: 'S', t_pts: 'Pkt', t_legs: 'Legs' });
+  // aim map (1.16)
+  Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
+  Object.assign(TEXTE.de, { t_aim: 'Zielen', aim_best: 'Bester Zielpunkt', aim_avg: 'etwa Ø {n} pro Aufnahme', aim_vs: 'Auf T20 Ø {n} – hier {d} mehr.', aim_t20: 'T20 ist für dich das richtige Ziel.', aim_hint: 'Berechnet aus deinem Average (Ø {a}, Streuung etwa {s} mm). Rot = die meisten Punkte.', aim_no_avg: 'Spiele zuerst ein X01-Spiel.' });
   const sprache = h => { const l = String((h && ((h.locale && h.locale.language) || h.language)) || navigator.language || 'en'); return l.slice(0, 2) === 'de' ? 'de' : 'en'; };
   let SPR = sprache(null);
   const t = (k, v) => { let s = (TEXTE[SPR] || TEXTE.en)[k]; if (s === undefined) s = TEXTE.en[k] || k; if (v) Object.keys(v).forEach(x => { s = s.split('{' + x + '}').join(v[x]); }); return s; };
@@ -698,6 +707,62 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     s += '<circle cx="60" cy="60" r="' + f1(15.9 * k) + '" fill="' + farbe(n('S25')) + '" stroke="#111" stroke-width=".35"/><circle cx="60" cy="60" r="' + f1(6.35 * k) + '" fill="' + farbe(n('D25')) + '" stroke="#111" stroke-width=".35"/>';
     return s + '</svg>';
   };
+  // aim map: points per dart for every aim point, with the player's spread (taken from the average)
+  const feldMm = (x, y) => {
+    const r = Math.hypot(x, y);
+    if (r <= 6.35) return 'D25'; if (r <= 15.9) return 'S25'; if (r > 170) return 'M';
+    const n = ORDER[Math.floor(((Math.atan2(x, y) * 180 / Math.PI + 9) % 360 + 360) % 360 / 18) % 20];
+    return (r >= 99 && r <= 107 ? 'T' : r >= 162 ? 'D' : 'S') + n;
+  };
+  const wertMm = (x, y) => {
+    const r = Math.hypot(x, y);
+    if (r <= 6.35) return 50; if (r <= 15.9) return 25; if (r > 170) return 0;
+    const n = ORDER[Math.floor(((Math.atan2(x, y) * 180 / Math.PI + 9) % 360 + 360) % 360 / 18) % 20];
+    return r >= 99 && r <= 107 ? 3 * n : r >= 162 ? 2 * n : n;
+  };
+  // board values on a 2 mm raster, blurred with the player's spread = points per dart for every aim point
+  const AIM_R = 86, AIM_N = 2 * AIM_R + 1;
+  let aimRaster = null;
+  const raster = () => aimRaster || (aimRaster = Float32Array.from({ length: AIM_N * AIM_N }, (_, k) => wertMm((k % AIM_N - AIM_R) * 2, (AIM_R - Math.floor(k / AIM_N)) * 2)));
+  const kern = sg => { const m = Math.min(AIM_R, Math.ceil(1.5 * sg)), g = []; let w = 0; for (let k = -m; k <= m; k++) { const v = Math.exp(-(k * k * 4) / (2 * sg * sg)); g.push(v); w += v; } return { m, g: g.map(v => v / w) }; };
+  const amPunkt = (sg, i0, j0) => { const r = raster(), { m, g } = kern(sg); let s = 0; for (let j = -m; j <= m; j++) { const jj = j0 + j; if (jj < 0 || jj >= AIM_N) continue; for (let i = -m; i <= m; i++) { const ii = i0 + i; if (ii >= 0 && ii < AIM_N) s += r[jj * AIM_N + ii] * g[i + m] * g[j + m]; } } return s; };
+  const verwischen = sg => {
+    const r = raster(), { m, g } = kern(sg), a = new Float32Array(r.length), b = new Float32Array(r.length);
+    for (let j = 0; j < AIM_N; j++) for (let i = 0; i < AIM_N; i++) { let s = 0; for (let k = -m; k <= m; k++) { const ii = i + k; if (ii >= 0 && ii < AIM_N) s += r[j * AIM_N + ii] * g[k + m]; } a[j * AIM_N + i] = s; }
+    for (let j = 0; j < AIM_N; j++) for (let i = 0; i < AIM_N; i++) { let s = 0; for (let k = -m; k <= m; k++) { const jj = j + k; if (jj >= 0 && jj < AIM_N) s += a[jj * AIM_N + i] * g[k + m]; } b[j * AIM_N + i] = s; }
+    return b;
+  };
+  const T20_IJ = [AIM_R, AIM_R - 52];
+  const aimCache = {};
+  const aimKarte = avg => {
+    const key = Math.round(avg);
+    if (aimCache[key]) return aimCache[key];
+    let lo = 1, hi = 160; // spread (mm) that gives this average when aiming at T20
+    for (let n = 0; n < 18; n++) { const m = (lo + hi) / 2; if (amPunkt(m, ...T20_IJ) * 3 > key) lo = m; else hi = m; }
+    const sg = (lo + hi) / 2, b = verwischen(sg), zellen = [];
+    let best = [-1, 0, 0], min = 1e9;
+    for (let j = 0; j < AIM_N; j++) for (let i = 0; i < AIM_N; i++) {
+      const x = (i - AIM_R) * 2, y = (AIM_R - j) * 2;
+      if (Math.hypot(x, y) > 170) continue;
+      const e = b[j * AIM_N + i];
+      if (e > best[0]) best = [e, x, y];
+      if (e < min) min = e;
+      if (i % 3 === 2 && j % 3 === 2) zellen.push([x, y, e]);
+    }
+    const t20 = b[T20_IJ[1] * AIM_N + T20_IJ[0]];
+    if (best[0] - t20 < 0.5 / 3) best = [t20, 0, 104]; // less than half a point per visit: stay on T20
+    return (aimCache[key] = { sg, zellen, best, min, t20, feld: feldMm(best[1], best[2]) });
+  };
+  const aimBrett = k => {
+    const K = BRETT_K / 170, S = 6 * K, h = f1(S * 1.04), wege = HEAT.map(() => ''), span = Math.max(1e-6, k.best[0] - k.min);
+    k.zellen.forEach(([x, y, e]) => { const i = Math.min(HEAT.length - 1, Math.floor(Math.pow((e - k.min) / span, 1.6) * HEAT.length)); wege[i] += 'M' + f1(60 + x * K - S / 2) + ' ' + f1(60 - y * K - S / 2) + 'h' + h + 'v' + h + 'h-' + h + 'z'; });
+    let s = '<svg viewBox="0 0 120 120"><defs><clipPath id="aimc"><circle cx="60" cy="60" r="' + f1(170 * K) + '"/></clipPath></defs><circle cx="60" cy="60" r="60" fill="#111"/><g clip-path="url(#aimc)">' +
+      wege.map((d, i) => d ? '<path d="' + d + '" fill="' + HEAT[i] + '"/>' : '').join('') + '</g><g fill="none" stroke="#000" stroke-opacity=".5" stroke-width=".35">' +
+      [6.35, 15.9, 99, 107, 162, 170].map(r => '<circle cx="60" cy="60" r="' + f1(r * K) + '"/>').join('') +
+      ORDER.map((n, i) => { const [a, b] = brettP(15.9 * K, i * 18 - 9), [c, d] = brettP(170 * K, i * 18 - 9); return '<path d="M' + f1(a) + ' ' + f1(b) + 'L' + f1(c) + ' ' + f1(d) + '"/>'; }).join('') + '</g>';
+    ORDER.forEach((n, i) => { const [x, y] = brettP(56.5, i * 18); s += '<text x="' + f1(x) + '" y="' + f1(y + 1.8) + '">' + n + '</text>'; });
+    return s + '<g transform="translate(' + f1(60 + k.best[1] * K) + ' ' + f1(60 - k.best[2] * K) + ')"><circle r="3.4" fill="none" stroke="#fff" stroke-width="1.1"/><circle r="1" fill="#fff"/></g></svg>';
+  };
   const linie = (werte, b, h) => {
     if (werte.length < 2) return '';
     const lo = Math.min(...werte), hi = Math.max(...werte), sp = hi - lo || 1;
@@ -878,6 +943,11 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .tban ha-icon{--mdc-icon-size:20px;color:var(--amber-color,#ffc107)}.tban small{font-weight:600;color:var(--secondary-text-color)}
 .baum{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:thin}
 .brd{display:flex;flex-direction:column;gap:8px;min-width:118px;flex:1}.brd>div{display:flex;flex-direction:column;justify-content:space-around;gap:10px;flex:1}
+.liga>small{display:block;font-size:11.5px;font-weight:700;color:var(--secondary-text-color);text-transform:uppercase;letter-spacing:.04em;margin:6px 2px}
+.ltab{width:100%;border-collapse:collapse;font-size:13.5px}.ltab th{font-size:11px;color:var(--secondary-text-color);font-weight:700;text-align:right;padding:4px 6px}.ltab td{padding:6px;text-align:right;border-top:1px solid color-mix(in srgb,var(--primary-text-color) 8%,transparent)}
+.ltab td:nth-child(2){text-align:left;font-weight:600;width:100%}.ltab td:first-child{color:var(--secondary-text-color);text-align:left}.ltab tr.w td{color:var(--green-color,#43a047)}
+.lsl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}.lsp{display:flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;font-size:13px}.lsp span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lsp span:last-child{text-align:right}
+.lsp b{min-width:34px;text-align:center}.lsp .w{font-weight:700}.lsp .l{opacity:.55}.lsp.akt{border-color:var(--primary-color)}
 .brd>small{font-size:11.5px;font-weight:700;color:var(--secondary-text-color);text-align:center;text-transform:uppercase;letter-spacing:.04em}
 .bm{border-radius:12px;overflow:hidden;font-size:13px;border:1px solid color-mix(in srgb,var(--primary-text-color) 10%,transparent)}
 .bm.akt{border-color:var(--amber-color,#ffc107);box-shadow:0 0 0 2px color-mix(in srgb,var(--amber-color,#ffc107) 35%,transparent)}
@@ -1298,13 +1368,22 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     // tournament: round name, banner, bracket
     _rundeName(r, gesamt) {
       const rest = gesamt - r;
-      return rest === 1 ? t('t_final') : rest === 2 ? t('t_semi') : rest === 3 ? t('t_quarter') : rest === 4 ? t('t_last16') : t('t_round', { n: r + 1 });
+      return rest === 1 ? t('t_final') : rest === 2 ? t('t_semi') : rest === 3 ? t('t_quarter') : rest === 4 ? t('t_last16') : rest === 5 ? t('t_last32') : t('t_round', { n: r + 1 });
     }
+    _max() { return this._turMod === 'ko' ? 32 : this._turMod === 'liga' ? 10 : 8; }
     _turBanner(a) {
       const tu = a.turnier, n = tu && tu.match_nr; if (!n) return '';
+      if (tu.modus === 'liga') return '<div class="tban"><ha-icon icon="mdi:format-list-numbered"></ha-icon>' + t('liga') + ' <small>· ' + t('liga_match', { n: n[1], m: n[2] }) + '</small></div>';
       return '<div class="tban"><ha-icon icon="mdi:tournament"></ha-icon>' + this._rundeName(n[0], n[3]) + (n[2] > 1 ? ' <small>· ' + t('match_of', { n: n[1], m: n[2] }) + '</small>' : '') + '</div>';
     }
+    _liga(tu) {
+      const tab = '<table class="ltab"><tr><th></th><th></th><th>' + t('t_pl') + '</th><th>' + t('t_w') + '</th><th>' + t('t_legs') + '</th><th>' + t('t_pts') + '</th></tr>' +
+        tu.tabelle.map((z, i) => '<tr' + (i === 0 && tu.sieger ? ' class="w"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(z.name) + '</td><td>' + z.spiele + '</td><td>' + z.siege + '</td><td>' + z.legs + ':' + z.gegen + '</td><td><b>' + z.punkte + '</b></td></tr>').join('') + '</table>';
+      const spiele = tu.spiele.map(m => '<div class="lsp feld' + (m.aktiv ? ' akt' : '') + '"><span class="' + (m.sieger === 0 ? 'w' : m.sieger === 1 ? 'l' : '') + '">' + esc(m.a) + '</span><b>' + (m.legs ? m.legs[0] + ':' + m.legs[1] : m.sieger == null ? '–' : '✓') + '</b><span class="' + (m.sieger === 1 ? 'w' : m.sieger === 0 ? 'l' : '') + '">' + esc(m.b) + '</span></div>').join('');
+      return '<div class="liga"><small>' + t('table') + '</small>' + tab + '<small>' + t('fixtures') + '</small><div class="lsl">' + spiele + '</div></div>';
+    }
     _baum(tu) {
+      if (tu.modus === 'liga') return this._liga(tu);
       const zeile = (m, k) => {
         const nm = k ? m.b : m.a;
         if (nm === '') return '<div class="o">' + t('bye') + '</div>';
@@ -1342,11 +1421,11 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           '<button data-act="weg" data-i="' + i + '" title="' + t('remove') + '"><ha-icon icon="mdi:close"></ha-icon></button></div>';
       }).join('') || '<div class="leer">' + t('nobody') + '</div>';
       const frei = alle.filter(s => !L.spieler.includes(s.id));
-      const tur = this._turMod && L.spieler.length >= 3, max = this._turMod ? 16 : 8, voll = L.spieler.length >= max;
-      let s = '<div class="lobby">' + (L.spieler.length >= 3 ? '<div class="seg breit">' + [[false, 'mdi:account-multiple', t('single_game')], [true, 'mdi:tournament', t('tournament')]].map(([v, ic, x]) =>
-        '<button class="feld' + (!!this._turMod === v ? ' an' : '') + '" data-act="turmod" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon> ' + x + '</button>').join('') + '</div>' : '') +
-        (tur ? '<div class="regel" style="margin:0 0 10px"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t('tour_hint') + '</span></div>' : '') +
-        '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:account-group"></ha-icon>' + t('players') + '<span class="rechts">' + t(this._turMod ? 'of16' : 'of6', { n: L.spieler.length }) + '</span>' +
+      const tur = this._turMod && L.spieler.length >= 3, max = this._turMod === 'ko' ? 32 : this._turMod === 'liga' ? 10 : 8, voll = L.spieler.length >= max;
+      let s = '<div class="lobby">' + (L.spieler.length >= 3 ? '<div class="seg breit">' + [['', 'mdi:account-multiple', t('single_game')], ['ko', 'mdi:tournament', t('tour_ko')], ['liga', 'mdi:format-list-numbered', t('tour_liga')]].map(([v, ic, x]) =>
+        '<button class="feld' + ((this._turMod || '') === v ? ' an' : '') + '" data-act="turmod" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon> ' + x + '</button>').join('') + '</div>' : '') +
+        (tur ? '<div class="regel" style="margin:0 0 10px"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t(this._turMod === 'liga' ? 'liga_hint' : 'tour_hint') + '</span></div>' : '') +
+        '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:account-group"></ha-icon>' + t('players') + '<span class="rechts">' + t(this._turMod ? 'of16' : 'of6', { n: L.spieler.length, m: max }) + '</span>' +
         '<button class="ik" data-act="mischen" title="' + t('shuffle') + '"' + (L.spieler.length < 2 ? ' disabled' : '') + '><ha-icon icon="mdi:shuffle-variant"></ha-icon></button></div>' +
         '<div class="sliste">' + liste + '</div><div class="chips">' +
         frei.map(p => '<button class="chip feld" data-act="dazu" data-id="' + p.id + '"' + (voll ? ' disabled' : '') + '><ha-icon icon="mdi:plus"></ha-icon>' + esc(p.name) + '</button>').join('') +
@@ -1617,9 +1696,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'vollbild':
           if (document.fullscreenElement) document.exitFullscreen(); else if (this.requestFullscreen) this.requestFullscreen().catch(() => {});
           setTimeout(() => { this._kxAlt = null; this._zeichnen(); }, 300); break;
-        case 'dazu': if (L.spieler.length < (this._turMod ? 16 : 8)) L.spieler.push(b.dataset.id); neu(); break;
-        case 'bot': if (L.spieler.length < (this._turMod ? 16 : 8)) L.spieler.push('bot:' + b.dataset.l); this._auf.bot = false; neu(); break;
-        case 'turmod': this._turMod = b.dataset.v === 'true'; if (!this._turMod) L.spieler = L.spieler.slice(0, 8); neu(); break;
+        case 'dazu': if (L.spieler.length < this._max()) L.spieler.push(b.dataset.id); neu(); break;
+        case 'bot': if (L.spieler.length < this._max()) L.spieler.push('bot:' + b.dataset.l); this._auf.bot = false; neu(); break;
+        case 'turmod': this._turMod = b.dataset.v || false; L.spieler = L.spieler.slice(0, this._max()); neu(); break;
         case 'turweiter': this._dienst('turnier_weiter'); this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
         case 'turabbr': zweimal(this, b, t('really_tour'), () => this._dienst('turnier_abbrechen')); break;
         case 'turende': this._dienst('turnier_abbrechen'); if (phase(a) === 'finished') this._dienst('spiel_abbrechen'); break;
@@ -1643,7 +1722,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'pcein': if (this._c.power_on) ausloesen(h, this._c.power_on, false); break;
         case 'start': case 'turstart':
           this._dienst(act === 'turstart' ? 'turnier_starten' : 'spiel_starten', { spieler: L.spieler, spiel: L.spiel, startwert: L.startwert, legs: L.legs, sets: L.spiel === 'x01' ? L.sets : 0, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off,
-            variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben });
+            variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben, ...(act === 'turstart' ? { turnier_modus: this._turMod || 'ko' } : {}) });
           this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
         case 'undo': this._dienst('rueckgaengig'); break;
         case 'weiter': this._dienst('weiter'); break;
@@ -1860,16 +1939,25 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
 .rl{display:grid;gap:4px}
 .rl div{display:grid;grid-template-columns:26px 1fr auto auto;gap:8px;align-items:center;font-size:13.5px;padding:7px 10px;border-radius:12px}
 .rl b{font-variant-numeric:tabular-nums}.rl small{color:var(--secondary-text-color)}
+.aim{display:grid;gap:6px;font-size:13.5px}.aim .aimf{font-size:30px;line-height:1.1;color:var(--primary-color)}
 @container (max-width:420px){.hm{grid-template-columns:1fr}}`;
   const datum = x => { try { const d = new Date(x); return d.toLocaleDateString(LOC, { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString(LOC, { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } };
   class AutodartsPlayersCard extends DartsSeite {
     static get CSS() { return SPL_CSS; }
     // hit map, most hit fields, trend, badges and head to head of one player
     _profil(p, alle) {
-      const felder = p.felder || {}, summe = Object.values(felder).reduce((a, b) => a + b, 0), pkt = !!(this._hm || {})[p.id];
-      let s = '<div class="ab"><ha-icon icon="mdi:bullseye"></ha-icon>' + t('heatmap') + '<span class="rechts seg2"><button class="' + (pkt ? '' : 'an') + '" data-act="hm" data-id="' + p.id + '" data-v="f">' + t('t_fields') + '</button>' +
-        '<button class="' + (pkt ? 'an' : '') + '" data-act="hm" data-id="' + p.id + '" data-v="p">' + t('t_points') + '</button></span></div>';
-      if (!summe) s += '<div class="leer">' + t('no_data') + '</div>';
+      const felder = p.felder || {}, summe = Object.values(felder).reduce((a, b) => a + b, 0), modus = (this._hm || {})[p.id] || 'f', pkt = modus === 'p';
+      let s = '<div class="ab"><ha-icon icon="mdi:bullseye"></ha-icon>' + t('heatmap') + '<span class="rechts seg2">' +
+        [['f', 't_fields'], ['p', 't_points'], ['a', 't_aim']].map(([v, k]) => '<button class="' + (modus === v ? 'an' : '') + '" data-act="hm" data-id="' + p.id + '" data-v="' + v + '">' + t(k) + '</button>').join('') + '</span></div>';
+      if (modus === 'a') {
+        if (!(p.avg > 0)) s += '<div class="leer">' + t('aim_no_avg') + '</div>';
+        else {
+          const k = aimKarte(p.avg), gut = k.best[0] * 3, t20 = k.t20 * 3;
+          s += '<div class="hm"><div>' + aimBrett(k) + '<div class="skala"></div></div><div class="aim"><div class="ab" style="margin-top:0">' + t('aim_best') + '</div><b class="aimf">' + ft(k.feld) + '</b>' +
+            '<div>' + t('aim_avg', { n: z1(gut) }) + '</div><div class="klein">' + (k.feld !== 'T20' ? t('aim_vs', { n: z1(t20), d: z1(gut - t20) }) : t('aim_t20')) + '</div>' +
+            '<div class="klein">' + t('aim_hint', { a: z1(p.avg), s: Math.round(k.sg) }) + '</div></div></div>';
+        }
+      } else if (!summe) s += '<div class="leer">' + t('no_data') + '</div>';
       else {
         const top = Object.entries(felder).sort((a, b) => b[1] - a[1]).slice(0, 7), max = top[0][1];
         s += '<div class="hm"><div>' + heatBrett(felder, p.xy, pkt) + (pkt ? '<div class="klein">' + t('points_hint') + '</div>' : '<div class="skala"></div>') + '</div><div><div class="ab" style="margin-top:0">' + t('top_fields') + '</div><div class="tf">' +
@@ -1950,7 +2038,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         if (act === 'neuok') this._dienst('spieler_anlegen', { name }); else this._dienst('spieler_aendern', { id: this._m.id, name });
         this._modal(null); return;
       }
-      if (act === 'hm') { this._hm = this._hm || {}; this._hm[b.dataset.id] = b.dataset.v === 'p'; this._alt = null; this._zeichnen(); return; }
+      if (act === 'hm') { this._hm = this._hm || {}; this._hm[b.dataset.id] = b.dataset.v; this._alt = null; this._zeichnen(); return; }
       if (act === 'export') { this._export(); return; }
       if (act === 'statweg') zweimal(this, b, t('really_del'), () => this._dienst('statistik_loeschen', { id: b.dataset.id }));
       if (act === 'spweg') zweimal(this, b, t('really_del'), () => this._dienst('spieler_aendern', { id: b.dataset.id, loeschen: true }));
@@ -2108,12 +2196,67 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-lights-card', AutodartsLightsCard);
 
+  /* ---------- Caller card: announcements and walk-on songs on the speakers of Home Assistant ---------- */
+  const ANSAGE_ARTEN = ['punkte', 'rest', 'ende', 'besondere', 'game_on', 'walkon'];
+  class AutodartsCallerCard extends DartsSeite {
+    static get CSS() { return LICHT_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer}.schalter ha-icon{--mdc-icon-size:28px}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter small{margin-left:auto;font-weight:600;color:var(--secondary-text-color)}.chips{display:flex;flex-wrap:wrap;gap:6px}.wl{display:flex;align-items:center;gap:10px;margin:6px 0}.wl b{flex:1;min-width:0;font-size:14px}.wl select{width:auto;flex:1.4;min-width:0}.lb{display:block;font-size:12.5px;font-weight:700;color:var(--secondary-text-color);margin:16px 2px 6px}.inhalt select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:14px;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 7%,transparent);border:1px solid color-mix(in srgb,var(--primary-text-color) 18%,transparent)}.inhalt select option{color:#000}'; }
+    getCardSize() { return 8; }
+    async _laden() {
+      try { this._daten = await this._h.callWS({ type: 'autodarts/ansager' }); } catch (e) { this._daten = { einstellungen: {}, stimmen: [], packs: {}, songs: [] }; }
+      this._alt = null; this._zeichnen();
+    }
+    _e() { return Object.assign({ aktiv: false, lautsprecher: [], stimme: '', pack: '', punkte: true, rest: true, ende: true, besondere: true, game_on: true, walkon: true, walkon_sekunden: 15, songs: {} }, (this._daten || {}).einstellungen || {}); }
+    _name(id) { const s = st(this._h, id); return (s && s.attributes.friendly_name) || id; }
+    _zeichnen() {
+      if (this._fehlt()) return;
+      if (!this._daten) { if (!this._lade) { this._lade = true; this._laden(); } return; }
+      const e = this._e(), d = this._daten, an = e.aktiv;
+      this._kopf(t('caller_title'), an ? t('caller_on_hint') + ' · ' + e.lautsprecher.length + ' ' + t('speakers') : t('caller_off_hint'));
+      const lp = Object.keys(this._h.states).filter(id => id.startsWith('media_player.') && this._h.states[id].state !== 'unavailable')
+        .sort((a, b) => (e.lautsprecher.includes(b) - e.lautsprecher.includes(a)) || this._name(a).localeCompare(this._name(b)));
+      const stimmen = d.stimmen || [], packs = d.packs || {}, songs = d.songs || [];
+      const spieler = (att(this._h, E(this._h, 'sensor.players')).spieler || []);
+      let s = '<button class="schalter feld' + (an ? ' an' : '') + '" data-act="aktiv"><ha-icon icon="' + (an ? 'mdi:account-voice' : 'mdi:account-voice-off') + '"></ha-icon>' + t('caller_run') + '<small>' + (an ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button>';
+      s += '<label class="lb">' + t('speakers') + '</label><div class="ll feld">' + lp.map(id => '<label><input type="checkbox" data-lp="' + id + '"' + (e.lautsprecher.includes(id) ? ' checked' : '') + '>' + esc(this._name(id)) + '<small>' + id.slice(13) + '</small></label>').join('') + '</div>';
+      if (an && !e.lautsprecher.length) s += '<div class="klein" style="color:var(--red-color,#e53935)">' + t('no_speakers') + '</div>';
+      s += '<label class="lb">' + t('voice') + '</label>' + (stimmen.length ? '<select data-f="stimme"><option value="">' + esc(this._name(stimmen[0])) + ' (auto)</option>' + stimmen.map(x => '<option value="' + x + '"' + (x === e.stimme ? ' selected' : '') + '>' + esc(this._name(x)) + '</option>').join('') + '</select>' : '<div class="klein">' + t('no_voice') + '</div>');
+      s += '<label class="lb">' + t('pack') + '</label><div class="seg">' + [['', t('only_voice')]].concat(Object.keys(packs).map(k => [k, k + ' · ' + t('n_files', { n: packs[k].length })])).map(([k, n]) => '<button class="feld' + (k === e.pack ? ' an' : '') + '" data-act="pack" data-v="' + esc(k) + '">' + esc(n) + '</button>').join('') + '</div><div class="klein">' + t('pack_hint') + '</div>';
+      s += '<label class="lb">' + t('say_what') + '</label><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
+      if (e.walkon) {
+        s += '<label class="lb">' + t('walkons') + '</label>';
+        if (!spieler.length) s += '<div class="klein">' + t('no_players_yet') + '</div>';
+        else if (!songs.length) s += '<div class="klein">' + t('no_songs') + '</div>';
+        else s += spieler.map(p => '<div class="wl"><b>' + esc(p.name) + '</b><select data-song="' + esc(p.id) + '"><option value="">' + t('no_song') + '</option>' + songs.map(x => '<option' + (e.songs[p.id] === x ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select></div>').join('');
+        s += '<label class="lb">' + t('walk_secs') + '</label><div class="stepper"><button class="feld" data-act="sek" data-v="-5">−</button><b>' + t('seconds', { n: e.walkon_sekunden }) + '</b><button class="feld" data-act="sek" data-v="5">+</button></div><div class="klein">' + t('songs_hint') + '</div>';
+      }
+      s += '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:16px 0 0"' + (e.lautsprecher.length ? '' : ' disabled') + ' data-act="test"><ha-icon icon="mdi:bullhorn-outline"></ha-icon>' + t('test_caller') + '</button>';
+      this._setze(s);
+      this._in.querySelectorAll('[data-lp]').forEach(c => c.onchange = () => { const x = this._e(); x.lautsprecher = c.checked ? x.lautsprecher.concat(c.dataset.lp) : x.lautsprecher.filter(y => y !== c.dataset.lp); this._speichern(x); });
+      this._in.querySelectorAll('[data-f=stimme]').forEach(c => c.onchange = () => { const x = this._e(); x.stimme = c.value; this._speichern(x); });
+      this._in.querySelectorAll('[data-song]').forEach(c => c.onchange = () => { const x = this._e(); x.songs = Object.assign({}, x.songs); if (c.value) x.songs[c.dataset.song] = c.value; else delete x.songs[c.dataset.song]; this._speichern(x); });
+    }
+    async _speichern(x) {
+      this._daten.einstellungen = x; this._alt = null; this._zeichnen();
+      try { await this._h.callService('autodarts', 'ansager_setzen', { einstellungen: x }); } catch (err) { await this._laden(); }
+    }
+    _klick(act, b) {
+      const x = this._e();
+      if (act === 'aktiv') { x.aktiv = !x.aktiv; this._speichern(x); }
+      else if (act === 'pack') { x.pack = b.dataset.v; this._speichern(x); }
+      else if (act === 'art') { x[b.dataset.v] = !x[b.dataset.v]; this._speichern(x); }
+      else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +b.dataset.v)); this._speichern(x); }
+      else if (act === 'test') this._h.callService('autodarts', 'ansager_testen', {});
+    }
+  }
+  customElements.define('autodarts-caller-card', AutodartsCallerCard);
+
   /* ---------- Sidebar panel "Autodarts": all cards as tabs, no setup needed ---------- */
   const PANEL_TABS = [
     ['board', 'autodarts-overview-card', 'mdi:bullseye', 'tab_board'],
     ['spiel', 'autodarts-game-card', 'mdi:bullseye-arrow', 'play'],
     ['spieler', 'autodarts-players-card', 'mdi:account-group', 'players'],
     ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title'],
+    ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title'],
     ['manager', 'autodarts-manager-card', 'mdi:camera-iris', 'manager']
   ];
   const PANEL_CSS = `
@@ -2176,7 +2319,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     { type: 'autodarts-game-card', name: 'Autodarts Game', description: t('d_game') },
     { type: 'autodarts-manager-card', name: 'Autodarts Board Manager', description: t('d_manager') },
     { type: 'autodarts-players-card', name: 'Autodarts Players', description: t('d_players') },
-    { type: 'autodarts-lights-card', name: 'Autodarts Light effects', description: t('d_lights') }
+    { type: 'autodarts-lights-card', name: 'Autodarts Light effects', description: t('d_lights') },
+    { type: 'autodarts-caller-card', name: 'Autodarts Caller', description: t('d_caller') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

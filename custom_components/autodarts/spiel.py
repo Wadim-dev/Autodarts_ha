@@ -531,11 +531,11 @@ class Spielleiter:
 
     # Turnier
 
-    async def turnier_starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any]) -> None:
+    async def turnier_starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any], modus: str = "ko") -> None:
         e = self._pruefen(einstellungen)
         spieler = self._spieler_aus(eintraege or [], turnier.MAX_SPIELER)
-        if len(spieler) < turnier.MIN_SPIELER:
-            raise _fehler("tournament_players")
+        if not turnier.MIN_SPIELER <= len(spieler) <= (turnier.LIGA_MAX if modus == "liga" else turnier.MAX_SPIELER):
+            raise _fehler("tournament_players", max=str(turnier.LIGA_MAX if modus == "liga" else turnier.MAX_SPIELER))
         teilnehmer = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
         self.daten["letzte"] = {**e, "spieler": teilnehmer}
         self.daten["turnier"] = {
@@ -545,6 +545,8 @@ class Spielleiter:
             "namen": [s["name"] for s in spieler],
             "einstellungen": {k: e[k] for k in EINSTELLUNGEN if k != "spieler"},
             "ergebnisse": {},
+            "modus": modus if modus in turnier.MODI else "ko",
+            "legs": {},
         }
         await self.turnier_weiter()
 
@@ -574,9 +576,14 @@ class Spielleiter:
         schluessel = f"{ref['r']}-{ref['m']}"
         if gewinner is None:
             t["ergebnisse"].pop(schluessel, None)
+            t.get("legs", {}).pop(schluessel, None)
             t.pop("ende", None)
             return
         t["ergebnisse"][schluessel] = ref["t"][gewinner]
+        spieler = (self.stand or {}).get("spieler") or []
+        if len(spieler) == 2:  # legs (or sets) of both, for the league table
+            zaehlen = "sets" if int(sp["einstellungen"].get("sets") or 0) else "legs"
+            t.setdefault("legs", {})[schluessel] = [int(spieler[i].get(zaehlen) or 0) for i in (0, 1)]
         ch = turnier.champion(t)
         if ch is not None:
             t["ende"] = dt_util.now().isoformat()
@@ -684,6 +691,31 @@ class Spielleiter:
         elif len(aufn["d"]) < 3:
             aufn["d"].append({"f": feld, "q": "hand"})
         self._neu_rechnen()
+
+    async def aufnahme_eintragen(self, name: str | None, punkte: int) -> None:
+        """Enter a whole visit by its score (voice: "Alex has 140"); the darts are made up to fit."""
+        sp, st = self.spiel, self.stand
+        if not sp or sp["phase"] != "laeuft" or not st or st.get("gewinner") is not None:
+            raise _fehler("no_game")
+        if st.get("art", "x01") != "x01":
+            raise _fehler("score_x01_only")
+        wer = st["spieler"][st["am_zug"]]
+        if wer.get("bot") or (name and name.strip().lower() != str(wer["name"]).lower()):
+            raise _fehler("not_your_turn", player=str(wer["name"]))
+        rest = int(wer.get("rest") or 0)
+        if punkte == rest:
+            darts = x01.weg(punkte, 3, sp["einstellungen"]["auswurf"]) or x01.weg(punkte, 3, "straight")
+        else:
+            darts = x01.weg(punkte, 3, "straight") if punkte else []
+            if darts is not None:
+                darts = darts + ["M"] * (3 - len(darts))
+        if darts is None or not 0 <= punkte <= 180:
+            raise _fehler("invalid_score", score=str(punkte))
+        self._bot_stoppen()
+        self._offene_aufnahme()["d"] = [{"f": f, "q": "hand"} for f in darts]
+        self._neu_rechnen()
+        await self._board_leeren()
+        self._aufnahme_schliessen()
 
     # Spieler
 

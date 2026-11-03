@@ -242,6 +242,22 @@ All games run completely inside Home Assistant: X01, Cricket, five training game
 
 Every game can be played as first to N legs.
 
+### Without cameras: tap or type
+
+Tap **Tap the board** under the board in the game card and tap the spot where the dart landed (outside the double ring = miss). It switches on by itself while the board is offline and is remembered per device. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
+
+### Voice (Assist)
+
+The integration registers sentences in German, English and Russian, nothing to set up. They also work with an AI conversation agent, because sentence triggers are checked first.
+
+| Command | Examples |
+|---------|----------|
+| Score | "Wie steht es beim Darts", "Who is winning at darts", "Какой счёт в дартс" |
+| Ranking | "Wer ist der beste beim Darts", "Darts ranking", "Кто лучший в дартс" |
+| Start / rematch | "Starte Darts 501", "Starte Darts Cricket", "Start a darts rematch", "Начни дартс шанхай" |
+| Next tournament match | "Nächstes Darts Match", "Next darts match" |
+| Undo / cancel | "Darts rückgängig", "Darts Spiel abbrechen", "Cancel the darts game" |
+
 ### Tournament
 
 For 3–16 players (bots too) the lobby offers **Tournament** next to single game: a knockout bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
@@ -461,6 +477,8 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 
 - Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
 - Lokale Spiele für 1–8 Spieler, mit Bots: X01 (Double/Master In und Out, Legs und Sets), Cricket (Standard, Cut-Throat, ohne Punkte; 15–20, 10–20, Zufall), Training (Rund um die Uhr, Bob's 27, Doppel, 121 Checkout, Highscore) und Partyspiele (Shanghai, Killer, Halve-It, Golf, Baseball) – mit Regeltext, Ziel auf der Scheibe, Bull-Off, Korrekturen und Statistik
+- Eingabe ohne Kameras: Scheibe antippen oder per Tastatur (T20 + Enter)
+- Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen

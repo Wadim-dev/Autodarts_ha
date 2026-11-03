@@ -27,6 +27,7 @@
       first9: 'First 9', highest: 'Highest', best_finish: 'Highest finish', best_leg: 'Best leg', n_darts: '{n} darts', wins: '{n} wins!', rematch: 'Rematch', undo_last: 'Undo last dart',
       single: 'Single', double: 'Double', treble: 'Triple', clear: 'Clear', cancel: 'Cancel', create: 'Create', name: 'Name', cancel_q: 'Cancel game?', cancel_text: 'The game ends without being counted.',
       keep_playing: 'Keep playing', which_dart: 'Which dart?', close: 'Close', enter_dart: 'Enter or change dart {n}', visit_dart: 'Visit {a}, dart {d}', last: 'last',
+      tap_mode: 'Tap the board', tap_on: 'Tap input on: tap the board where the dart landed, outside = miss. Keyboard: T20, D16, 25, 50, 0 + Enter; Enter alone = next, Backspace = undo.', tap_full: 'Three darts – tap Next',
       cam: 'Camera {n}', cams_off: 'Cameras off', graphic: 'graphic', tap_view: 'Tap: next camera / graphic', grid: 'Grid',
       first_leg: 'First to {n} leg', first_legs: 'First to {n} legs', sets_legs: 'First to {s} sets of {l} legs', din: 'Double In', min: 'Master In', sout: 'Straight Out', dout: 'Double Out', mout: 'Master Out',
       say_180: 'One hundred and eighty!', say_bust: 'Bust', say_game: 'Game shot, and the match, {n}!', say_set: 'Game shot, and the set, {n}!', say_leg: 'Game shot, {n}!', say_0: 'No score',
@@ -94,6 +95,7 @@
       first9: 'First 9', highest: 'Höchste', best_finish: 'Höchstes Finish', best_leg: 'Bestes Leg', n_darts: '{n} Darts', wins: '{n} gewinnt!', rematch: 'Revanche', undo_last: 'Letzten Dart zurücknehmen',
       single: 'Single', double: 'Double', treble: 'Triple', clear: 'Löschen', cancel: 'Abbrechen', create: 'Anlegen', name: 'Name', cancel_q: 'Spiel abbrechen?', cancel_text: 'Das Spiel endet ohne Wertung.',
       keep_playing: 'Weiterspielen', which_dart: 'Welchen Dart ändern?', close: 'Schließen', enter_dart: 'Dart {n} eintragen oder ändern', visit_dart: 'Aufnahme {a}, Dart {d}', last: 'zuletzt',
+      tap_mode: 'Scheibe antippen', tap_on: 'Antippen an: tippe auf die Stelle, wo der Dart steckt, außerhalb = daneben. Tastatur: T20, D16, 25, 50, 0 + Enter; nur Enter = Weiter, Rücktaste = Zurück.', tap_full: 'Drei Darts – Weiter tippen',
       cam: 'Kamera {n}', cams_off: 'Kameras aus', graphic: 'Grafik', tap_view: 'Antippen: nächste Kamera / Grafik', grid: 'Netz',
       first_leg: 'Erster bis {n} Leg', first_legs: 'Erster bis {n} Legs', sets_legs: 'Erster bis {s} Sets à {l} Legs', din: 'Double In', min: 'Master In', sout: 'Straight Out', dout: 'Double Out', mout: 'Master Out',
       say_180: 'Einhundertachtzig!', say_bust: 'Überworfen', say_game: 'Game shot! Spiel für {n}', say_set: 'Game shot! Satz für {n}', say_leg: 'Game shot! Leg für {n}', say_0: 'No score',
@@ -646,6 +648,13 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     }
     return '<path class="zm" d="' + d + '" fill-rule="evenodd"/>';
   };
+  // field at a point of the drawn board (viewBox units) – for tap input
+  const feldAn = (x, y) => {
+    const dx = x - BRETT_CX, dy = y - BRETT_CX, r = Math.hypot(dx, dy) * 170 / BRETT_K;
+    if (r <= 6.35) return 'D25'; if (r <= 15.9) return 'S25'; if (r > 170) return 'M';
+    const w = ((Math.atan2(dy, dx) * 180 / Math.PI + 90) % 360 + 360) % 360, n = ORDER[Math.round(w / 18) % 20];
+    return (r > 162 ? 'D' : r > 99 && r <= 107 ? 'T' : 'S') + n;
+  };
   const brett = (darts, ziel) => {
     const P = brettP;
     const sek = (r1, r2, w1, w2, f) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return '<path d="M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z" fill="' + f + '"/>'; };
@@ -785,6 +794,10 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .brett.live{position:relative;width:min(100%,420px);aspect-ratio:1;margin:0 auto;border-radius:50%;overflow:hidden;background:transparent;cursor:pointer;clip-path:circle(50%);isolation:isolate}
 .brett.live svg{position:absolute;inset:0;width:100%;height:100%}
 .brett.grafik{cursor:pointer;position:relative}
+.brett.tippen{cursor:crosshair;position:relative}.brett.tippen svg{width:min(100%,440px);touch-action:manipulation}
+.brett .tipp{position:absolute;left:4px;bottom:4px;display:flex;align-items:center;gap:4px;border-radius:10px;padding:4px 9px;font-size:12px;font-weight:700;background:rgba(0,0,0,.55);color:#fff;border:0;cursor:pointer;z-index:2}
+.brett .tipp ha-icon{--mdc-icon-size:16px}.brett .tipp.an{background:var(--primary-color)}
+.tasten{position:absolute;right:4px;bottom:4px;border-radius:10px;padding:4px 10px;font-size:15px;font-weight:800;background:var(--primary-color);color:#fff;z-index:2;letter-spacing:.04em}
 .lvh,.lv{position:absolute;inset:0}
 .lv img{position:absolute;left:0;top:0;max-width:none;transform-origin:0 0;display:block}
 .netz path{fill:none;stroke:#00e5a8;stroke-width:1.2;vector-effect:non-scaling-stroke;opacity:.85}
@@ -1032,14 +1045,19 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const id = this._ansicht(), h = this._h;
       return id && id !== 'grafik' && phase(att(h, this._spiel)) === 'running' && boardOnline(h) && an(h, E(h, 'binary_sensor.detection_running')) && !!entzerrung(att(h, id).kalibrierung);
     }
+    _tippAn() { let v = null; try { v = localStorage.getItem('autodarts_tap'); } catch (e) {} return v === '1' || (v === null && !boardOnline(this._h)); }
+    _toast(message) { this.dispatchEvent(new CustomEvent('hass-notification', { detail: { message }, bubbles: true, composed: true })); }
     _brettHtml(darts, ziel) {
       const id = this._ansicht(), nr = this._ansichtNr();
-      if (!this._lvSoll()) return '<div class="brett grafik" data-act="ansicht" title="' + t('tap_view') + '">' + brett(darts, ziel) + (id !== 'grafik' ? '<div class="bk"><span>' + (boardOnline(this._h) ? t('cams_off') : t('sc_off')) + ' – ' + t('graphic') + '</span></div>' : '') + '</div>';
+      const tk = '<button class="tipp' + (this._tippAn() ? ' an' : '') + '" data-act="tipp" title="' + t('tap_on') + '"><ha-icon icon="mdi:gesture-tap"></ha-icon>' + t('tap_mode') + '</button>' +
+        (this._tb ? '<span class="tasten">' + esc(this._tb) + '</span>' : '');
+      if (this._tippAn()) return '<div class="brett tippen" data-act="tippen" data-n="' + (darts || []).length + '">' + brett(darts, ziel) + tk + '</div>';
+      if (!this._lvSoll()) return '<div class="brett grafik" data-act="ansicht" title="' + t('tap_view') + '">' + brett(darts, ziel) + tk + (id !== 'grafik' ? '<div class="bk"><span>' + (boardOnline(this._h) ? t('cams_off') : t('sc_off')) + ' – ' + t('graphic') + '</span></div>' : '') + '</div>';
       const netz = this._netzAn();
       const pf = (darts || []).map((d, i) => { const [x, y] = dartMM(d, i); return '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><circle r="15" fill="' + ['#ff5252', '#40c4ff', '#ffd740'][i] + '"/><text y="6.5">' + (i + 1) + '</text></g>'; }).join('');
       return '<div class="brett live" data-act="ansicht" title="' + t('tap_view') + '"><div class="lvh"></div>' +
         (netz ? '<svg class="netz" viewBox="-225 -225 450 450"><path d="' + NETZ_MM + '"/></svg>' : '') +
-        '<svg class="pf" viewBox="-225 -225 450 450">' + pf + '</svg><div class="bk"><span>' + t('cam', { n: nr }) + '</span><button class="' + (netz ? 'an' : '') + '" data-act="netz">' + t('grid') + '</button></div></div>';
+        '<svg class="pf" viewBox="-225 -225 450 450">' + pf + '</svg>' + tk + '<div class="bk"><span>' + t('cam', { n: nr }) + '</span><button class="' + (netz ? 'an' : '') + '" data-act="netz">' + t('grid') + '</button></div></div>';
     }
     _lvStrom() {
       const soll = this._sicht && !document.hidden && this.isConnected && this._lvSoll();
@@ -1071,8 +1089,45 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       img.style.transform = 'matrix3d(' + [M[0][0], M[1][0], 0, M[2][0], M[0][1], M[1][1], 0, M[2][1], 0, 0, 1, 0, M[0][2], M[1][2], 0, M[2][2]].map(v => +v.toPrecision(9)).join(',') + ')';
     }
     // optional: hide elements of the dashboard (e.g. a fixed bottom bar) while the game card is shown
-    connectedCallback() { this._ausblenden(true); }
-    disconnectedCallback() { this._ausblenden(false); this._lvStrom(); }
+    connectedCallback() {
+      this._ausblenden(true);
+      if (!this._tasteFn) this._tasteFn = ev => this._taste(ev);
+      window.addEventListener('keydown', this._tasteFn);
+    }
+    disconnectedCallback() { this._ausblenden(false); this._lvStrom(); window.removeEventListener('keydown', this._tasteFn); }
+    // keyboard input while a game runs: T20, D16, S5, 25, 50/BULL, 0/M + Enter; Enter alone = next, Backspace = undo / delete, Esc = clear
+    _taste(ev) {
+      if (!this._h || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+      const a = att(this._h, this._spiel);
+      if (phase(a) !== 'running' || !this._sicht || document.hidden) return;
+      if (ev.composedPath().some(x => x.tagName === 'INPUT' || x.tagName === 'TEXTAREA' || x.isContentEditable)) return;
+      const m = this._r && this._r.querySelector('.modal'); if (m && !m.hidden) return;
+      const k = ev.key, alt = this._tb || '';
+      let tb = alt;
+      if (/^[0-9]$/.test(k) && alt.replace(/\D/g, '').length < 2) tb = alt + k;
+      else if (/^[tdsbm]$/i.test(k) && !alt) tb = k.toUpperCase();
+      else if (k === 'Backspace') { if (alt) tb = alt.slice(0, -1); else { this._dienst('rueckgaengig'); ev.preventDefault(); return; } }
+      else if (k === 'Escape') tb = '';
+      else if (k === 'Enter') {
+        ev.preventDefault();
+        if (!alt) { this._dienst('weiter'); return; }
+        const f = this._tastenFeld(alt), n = ((a.aufnahme || {}).darts || []).length;
+        this._tb = ''; this._alt = null; this._zeichnen();
+        if (!f) { this._toast(t('tap_on')); return; }
+        if (n >= 3) { this._toast(t('tap_full')); return; }
+        this._dienst('wurf_aendern', { dart: n, feld: f }); return;
+      } else return;
+      ev.preventDefault();
+      this._tb = tb; this._alt = null; this._zeichnen();
+    }
+    _tastenFeld(x) {
+      if (x === 'M' || x === '0') return 'M';
+      if (x === 'B' || x === '50' || x === 'D25') return 'D25';
+      if (x === '25' || x === 'S25') return 'S25';
+      const m = /^([TDS]?)(\d{1,2})$/.exec(x); if (!m) return null;
+      const n = +m[2]; if (n < 1 || n > 20) return null;
+      return (m[1] || 'S') + n;
+    }
     _ausblenden(weg) {
       if (!weg) { (this._weg || []).forEach(b => { b.style.visibility = ''; b.style.pointerEvents = ''; }); this._weg = null; return; }
       const sel = (this._c && this._c.hide_elements) || []; if (!sel.length) return;
@@ -1536,13 +1591,23 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         '<div class="sonder"><button class="feld" data-act="pf" data-f="S25">25</button><button class="feld" data-act="pf" data-f="D25">Bull</button><button class="feld" data-act="pf" data-f="M">Miss</button>' +
         '<button class="feld" data-act="pf" data-f="" style="color:var(--red-color,#e53935)">' + t('clear') + '</button></div><div class="mknoepfe"><button class="feld" data-act="mzu">' + t('cancel') + '</button></div>');
     }
-    _klick(act, b) {
+    _klick(act, b, e) {
       const h = this._h, L = this._lob, a = att(h, this._spiel);
       const neu = () => { this._alt = null; this._zeichnen(); };
       if (this._ansage()) fxKlang('');  // sounds need a tap once to be allowed
       switch (act) {
         case 'fx': { const ein = !this._fxAn(); try { localStorage.setItem('autodarts_fx', ein ? '1' : '0'); } catch (e) {} this._kxAlt = null; this._zeichnen(); break; }
         case 'ansicht': { const f = ['1', '2', '3', 'g'], n = f[(f.indexOf(this._ansichtNr()) + 1) % 4]; try { localStorage.setItem('autodarts_view', n); } catch (e) {} neu(); break; }
+        case 'tipp': {
+          const ein = !this._tippAn(); try { localStorage.setItem('autodarts_tap', ein ? '1' : '0'); } catch (e) {}
+          if (ein) this._toast(t('tap_on')); neu(); break;
+        }
+        case 'tippen': {
+          if (+b.dataset.n >= 3) { this._toast(t('tap_full')); break; }
+          const svg = b.querySelector('svg'); if (!svg || !e) break;
+          const r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 120, y = (e.clientY - r.top) / r.height * 120;
+          this._dienst('wurf_aendern', { dart: +b.dataset.n, feld: feldAn(x, y) }); break;
+        }
         case 'netz': { try { localStorage.setItem('autodarts_grid', this._netzAn() ? '0' : '1'); } catch (e) {} neu(); break; }
         case 'ansage': { const ein = !this._ansage(); try { localStorage.setItem('autodarts_caller', ein ? '1' : '0'); } catch (e) {} if (ein && window.speechSynthesis) this._sagen(t('caller_on')); this._kxAlt = null; this._zeichnen(); break; }
         case 'vollbild':

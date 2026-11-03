@@ -18,6 +18,7 @@ from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 
 from .api import Board
+from .assist import async_setup_assist
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
 from .services import async_setup_services
@@ -78,6 +79,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     await spiel.laden()
     entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel)
     entry.async_on_unload(zustand.async_add_listener(spiel.board_aenderung))
+    if abmelden := async_setup_assist(hass, lambda: entry.runtime_data.spiel):
+        entry.async_on_unload(abmelden)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

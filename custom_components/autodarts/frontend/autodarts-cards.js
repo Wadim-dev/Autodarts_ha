@@ -2319,7 +2319,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const stimme = e.stimme || stimmen[0] || '', ent = this._h.entities && this._h.entities[stimme], gki = !!ent && ent.platform === 'google_generative_ai_conversation';
       const ez = d.erzeugung || {};
       const spJetzt = this._sprecher || (/^Meisterschaft (\w+)$/.exec(e.pack) || [])[1] || 'fenrir';
-      if (gki) s += '<label class="lb">' + t('pack_speaker') + '</label><div class="seg">' + SPRECHER.map(([k, n]) => '<button class="feld' + (k === spJetzt.toLowerCase() ? ' an' : '') + '" data-act="sprecher" data-v="' + k + '">' + n + (packs['Meisterschaft ' + n] ? ' ✓' : '') + '</button>').join('') + '</div>';
+      if (gki) s += '<label class="lb">' + t('pack_speaker') + '</label><div class="seg">' + SPRECHER.map(([k, n]) => '<button class="feld' + (k === spJetzt.toLowerCase() ? ' an' : '') + '" data-act="sprecher" data-v="' + k + '">' + n + ((packs['Meisterschaft ' + n] || []).length ? ' ✓' : '') + '</button>').join('') + '</div>';
       s += '<button class="schalter feld" data-act="erzeugen" style="margin-top:10px"' + (ez.laeuft || !stimme ? ' disabled' : '') + '><ha-icon icon="mdi:trophy-variant-outline"></ha-icon>' + (ez.laeuft ? t('pack_running', { n: ez.fertig, m: ez.gesamt }) : t('pack_make')) + '</button>' +
         '<div class="klein"' + (ez.fehler && !ez.laeuft ? ' style="color:var(--red-color,#e53935)">' + esc(ez.fehler === 'daily limit' ? t('pack_daily') : t('pack_error', { e: ez.fehler })) : '>' + t('pack_make_hint')) + '</div>';
       if (e.pack && packs[e.pack]) s += '<button class="chip feld" data-act="packweg" style="margin-top:8px;color:var(--red-color,#e53935)"><ha-icon icon="mdi:delete-outline" style="--mdc-icon-size:16px"></ha-icon>' + t('pack_del') + ' · ' + esc(e.pack) + '</button>';
@@ -2350,7 +2350,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       else if (act === 'pack') { x.pack = b.dataset.v; this._speichern(x); }
       else if (act === 'art') { x[b.dataset.v] = !x[b.dataset.v]; this._speichern(x); }
       else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +b.dataset.v)); this._speichern(x); }
-      else if (act === 'sprecher') { this._sprecher = b.dataset.v; const n = 'Meisterschaft ' + b.dataset.v.charAt(0).toUpperCase() + b.dataset.v.slice(1); if ((this._daten.packs || {})[n]) { x.pack = n; this._speichern(x); } else { this._alt = null; this._zeichnen(); } }
+      else if (act === 'sprecher') { this._sprecher = b.dataset.v; const n = 'Meisterschaft ' + b.dataset.v.charAt(0).toUpperCase() + b.dataset.v.slice(1); if (((this._daten.packs || {})[n] || []).length) { x.pack = n; this._speichern(x); } else { this._alt = null; this._zeichnen(); } }
       else if (act === 'packweg') zweimal(this, b, t('pack_del_q'), () => this._h.callService('autodarts', 'ansager_pack_loeschen', { name: x.pack }).then(() => this._laden()));
       else if (act === 'stil') { x.stil = x.stil === false; this._speichern(x); }
       else if (act === 'erzeugen') { const sp = (this._sprecher || (/^Meisterschaft (\w+)$/.exec(x.pack) || [])[1] || 'fenrir').toLowerCase(); const ent = this._h.entities && this._h.entities[x.stimme || (this._daten.stimmen || [])[0]];

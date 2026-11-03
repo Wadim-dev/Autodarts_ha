@@ -300,6 +300,7 @@ async def test_pack_tageslimit_und_loeschen(hass: HomeAssistant, geladen, lautsp
         a.pack_erzeugen("Neu", [], None, ["140"])
         await a._erzeuger
     assert a.erzeugung["fehler"] == "daily limit"
+    assert not (ordner.parent / "Neu").exists()  # no sound made: no empty pack left behind
     await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Alt"}, blocking=True)
     assert not ordner.exists() and a.einst["pack"] == ""
     await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Neu"}, blocking=True)

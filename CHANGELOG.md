@@ -3,6 +3,15 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.19.3
+
+- Championship pack: the ✓ on a speaker now only shows when its pack really has sounds; tapping a speaker without sounds no longer selects an empty pack.
+- A pack that got no sound (for example because the daily limit was already reached) no longer leaves an empty folder behind.
+
+**Deutsch**
+- Meisterschafts-Pack: Das ✓ am Sprecher erscheint nur noch, wenn sein Pack wirklich Töne hat; Antippen eines Sprechers ohne Töne wählt kein leeres Pack mehr aus.
+- Ein Pack ohne einen einzigen Ton (z. B. weil das Tageslimit schon erreicht war) hinterlässt keinen leeren Ordner mehr.
+
 ## 1.19.2
 
 - Championship pack: each Google AI speaker gets its own pack ("Meisterschaft Fenrir", "Meisterschaft Orus" …). Tapping a speaker that already has a pack switches to it at once; the pack just made is used right away.

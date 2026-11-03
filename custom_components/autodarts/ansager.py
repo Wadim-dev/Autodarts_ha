@@ -156,6 +156,15 @@ def _uebersicht(basis: Path) -> dict[str, Any]:
     return {"packs": packs, "songs": sorted(_dateien(basis.joinpath(*SONG_ORDNER)).values())}
 
 
+def _leer_weg(ordner: Path) -> None:
+    """Remove a pack folder that got no sound (e.g. daily limit right away), so no empty pack shows up."""
+    try:
+        if ordner.is_dir() and not _dateien(ordner):
+            shutil.rmtree(ordner, ignore_errors=True)
+    except OSError:
+        pass
+
+
 class Ansager:
     """Turns game events into announcements on the chosen speakers."""
 
@@ -470,6 +479,7 @@ class Ansager:
             st["fehler"] = str(err)[:200]
         finally:
             st["laeuft"] = False
+            await self.hass.async_add_executor_job(_leer_weg, ordner)
 
     async def pack_loeschen(self, name: str) -> None:
         """Delete a pack folder (only below autodarts/caller)."""

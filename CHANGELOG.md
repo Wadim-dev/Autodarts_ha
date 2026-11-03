@@ -6,9 +6,13 @@ and in the Home Assistant update dialog are taken from this file automatically.
 ## 1.19.2
 
 - Championship pack: each Google AI speaker gets its own pack ("Meisterschaft Fenrir", "Meisterschaft Orus" …). Tapping a speaker that already has a pack switches to it at once; the pack just made is used right away.
+- Pack making waits between sounds (Google AI allows 10 a minute) and stops cleanly at the daily limit (100 a day) with a hint to continue tomorrow.
+- New button "Delete pack" and action `autodarts.ansager_pack_loeschen`.
 
 **Deutsch**
 - Meisterschafts-Pack: Jeder Google-AI-Sprecher bekommt ein eigenes Pack („Meisterschaft Fenrir“, „Meisterschaft Orus“ …). Antippen eines Sprechers mit fertigem Pack schaltet sofort um; das gerade erzeugte Pack wird gleich benutzt.
+- Pack-Erzeugung wartet zwischen den Tönen (Google AI erlaubt 10 pro Minute) und hält beim Tageslimit (100 am Tag) sauber an, mit Hinweis zum Fortsetzen am nächsten Tag.
+- Neuer Knopf „Pack löschen“ und Aktion `autodarts.ansager_pack_loeschen`.
 
 ## 1.19.1
 

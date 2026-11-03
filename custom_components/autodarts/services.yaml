@@ -228,6 +228,16 @@ ansager_pack_erzeugen:
       description: Vorhandene Dateien neu sprechen (z. B. nach Wechsel des Sprechers).
       selector:
         boolean:
+ansager_pack_loeschen:
+  name: Ansager-Pack löschen
+  description: Löscht ein Pack (Ordner unter Medien autodarts/caller). Die Ansager-Karte macht das per Klick.
+  fields:
+    name:
+      name: Name
+      required: true
+      example: Meisterschaft Fenrir
+      selector:
+        text:
 aufnahme_eintragen:
   name: Aufnahme eintragen
   description: >-

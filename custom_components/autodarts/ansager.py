@@ -22,6 +22,7 @@ import hashlib
 import logging
 from pathlib import Path
 import re
+import shutil
 from typing import Any
 import wave
 
@@ -38,6 +39,7 @@ ENDUNGEN = (".mp3", ".wav", ".ogg", ".m4a", ".flac")
 MEDIA_ANNOUNCE = 1048576  # MediaPlayerEntityFeature.MEDIA_ANNOUNCE
 MIX = "_mix"  # joined announcements of a pack (cache)
 MIX_MAX = 300
+PAUSE = 6.5  # seconds between two sounds: Google AI allows 10 a minute
 UNMOEGLICH = {163, 166, 169, 172, 173, 175, 176, 178, 179}  # scores three darts cannot make
 GOOGLE_AI = "google_generative_ai_conversation"  # voices that follow a spoken style instruction
 # short "Say …:" direction as in the Gemini speech docs; a longer one is read out loud
@@ -445,6 +447,9 @@ class Ansager:
                         raise
                     except Exception as err:  # rate limit of the voice service: wait and try again
                         fehler += 1
+                        if "per_day" in str(err) or "PerDay" in str(err):
+                            st["fehler"] = "daily limit"  # the voice allows only so many a day: continue tomorrow
+                            return
                         if fehler > 6:
                             st["fehler"] = str(err)[:200]
                             return
@@ -452,6 +457,8 @@ class Ansager:
                 fehler = 0
                 await self.hass.async_add_executor_job((ordner / f"{key}.{endung}").write_bytes, daten)
                 st["fertig"] += 1
+                if google:
+                    await asyncio.sleep(PAUSE)
             if name != self.einst["pack"]:
                 await self.setzen({**self.einst, "pack": name})  # the pack just made is used right away
             else:
@@ -463,6 +470,16 @@ class Ansager:
             st["fehler"] = str(err)[:200]
         finally:
             st["laeuft"] = False
+
+    async def pack_loeschen(self, name: str) -> None:
+        """Delete a pack folder (only below autodarts/caller)."""
+        if self._erzeuger and not self._erzeuger.done() and self.erzeugung.get("pack") == name:
+            self._erzeuger.cancel()
+        ordner = self._basis.joinpath(*ORDNER, name)
+        if ordner.parent == self._basis.joinpath(*ORDNER):
+            await self.hass.async_add_executor_job(lambda: shutil.rmtree(ordner, ignore_errors=True))
+        if self.einst["pack"] == name:
+            await self.setzen({**self.einst, "pack": ""})
 
     async def _dienst(self, domain: str, name: str, daten: dict[str, Any]) -> None:
         await self.hass.services.async_call(domain, name, daten, blocking=True)

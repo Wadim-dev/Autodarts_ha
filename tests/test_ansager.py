@@ -212,9 +212,11 @@ def _wav(pfad, frames: int = 800) -> bytes:
     return b.getvalue()
 
 
-async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, lautsprecher) -> None:
+async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, lautsprecher, monkeypatch) -> None:
     """A pack is made from the voice (resumable) and a visit with rest is joined from its files."""
     from homeassistant.helpers import entity_registry as er
+
+    monkeypatch.setattr(ansager_modul, "PAUSE", 0)
 
     er.async_get(hass).async_get_or_create("tts", ansager_modul.GOOGLE_AI, "x", suggested_object_id="gemini")
     hass.states.async_set("tts.gemini", "unknown")
@@ -284,3 +286,20 @@ async def test_pack_fehler(hass: HomeAssistant, geladen, lautsprecher) -> None:
     a.pack_erzeugen("Test", [], None, None)
     await a._erzeuger
     assert a.erzeugung["fehler"] == "no voice"
+
+
+async def test_pack_tageslimit_und_loeschen(hass: HomeAssistant, geladen, lautsprecher, hass_storage) -> None:
+    a = geladen.runtime_data.ansager
+    await _setzen(hass, pack="Alt")
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Alt"
+    ordner.mkdir(parents=True)
+    _wav(ordner / "180.wav")
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio",
+                side_effect=ValueError("429 generate_requests_per_model_per_day"))):
+        a.pack_erzeugen("Neu", [], None, ["140"])
+        await a._erzeuger
+    assert a.erzeugung["fehler"] == "daily limit"
+    await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Alt"}, blocking=True)
+    assert not ordner.exists() and a.einst["pack"] == ""
+    await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Neu"}, blocking=True)

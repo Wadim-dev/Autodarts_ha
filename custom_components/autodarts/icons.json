@@ -119,6 +119,11 @@
       "board_software": {
         "default": "mdi:update"
       }
+    },
+    "event": {
+      "game_event": {
+        "default": "mdi:party-popper"
+      }
     }
   },
   "services": {

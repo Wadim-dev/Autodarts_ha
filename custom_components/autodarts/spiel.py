@@ -49,6 +49,10 @@ class Spielleiter:
         self.daten: dict[str, Any] = {"spieler": [], "statistik": {}, "verlauf": [], "letzte": dict(STANDARD), "spiel": None}
         self.stand: dict[str, Any] | None = None
         self._hoerer: list[Callable[[], None]] = []
+        self._ereignis_hoerer: list[Callable[[str, dict[str, Any]], None]] = []
+        self._ev_spiel: str | None = None
+        self._ev_offen: tuple[int, int] = (-1, 0)
+        self._ev_visit = -1
         self._gesehen = 0
         self._board_felder: list[str] = []
         self._bot_aufgabe: asyncio.Task[None] | None = None
@@ -91,8 +95,83 @@ class Spielleiter:
         self._store.async_delay_save(lambda: self.daten, 2)
 
     def _melden(self) -> None:
+        self._ereignisse_pruefen()
         for f in list(self._hoerer):
             f()
+
+    def ereignis_hoerer(self, f: Callable[[str, dict[str, Any]], None]) -> Callable[[], None]:
+        """Listen to game events (dart, 180, bust, checkout, leg won …) for the event entity."""
+        self._ereignis_hoerer.append(f)
+        return lambda: self._ereignis_hoerer.remove(f)
+
+    def _ereignis(self, typ: str, daten: dict[str, Any]) -> None:
+        for f in list(self._ereignis_hoerer):
+            f(typ, daten)
+
+    def _ereignisse_pruefen(self) -> None:
+        """Fire events for darts and visits that are new since the last check (never for undo or edits)."""
+        sp, st = self.spiel, self.stand
+        if not sp or not st or sp["phase"] not in ("laeuft", "beendet"):
+            self._ev_spiel = None
+            return
+        verlauf = st.get("verlauf") or []
+        aufnahme = st["aufnahme"]["darts"]
+        offen = (verlauf[-1]["i"] if verlauf and aufnahme else len(sp["aufnahmen"]), len(aufnahme))
+        visit = int(st["ansage_id"]) if st.get("ansage_id") not in (None, "") else -1
+        if self._ev_spiel != sp["id"]:
+            # game started or loaded: nothing happened yet
+            self._ev_spiel, self._ev_offen, self._ev_visit = sp["id"], offen, visit
+            return
+        alt_i, alt_n = self._ev_offen
+        neu = aufnahme[alt_n:] if offen[0] == alt_i else (aufnahme if offen[0] > alt_i else [])
+        spieler = st["spieler"]
+        for dart in neu:
+            feld = dart["f"]
+            punkte, faktor = x01.wert(feld)
+            daten = {"player": spieler[st["am_zug"]]["name"], "field": feld, "points": punkte}
+            self._ereignis("dart", daten)
+            if feld == "D25":
+                self._ereignis("bullseye", daten)
+            elif feld == "S25":
+                self._ereignis("bull", daten)
+            elif faktor == 3:
+                self._ereignis("triple", daten)
+        self._ev_offen = offen
+        if visit > self._ev_visit and visit < len(verlauf):
+            self._visit_ereignisse(st, verlauf[visit])
+        self._ev_visit = visit
+
+    def _visit_ereignisse(self, st: dict[str, Any], z: dict[str, Any]) -> None:
+        name = st["spieler"][z["s"]]["name"]
+        daten = {"player": name, "score": z["p"], "darts": z["d"], "remaining": z["r"]}
+        self._ereignis("visit", daten)
+        if z["b"]:
+            self._ereignis("bust", daten)
+        elif z["p"] == 180:
+            self._ereignis("one_eighty", daten)
+        elif z["p"] >= 140:
+            self._ereignis("ton_forty", daten)
+        elif z["p"] >= 100:
+            self._ereignis("ton", daten)
+        elif z["p"] == 0:
+            self._ereignis("no_score", daten)
+        if len(z["d"]) == 3 and len(set(z["d"])) == 1 and z["d"][0] != "M":
+            self._ereignis("three_in_a_bed", daten)
+        if not z["c"]:
+            return
+        daten = {"player": name, "finish": z["p"], "darts": z["d"]}
+        self._ereignis("checkout", daten)
+        if z["p"] >= 100:
+            self._ereignis("high_finish", daten)
+        if st["spieler"][z["s"]]["leg_darts"] == 9:
+            self._ereignis("nine_darter", daten)
+        ansage = str(st.get("ansage") or "")
+        if ansage.startswith("Spiel "):
+            self._ereignis("match_won", {"player": name})
+        elif ansage.startswith("Satz "):
+            self._ereignis("set_won", {"player": name})
+        else:
+            self._ereignis("leg_won", {"player": name})
 
     def _neu_rechnen(self, speichern: bool = True) -> None:
         sp = self.spiel

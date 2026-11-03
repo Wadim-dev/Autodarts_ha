@@ -97,6 +97,7 @@ The game card is made for a tablet next to the board (full screen button include
 - live statistics and the result screen with rematch
 - optional **caller**: announces scores, "One hundred and eighty!", checkouts and what you require (browser speech, English or German)
 - keeps the screen awake during a game
+- **effects** for what happens at a real board: dart flight with wobble, sparks on trebles and doubles, bull flash, "MISS" falling off, board jolt; big scenes for 180 (spotlights, shockwave, confetti), ton-forty, ton, three in a bed, bed & breakfast, no score (tumbleweed), bust (cracks and stamp), game shot, high finish, 170 "big fish", set, match (fireworks and trophy) and the nine-darter (rainbow). Sounds play only while the caller is on. The ✨ button switches effects off per device; they respect "reduce motion" and stop while the card is hidden.
 
 ### Card options
 
@@ -125,6 +126,7 @@ type: custom:autodarts-game-card
 back_path: /dashboard-darts/0           # back arrow; without it the arrow goes back in history
 power_on: script.dartboard_on           # "Turn on" button when the board is off
 hide_elements: ["#bottom-bar"]          # hide elements of your dashboard while the game is shown
+effects: false                          # no effects and no ✨ button
 ```
 
 ```yaml
@@ -206,6 +208,7 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 | `sensor.autodarts_board_number_of_throws` | Darts on the board *(disabled by default)* |
 | `binary_sensor.autodarts_board_detection_running` | Detection is running |
 | `sensor.autodarts_board_game` | Local game: `idle` / `bull_off` / `running` / `finished` (shown translated), everything else as attributes (players, scores, checkout, visits, statistics) |
+| `event.autodarts_board_game_event` | Fires on game events: `dart`, `triple`, `bull`, `bullseye`, `visit`, `ton`, `ton_forty`, `one_eighty`, `no_score`, `bust`, `three_in_a_bed`, `checkout`, `high_finish`, `nine_darter`, `leg_won`, `set_won`, `match_won`; attributes `player` and, depending on the event, `field`/`points` (darts), `score`/`darts`/`remaining` (visits) or `finish` (checkouts) |
 | `sensor.autodarts_board_players` | Number of players, attributes with all players, statistics and recent games |
 | `camera.autodarts_board_camera_1` … `_3` | Board cameras (attribute `kalibrierung` with the calibration points) |
 | `camera.autodarts_board_detection_image`, `_live_image` | Detection image and live image |
@@ -244,6 +247,38 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 Player IDs are listed in the attributes of `sensor.autodarts_board_players`. Wrong input (unknown field, no game running …) returns a clear, translated error message.
 
 ## Automation examples
+
+**Flash the lights on a 180**
+
+```yaml
+triggers:
+  - trigger: state
+    entity_id: event.autodarts_board_game_event
+    attribute: event_type
+    to: one_eighty
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.living_room
+    data:
+      flash: long
+```
+
+This triggers when the event type changes to `one_eighty`. To react to every 180, also two in a row, trigger on any state change of the entity and check the type:
+
+```yaml
+triggers:
+  - trigger: state
+    entity_id: event.autodarts_board_game_event
+    not_from: unavailable
+conditions:
+  - condition: state
+    entity_id: event.autodarts_board_game_event
+    attribute: event_type
+    state: one_eighty
+```
+
+The same works for every other moment, e.g. `match_won`, `bust` or `nine_darter`.
 
 **Announce a 180 on your speakers**
 
@@ -299,7 +334,7 @@ actions:
 triggers:
   - trigger: state
     entity_id: sensor.autodarts_board_game
-    to: Beendet
+    to: finished
 actions:
   - action: notify.notify
     data:
@@ -382,6 +417,8 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 
 - Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
 - Lokales X01-Spiel: 1–6 Spieler, Bots, Double/Master In und Out, Legs und Sets, Bull-Off, Korrekturen, Statistik
+- Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
+- Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
 - Vier fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 

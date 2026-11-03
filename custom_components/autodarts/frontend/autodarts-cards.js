@@ -42,6 +42,7 @@
       games_wins: '{g} games · {w} wins', best_avg: 'Best avg', n180: '180s', legs: 'Legs', rename: 'Rename', del_stats: 'Delete statistics', del_player: 'Delete player', really_del: 'Really delete?',
       recent: 'Recent games', no_game_yet: 'No finished game yet.', reset_all: 'Reset everything', del_all: 'Delete statistics of all players and game history', del_all_q: 'Sure? This cannot be undone',
       players_stay: 'The players themselves are kept.', save: 'Save',
+      effects: 'Effects', fx_nine: 'NINE-DARTER', fx_perfect: 'The perfect leg', fx_match: 'and the match, {n}', fx_set: 'and the set, {n}', fx_leg: 'Leg {n}', fx_bust: 'BUST',
       d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local X01 game: lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games'
     },
     de: {
@@ -76,6 +77,7 @@
       games_wins: '{g} Spiele · {w} Siege', best_avg: 'Bester Avg', n180: '180er', legs: 'Legs', rename: 'Umbenennen', del_stats: 'Statistik löschen', del_player: 'Spieler löschen', really_del: 'Wirklich löschen?',
       recent: 'Letzte Spiele', no_game_yet: 'Noch kein Spiel beendet.', reset_all: 'Alles zurücksetzen', del_all: 'Statistik aller Spieler und Spielverlauf löschen', del_all_q: 'Sicher? Lässt sich nicht rückgängig machen',
       players_stay: 'Die Spieler selbst bleiben.', save: 'Speichern',
+      effects: 'Effekte', fx_nine: 'NEUN-DARTER', fx_perfect: 'Das perfekte Leg', fx_match: 'Spiel für {n}', fx_set: 'Satz für {n}', fx_leg: 'Leg für {n}', fx_bust: 'ÜBERWORFEN',
       d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokales X01-Spiel: Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele'
     }
   };
@@ -527,8 +529,18 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
   const MODUS = [['straight', 'Straight'], ['double', 'Double'], ['master', 'Master']];
   const BOTS = [20, 30, 40, 50, 60, 70, 80, 90, 100];
   const BRETT_CX = 60, BRETT_K = 52;
+  const brettP = (r, w) => { const a = (w - 90) * Math.PI / 180; return [BRETT_CX + r * Math.cos(a), BRETT_CX + r * Math.sin(a)]; };
+  // position of a dart on the drawn board (viewBox 0 0 120 120)
+  const brettPos = (d, i) => {
+    const P = brettP, k = BRETT_K / 170;
+    if (typeof d.x === 'number' && typeof d.y === 'number') { const r = Math.hypot(d.x, d.y), f = r > 1.12 ? 1.12 / r : 1; return [60 + d.x * f * BRETT_K, 60 - d.y * f * BRETT_K]; }
+    const x = d.f || '';
+    if (x === 'D25') return P(1, i * 120); if (x === 'S25') return P(3.5, i * 120); if (x === 'M' || !x) return P(57, 200 + i * 30);
+    const n = parseInt(x.slice(1), 10), w = ORDER.indexOf(n) * 18 + [-4, 3, 0][i];
+    return P(x[0] === 'T' ? 103 * k : x[0] === 'D' ? 166 * k : (x[0] === 'S' ? 135 * k : 50), w);
+  };
   const brett = darts => {
-    const P = (r, w) => { const a = (w - 90) * Math.PI / 180; return [BRETT_CX + r * Math.cos(a), BRETT_CX + r * Math.sin(a)]; };
+    const P = brettP;
     const sek = (r1, r2, w1, w2, f) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return '<path d="M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z" fill="' + f + '"/>'; };
     const k = BRETT_K / 170;
     let s = '<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="60" fill="#111"/>';
@@ -539,13 +551,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     });
     s += '<circle cx="60" cy="60" r="' + f1(15.9 * k) + '" fill="#2e7d32"/><circle cx="60" cy="60" r="' + f1(6.35 * k) + '" fill="#c62828"/>';
     (darts || []).forEach((d, i) => {
-      let p = null;
-      if (typeof d.x === 'number' && typeof d.y === 'number') { const r = Math.hypot(d.x, d.y), f = r > 1.12 ? 1.12 / r : 1; p = [60 + d.x * f * BRETT_K, 60 - d.y * f * BRETT_K]; }
-      else {
-        const x = d.f || '';
-        if (x === 'D25') p = P(1, i * 120); else if (x === 'S25') p = P(3.5, i * 120); else if (x === 'M' || !x) p = P(57, 200 + i * 30);
-        else { const n = parseInt(x.slice(1), 10), w = ORDER.indexOf(n) * 18 + [-4, 3, 0][i]; p = P(x[0] === 'T' ? 103 * k : x[0] === 'D' ? 166 * k : (x[0] === 'S' ? 135 * k : 50), w); }
-      }
+      const p = brettPos(d, i);
       s += '<g transform="translate(' + f1(p[0]) + ' ' + f1(p[1]) + ')"><circle r="3.6" fill="' + ['#ff5252', '#40c4ff', '#ffd740'][i] + '" stroke="#000" stroke-width="1"/><text y="1.6" font-size="4.4" fill="#000">' + (i + 1) + '</text></g>';
     });
     return s + '</svg>';
@@ -673,8 +679,148 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 @container (min-width:700px){.mitte{grid-template-columns:1.4fr 1fr}.sk .sr{font-size:64px}}
 @container (max-width:420px){.sk .sr{font-size:44px}.spieler{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}.dz b{font-size:22px}}`;
   const KAMERA_KEYS = ['camera.camera_1', 'camera.camera_2', 'camera.camera_3'];
+  /* ---------- effects: one-shot animations for what happens at the board ----------
+     Triggered only by new darts and finished visits (never by undo or corrections), CSS transforms and
+     opacity only, removed from the page when done, off while the card is hidden. Optional sounds use
+     Web Audio (no files) and only play while the caller is switched on. */
+  const FX_CSS = `
+ha-card{position:relative}
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5;border-radius:inherit;container-type:size}
+.fxp{position:absolute;left:0;top:0;width:0;height:0}
+.fxd{position:absolute;left:-5px;top:-5px;width:58px;height:58px;transform-origin:5px 5px;animation:fx-flug .24s cubic-bezier(.35,0,.85,.35) both,fx-wipp .55s .24s ease-out,fx-weg .35s 1.25s ease-in forwards}
+.fxd.miss{animation:fx-flug .24s cubic-bezier(.35,0,.85,.35) both,fx-fall .7s .3s cubic-bezier(.5,0,.9,.6) forwards}
+@keyframes fx-flug{0%{transform:translate(150px,210px) scale(3) rotate(-10deg);opacity:0;filter:blur(3px)}30%{opacity:1}100%{transform:none;opacity:1;filter:none}}
+@keyframes fx-wipp{0%{transform:rotate(0)}20%{transform:rotate(-7deg)}45%{transform:rotate(4deg)}70%{transform:rotate(-2deg)}100%{transform:rotate(0)}}
+@keyframes fx-weg{to{opacity:0}}
+@keyframes fx-fall{0%{transform:none}25%{transform:translate(6px,-8px) rotate(25deg)}100%{transform:translate(24px,170px) rotate(115deg);opacity:0}}
+.fxr{position:absolute;left:-30px;top:-30px;width:60px;height:60px;border-radius:50%;border:3px solid var(--k,#fff);animation:fx-ring .6s .2s ease-out both}
+@keyframes fx-ring{0%{transform:scale(.1);opacity:.95}100%{transform:scale(1.6);opacity:0}}
+.fxs{position:absolute;left:0;top:-1.5px;width:16px;height:3px;border-radius:3px;background:linear-gradient(90deg,#fff,var(--k,#ffb300));transform-origin:0 50%;animation:fx-funke .5s .22s ease-out both}
+@keyframes fx-funke{0%{transform:rotate(var(--a)) translateX(2px) scaleX(.3);opacity:1}100%{transform:rotate(var(--a)) translateX(var(--w,34px)) scaleX(1);opacity:0}}
+.fxb{position:absolute;left:-70px;top:-70px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,var(--k) 0%,transparent 65%);animation:fx-blitz .7s .2s ease-out both;mix-blend-mode:screen}
+@keyframes fx-blitz{0%{transform:scale(.2);opacity:1}100%{transform:scale(1.4);opacity:0}}
+.fxc{position:absolute;left:0;top:0;transform:translate(-50%,-150%);white-space:nowrap;font-weight:900;font-size:13px;letter-spacing:.06em;padding:3px 9px;border-radius:999px;color:#fff;background:var(--k,#333);box-shadow:0 2px 10px rgba(0,0,0,.4);animation:fx-chip 1.3s .2s ease-out both}
+@keyframes fx-chip{0%{transform:translate(-50%,-60%) scale(.4);opacity:0}15%{transform:translate(-50%,-160%) scale(1.12);opacity:1}30%{transform:translate(-50%,-150%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-230%);opacity:0}}
+.fx-treffer{animation:fx-brett .22s ease-out}
+@keyframes fx-brett{0%{transform:none}35%{transform:translate(1.5px,1px) scale(.992)}70%{transform:translate(-1px,0)}100%{transform:none}}
+ha-card.fx-wackeln{animation:fx-wackeln .5s cubic-bezier(.36,.07,.19,.97)}
+@keyframes fx-wackeln{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-7px)}40%,60%{transform:translateX(7px)}}
+ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
+@keyframes fx-stoss{0%{transform:none}20%{transform:scale(1.012) translateY(-2px)}45%{transform:scale(.996) translateY(1px)}100%{transform:none}}
+.gross{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:fx-aus .5s var(--ende,2.5s) ease-in forwards}
+@keyframes fx-aus{to{opacity:0}}
+.gross .bg{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,.2),rgba(0,0,0,.78));animation:fx-ein .3s both}
+.gross.bust .bg{background:radial-gradient(ellipse at 50% 45%,rgba(120,0,0,.25),rgba(60,0,0,.85))}
+.gross.gold .bg{background:radial-gradient(ellipse at 50% 40%,rgba(80,55,0,.35),rgba(0,0,0,.82))}
+@keyframes fx-ein{from{opacity:0}}
+.gross .wort{position:relative;font-weight:900;font-size:clamp(46px,22cqmin,170px);line-height:.92;letter-spacing:-.02em;padding:0 .08em;
+ background:linear-gradient(180deg,#fffbe6 0%,#ffe57f 30%,#ffb300 52%,#a86b00 56%,#ffd54f 80%,#fff3c4 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 5px 0 rgba(0,0,0,.35)) drop-shadow(0 0 28px rgba(255,190,0,.55));animation:fx-slam .6s cubic-bezier(.2,1.5,.4,1) both}
+.gross .wort.lang{font-size:clamp(30px,11cqmin,96px)}
+.gross.silber .wort{background:linear-gradient(180deg,#ffffff 0%,#e0e6ec 45%,#7b8794 55%,#cfd8dc 80%,#ffffff 100%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35)) drop-shadow(0 0 22px rgba(160,200,255,.5))}
+.gross.gruen .wort{background:linear-gradient(180deg,#f1fff4 0%,#b9f6ca 35%,#00c853 55%,#007e33 60%,#69f0ae 85%,#e8fff0 100%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 5px 0 rgba(0,0,0,.35)) drop-shadow(0 0 30px rgba(0,230,118,.6))}
+.gross.grau .wort{background:linear-gradient(180deg,#fafafa,#9e9e9e 55%,#616161 60%,#bdbdbd);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 4px 0 rgba(0,0,0,.35));animation:fx-plumps .9s cubic-bezier(.3,1.4,.5,1) both}
+.gross.bust .wort{color:#ff1744;background:none;-webkit-text-stroke:3px #fff;filter:drop-shadow(0 6px 0 rgba(0,0,0,.45)) drop-shadow(0 0 26px rgba(255,23,68,.7));animation:fx-stempel .45s cubic-bezier(.2,1.6,.4,1) both}
+.gross.regenbogen .wort{background:linear-gradient(90deg,#ff1744,#ff9100,#ffea00,#00e676,#00b0ff,#d500f9,#ff1744);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;animation:fx-slam .6s cubic-bezier(.2,1.5,.4,1) both,fx-farben 1.6s linear infinite}
+@keyframes fx-farben{to{background-position:200% 0}}
+@keyframes fx-slam{0%{transform:scale(3.4);opacity:0}55%{opacity:1}100%{transform:scale(1)}}
+@keyframes fx-stempel{0%{transform:scale(2.6) rotate(-14deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+@keyframes fx-plumps{0%{transform:translateY(-120cqh)}100%{transform:none}}
+.gross .glanz{position:absolute;inset:0;overflow:hidden}
+.gross .glanz::after{content:'';position:absolute;top:-20%;bottom:-20%;width:18%;left:-30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:skewX(-20deg);animation:fx-glanz .9s .55s ease-in-out both;mix-blend-mode:overlay}
+@keyframes fx-glanz{to{left:120%}}
+.gross .unter{position:relative;margin-top:10px;font-size:clamp(13px,5cqmin,26px);font-weight:800;color:#fff;letter-spacing:.16em;text-transform:uppercase;text-shadow:0 2px 8px rgba(0,0,0,.7);animation:fx-hoch .5s .35s both}
+.gross .unter2{position:relative;margin-top:4px;font-size:clamp(12px,3.6cqmin,18px);font-weight:600;color:rgba(255,255,255,.85);animation:fx-hoch .5s .5s both}
+@keyframes fx-hoch{from{transform:translateY(14px);opacity:0}}
+.gross .welle{position:absolute;left:50%;top:50%;width:46cqmin;height:46cqmin;margin:-23cqmin 0 0 -23cqmin;border-radius:50%;border:6px solid rgba(255,214,79,.85);animation:fx-welle .9s .18s ease-out both}
+.gross.silber .welle{border-color:rgba(200,225,255,.8)}.gross.gruen .welle{border-color:rgba(105,240,174,.85)}
+@keyframes fx-welle{0%{transform:scale(.2);opacity:1}100%{transform:scale(2.6);opacity:0}}
+.gross .strahl{position:absolute;top:-30%;width:34%;height:160%;background:linear-gradient(180deg,rgba(255,255,255,.32),rgba(255,255,255,0) 75%);transform-origin:50% 0;filter:blur(6px)}
+.gross .strahl.l{left:-4%;animation:fx-schwenk-l 2.6s ease-in-out both}.gross .strahl.r{right:-4%;animation:fx-schwenk-r 2.6s ease-in-out both}
+@keyframes fx-schwenk-l{0%{transform:rotate(-40deg);opacity:0}20%{opacity:1}50%{transform:rotate(-8deg)}100%{transform:rotate(-34deg);opacity:.6}}
+@keyframes fx-schwenk-r{0%{transform:rotate(40deg);opacity:0}20%{opacity:1}50%{transform:rotate(8deg)}100%{transform:rotate(34deg);opacity:.6}}
+.gross .riss{position:absolute;inset:0;width:100%;height:100%}
+.gross .riss path{fill:none;stroke:rgba(255,255,255,.85);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:400;stroke-dashoffset:400;animation:fx-riss .35s .3s ease-out forwards;filter:drop-shadow(0 0 3px rgba(255,80,80,.9))}
+@keyframes fx-riss{to{stroke-dashoffset:0}}
+.kf{position:absolute;left:50%;top:42%;width:9px;height:15px;border-radius:2px;background:var(--c);animation:fx-konfetti var(--t,2.4s) cubic-bezier(.15,.6,.35,1) var(--v,0s) both}
+.kf.rund{width:10px;height:10px;border-radius:50%}
+@keyframes fx-konfetti{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}30%{transform:translate(var(--x),var(--y)) rotate(calc(var(--r) * .4)) rotateY(180deg);opacity:1}100%{transform:translate(calc(var(--x) * 1.25),calc(var(--y) + 75cqh)) rotate(var(--r)) rotateY(900deg);opacity:0}}
+.fw{position:absolute;width:0;height:0}
+.fw i{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);animation:fx-feuer 1.25s var(--v) cubic-bezier(.1,.7,.3,1) both}
+@keyframes fx-feuer{0%{transform:rotate(var(--a)) translateX(0);opacity:0}8%{opacity:1}70%{opacity:1}100%{transform:rotate(var(--a)) translateX(var(--w)) translateY(28px);opacity:0}}
+.fw b{position:absolute;left:-2px;top:0;width:4px;height:40cqh;background:linear-gradient(180deg,#fff,transparent);border-radius:2px;animation:fx-rakete .45s calc(var(--v) - .45s) ease-out both}
+@keyframes fx-rakete{0%{transform:translateY(60cqh) scaleY(.4);opacity:0}30%{opacity:1}100%{transform:translateY(0) scaleY(.1);opacity:0}}
+.gross .pokal{font-size:clamp(50px,20cqmin,120px);line-height:1;filter:drop-shadow(0 0 30px rgba(255,200,0,.8));animation:fx-pokal 1s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes fx-pokal{0%{transform:translateY(60cqh) scale(.4)}100%{transform:none}}
+.gross .schwimmt{position:absolute;bottom:14%;left:0;font-size:clamp(40px,16cqmin,90px);animation:fx-schwimm 2.8s .2s ease-in-out both}
+@keyframes fx-schwimm{0%{transform:translateX(-30cqw) scaleX(-1)}50%{transform:translateX(45cqw) translateY(-12px) scaleX(-1)}100%{transform:translateX(120cqw) scaleX(-1)}}
+.gross .roll{position:absolute;bottom:8%;left:0;width:64px;height:64px;animation:fx-roll 2.6s .3s linear both}
+.gross .roll svg{width:100%;height:100%;animation:fx-dreh .7s linear infinite}
+@keyframes fx-roll{0%{transform:translateX(-20cqw) translateY(0)}20%{transform:translateX(15cqw) translateY(-20px)}35%{transform:translateX(35cqw) translateY(0)}55%{transform:translateX(60cqw) translateY(-12px)}70%{transform:translateX(78cqw) translateY(0)}100%{transform:translateX(120cqw) translateY(0)}}
+@keyframes fx-dreh{to{transform:rotate(360deg)}}
+.gross .drei{position:relative;width:120px;height:70px;margin-bottom:6px}
+.gross .drei svg{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;transform-origin:5px 5px}
+.gross .drei svg:nth-child(1){animation:fx-anflug-1 .5s .05s cubic-bezier(.3,0,.8,.4) both}
+.gross .drei svg:nth-child(2){animation:fx-anflug-2 .5s .2s cubic-bezier(.3,0,.8,.4) both}
+.gross .drei svg:nth-child(3){animation:fx-anflug-3 .5s .35s cubic-bezier(.3,0,.8,.4) both}
+@keyframes fx-anflug-1{0%{transform:translate(-160px,140px) scale(2.5);opacity:0}100%{transform:translate(-12px,4px) rotate(-6deg)}}
+@keyframes fx-anflug-2{0%{transform:translate(0,180px) scale(2.5);opacity:0}100%{transform:translate(0,0)}}
+@keyframes fx-anflug-3{0%{transform:translate(160px,140px) scale(2.5);opacity:0}100%{transform:translate(12px,4px) rotate(6deg)}}
+@media (prefers-reduced-motion:reduce){
+ .fxd,.fxs,.kf,.fw,.gross .strahl,.gross .welle,.gross .roll,.gross .schwimmt,.gross .glanz,.gross .riss{display:none}
+ .gross .wort,.gross .pokal,.fxc{animation:fx-ein .3s both}ha-card.fx-wackeln,ha-card.fx-stoss,.fx-treffer{animation:none}}`;
+  const FX_FARBEN = ['#ff1744', '#ffea00', '#00e676', '#2979ff', '#ff9100', '#d500f9', '#ffffff', '#00e5ff'];
+  // a steel-tip dart, tip at (5,5), seen from the thrower: barrel, shaft and flight point back to the viewer
+  const dartSvg = farbe => '<svg viewBox="0 0 58 58"><defs><linearGradient id="fxbar" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0e0e0"/><stop offset=".5" stop-color="#5f6670"/><stop offset="1" stop-color="#2b3036"/></linearGradient></defs>' +
+    '<path d="M5 5 L15 14" stroke="#cfd8dc" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<path d="M14 13 L29 28" stroke="url(#fxbar)" stroke-width="5" stroke-linecap="round"/>' +
+    '<path d="M17 16 l2 2 M20 19 l2 2 M23 22 l2 2 M26 25 l2 2" stroke="#1c1f22" stroke-width="1.2"/>' +
+    '<path d="M29 28 L40 39" stroke="#263238" stroke-width="2.6" stroke-linecap="round"/>' +
+    '<path d="M38 37 L56 41 L50 46 Z M38 37 L41 55 L46 49 Z" fill="' + farbe + '" stroke="rgba(0,0,0,.45)" stroke-width=".8"/>' +
+    '<path d="M38 37 L52 52" stroke="rgba(255,255,255,.55)" stroke-width="1"/></svg>';
+  const zufall = (a, b) => a + Math.random() * (b - a);
+  const konfetti = (n, verz) => Array.from({ length: n }, () => {
+    const w = zufall(0, Math.PI * 2), r = zufall(18, 46);
+    return '<i class="kf' + (Math.random() < .3 ? ' rund' : '') + '" style="--c:' + FX_FARBEN[Math.floor(Math.random() * FX_FARBEN.length)] + ';--x:' + (Math.cos(w) * r).toFixed(1) + 'cqw;--y:' + (Math.sin(w) * r * .8 - 18).toFixed(1) + 'cqh;--r:' +
+      Math.round(zufall(-720, 720)) + 'deg;--t:' + zufall(2, 3.2).toFixed(2) + 's;--v:' + ((verz || 0) + zufall(0, .25)).toFixed(2) + 's"></i>';
+  }).join('');
+  const feuerwerk = (n, start) => Array.from({ length: n }, (_, k) => {
+    const c = FX_FARBEN[k % 6], v = (start + k * .55).toFixed(2), x = zufall(18, 82).toFixed(0), y = zufall(15, 45).toFixed(0);
+    return '<span class="fw" style="left:' + x + '%;top:' + y + '%;--c:' + c + ';--v:' + v + 's"><b></b>' +
+      Array.from({ length: 22 }, (_, j) => '<i style="--a:' + (j * 360 / 22) + 'deg;--w:' + zufall(60, 105).toFixed(0) + 'px"></i>').join('') + '</span>';
+  }).join('');
+  const ROLL_SVG = '<svg viewBox="0 0 64 64"><g fill="none" stroke="#a1887f" stroke-width="2" stroke-linecap="round"><circle cx="32" cy="32" r="26"/><path d="M10 26 C24 10 44 50 56 30 M12 42 C26 20 40 56 54 18 M22 8 C28 30 38 34 46 58 M8 34 C30 34 34 12 52 46"/></g></svg>';
+  const RISS_SVG = '<svg class="riss" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 48 L38 40 L30 44 L18 30 M50 48 L62 36 L70 40 L84 24 M50 48 L46 62 L36 70 L30 88 M50 48 L60 60 L74 64 L86 80 M50 48 L52 30 L48 18 L54 6"/></svg>';
+  // synthesized sounds (no audio files): thud of a dart, crowd cheer, buzzer
+  let fxAudio = null;
+  const fxKlang = art => {
+    try {
+      if (!fxAudio) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; fxAudio = new C(); }
+      const ac = fxAudio; if (ac.state === 'suspended') ac.resume();
+      const jetzt = ac.currentTime, aus = ac.createGain(); aus.connect(ac.destination);
+      const rauschen = sek => { const b = ac.createBuffer(1, Math.ceil(ac.sampleRate * sek), ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const q = ac.createBufferSource(); q.buffer = b; return q; };
+      if (art === 'tock') {
+        const q = rauschen(.12), f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1400; q.connect(f); f.connect(aus);
+        aus.gain.setValueAtTime(.55, jetzt); aus.gain.exponentialRampToValueAtTime(.001, jetzt + .09);
+        const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(190, jetzt); o.frequency.exponentialRampToValueAtTime(70, jetzt + .12); o.connect(g); g.connect(ac.destination);
+        g.gain.setValueAtTime(.35, jetzt); g.gain.exponentialRampToValueAtTime(.001, jetzt + .14); o.start(jetzt); o.stop(jetzt + .15); q.start(jetzt);
+      } else if (art === 'jubel' || art === 'gross') {
+        const lang = art === 'gross' ? 3.4 : 2.2, q = rauschen(lang), f = ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 1300; f.Q.value = .6;
+        const lfo = ac.createOscillator(), lg = ac.createGain(); lfo.frequency.value = 7; lg.gain.value = .12; lfo.connect(lg); lg.connect(aus.gain);
+        q.connect(f); f.connect(aus); aus.gain.setValueAtTime(.001, jetzt); aus.gain.exponentialRampToValueAtTime(.32, jetzt + .35); aus.gain.exponentialRampToValueAtTime(.001, jetzt + lang);
+        q.start(jetzt); lfo.start(jetzt); lfo.stop(jetzt + lang);
+      } else if (art === 'buzz') {
+        const o = ac.createOscillator(); o.type = 'sawtooth'; o.frequency.value = 98; const f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900; o.connect(f); f.connect(aus);
+        aus.gain.setValueAtTime(.22, jetzt); aus.gain.setValueAtTime(.22, jetzt + .45); aus.gain.exponentialRampToValueAtTime(.001, jetzt + .6); o.start(jetzt); o.stop(jetzt + .62);
+      } else if (art === 'pfiff') {
+        const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(900, jetzt); o.frequency.exponentialRampToValueAtTime(260, jetzt + .5); o.connect(aus);
+        aus.gain.setValueAtTime(.12, jetzt); aus.gain.exponentialRampToValueAtTime(.001, jetzt + .55); o.start(jetzt); o.stop(jetzt + .56);
+      }
+    } catch (e) {}
+  };
+
   class AutodartsGameCard extends DartsSeite {
-    static get CSS() { return SPIEL_CSS; }
+    static get CSS() { return SPIEL_CSS + FX_CSS; }
     get _spiel() { return E(this._h, 'sensor.game'); }
     get _spieler() { return E(this._h, 'sensor.players'); }
     _lobbyStart() {
@@ -775,6 +921,97 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
       this._ansId = a.ansage_id; this._zugAlt = zug;
       if (x) this._sagen(x);
     }
+    // ---------- effects ----------
+    _fxAn() {
+      if (this._c.effects === false) return false;
+      try { return localStorage.getItem('autodarts_fx') !== '0'; } catch (e) { return true; }
+    }
+    _fxEbene() {
+      const karte = this._r.querySelector('ha-card');
+      let e = karte.querySelector(':scope > .fx');
+      if (!e) { e = document.createElement('div'); e.className = 'fx'; karte.appendChild(e); }
+      return e;
+    }
+    _fxWeg(el, ms) { setTimeout(() => el.remove(), ms); }
+    _fxKarte(klasse) {
+      const k = this._r.querySelector('ha-card'); k.classList.remove(klasse); void k.offsetWidth; k.classList.add(klasse);
+      clearTimeout(this['_fxk' + klasse]); this['_fxk' + klasse] = setTimeout(() => k.classList.remove(klasse), 700);
+    }
+    // where a dart sits on the drawn board, as a point inside the effect layer
+    _fxPunkt(d, i) {
+      const b = this._in.querySelector('.brett.live') || this._in.querySelector('.brett.grafik svg');
+      if (!b) return null;
+      const r = b.getBoundingClientRect(), k = this._r.querySelector('ha-card').getBoundingClientRect();
+      let fx, fy;
+      if (b.classList.contains('live')) { const [x, y] = dartMM(d, i); fx = (x + 225) / 450; fy = (y + 225) / 450; }
+      else { const [x, y] = brettPos(d, i); fx = x / 120; fy = y / 120; }
+      return [r.left - k.left + fx * r.width, r.top - k.top + fy * r.height, b];
+    }
+    _fxDart(d, i, bot) {
+      const p = this._fxPunkt(d, i), f = d.f || 'M', farbe = ['#ff5252', '#40c4ff', '#ffd740'][i] || '#fff';
+      if (this._ansage()) setTimeout(() => fxKlang(f === 'M' ? 'pfiff' : 'tock'), 230);
+      if (!p) return;
+      const [x, y, brettEl] = p, art = f === 'M' ? 'miss' : f === 'D25' ? 'bullseye' : f === 'S25' ? 'bull' : f[0];
+      const k = { T: '#ff9100', D: '#2979ff', bullseye: '#ff1744', bull: '#00e676', S: '#ffffff', miss: '#9e9e9e' }[art];
+      let s = '<div class="fxd' + (art === 'miss' ? ' miss' : '') + '">' + dartSvg(farbe) + '</div><div class="fxr" style="--k:' + k + '"></div>';
+      if (art === 'T' || art === 'D') s += Array.from({ length: art === 'T' ? 12 : 8 }, (_, j) => '<i class="fxs" style="--k:' + k + ';--a:' + (j * 360 / (art === 'T' ? 12 : 8) + zufall(-10, 10)).toFixed(0) + 'deg;--w:' + zufall(22, 44).toFixed(0) + 'px"></i>').join('');
+      if (art === 'bullseye' || art === 'bull') s += '<div class="fxb" style="--k:' + k + '"></div>';
+      const chip = { T: 'TRIPLE ' + f.slice(1), D: 'DOUBLE ' + f.slice(1), bullseye: 'BULLSEYE', bull: 'BULL 25', miss: 'MISS' }[art];
+      if (chip) s += '<span class="fxc" style="--k:' + (art === 'S' ? '#455a64' : k) + '">' + (bot ? '🤖 ' : '') + chip + '</span>';
+      const el = document.createElement('div'); el.className = 'fxp'; el.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'; el.innerHTML = s;
+      this._fxEbene().appendChild(el); this._fxWeg(el, 1900);
+      if (brettEl && art !== 'miss') setTimeout(() => { brettEl.classList.remove('fx-treffer'); void brettEl.offsetWidth; brettEl.classList.add('fx-treffer'); }, 230);
+    }
+    _fxGross(klasse, inhalt, dauer, karte, klang) {
+      const ebene = this._fxEbene();
+      ebene.querySelectorAll('.gross').forEach(g => g.remove());
+      const el = document.createElement('div'); el.className = 'gross ' + klasse; el.style.setProperty('--ende', ((dauer - 500) / 1000) + 's');
+      el.innerHTML = '<div class="bg"></div>' + inhalt; ebene.appendChild(el); this._fxWeg(el, dauer);
+      if (karte) this._fxKarte(karte);
+      if (klang && this._ansage()) fxKlang(klang);
+    }
+    _fxAufnahme(z, a) {
+      const sp = a.spieler || [], wer = (sp[z.s] || {}).name || '', p = z.p, d = z.d || [];
+      const wort = (x, lang) => '<div class="wort' + (lang ? ' lang' : '') + '">' + esc(x) + '<span class="glanz"></span></div>';
+      const unter = (x, y) => '<div class="unter">' + esc(x) + '</div>' + (y ? '<div class="unter2">' + esc(y) + '</div>' : '');
+      const strahlen = '<div class="strahl l"></div><div class="strahl r"></div>';
+      if (z.c) {
+        const ansage = String(a.ansage || ''), match = ansage.startsWith('Spiel '), satz = ansage.startsWith('Satz ');
+        const neun = (sp[z.s] || {}).leg_darts === 9;
+        if (neun) return this._fxGross('regenbogen', strahlen + feuerwerk(6, .3) + konfetti(70) + wort(t('fx_nine'), true) + unter(wer, t('fx_perfect')), 6000, 'fx-stoss', 'gross');
+        if (match) return this._fxGross('gold', feuerwerk(5, .4) + konfetti(50, .2) + '<div class="pokal">🏆</div>' + wort('GAME SHOT', true) + unter(t('fx_match', { n: wer }), p + ' Checkout'), 5200, 'fx-stoss', 'gross');
+        if (p === 170) return this._fxGross('gold', strahlen + '<div class="schwimmt">🐟</div>' + konfetti(40) + wort('170') + unter('THE BIG FISH', wer), 4000, 'fx-stoss', 'gross');
+        if (p >= 100) return this._fxGross('gold', strahlen + '<div class="welle"></div>' + konfetti(36) + wort(String(p)) + unter('HIGH FINISH', (satz ? t('fx_set', { n: wer }) : t('fx_leg', { n: wer }))), 3800, 'fx-stoss', 'jubel');
+        return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(satz ? 40 : 26) + wort('GAME SHOT', true) + unter(satz ? t('fx_set', { n: wer }) : t('fx_leg', { n: wer }), p + ' Checkout'), 3200, 'fx-stoss', 'jubel');
+      }
+      if (z.b) return this._fxGross('bust', RISS_SVG + wort(t('fx_bust'), t('fx_bust').length > 5) + unter(wer), 2200, 'fx-wackeln', 'buzz');
+      if (p === 180) return this._fxGross('gold', strahlen + '<div class="welle"></div>' + konfetti(60, .15) + wort('180') + unter('ONE HUNDRED AND EIGHTY', wer), 4200, 'fx-stoss', 'gross');
+      if (d.length === 3 && d[0] === d[1] && d[1] === d[2] && d[0] !== 'M') {
+        const drei = '<div class="drei">' + [0, 1, 2].map(i => dartSvg(['#ff5252', '#40c4ff', '#ffd740'][i])).join('') + '</div>';
+        return this._fxGross(p >= 100 ? 'gold' : 'silber', drei + wort(String(p)) + unter('THREE IN A BED', wer + ' · ' + d.map(ft).join(' · ')), 3000, 'fx-stoss', 'jubel');
+      }
+      if (p >= 140) return this._fxGross('silber', '<div class="welle"></div>' + konfetti(18) + wort(String(p)) + unter('TON-FORTY', wer), 2800, 'fx-stoss', 'jubel');
+      if (p >= 100) return this._fxGross('silber', wort(String(p)) + unter('TON', wer), 2300);
+      if (p === 26 && ['S20', 'S5', 'S1'].every(f => d.includes(f))) return this._fxGross('grau', '<div class="pokal">☕</div>' + wort('26') + unter('BED & BREAKFAST', wer), 2600);
+      if (p === 0 && d.length) return this._fxGross('grau', '<div class="roll">' + ROLL_SVG + '</div>' + wort('NO SCORE', true) + unter(wer), 2800);
+      return null;
+    }
+    // compare with the last state: only new darts and newly finished visits trigger effects
+    _fxPruefen(a, ph) {
+      if (!['running', 'finished'].includes(ph)) { this._fxAlt = null; return; }
+      const vl = a.verlauf || [], au = a.aufnahme || { darts: [] }, darts = au.darts || [];
+      const offen = [darts.length && vl.length ? vl[vl.length - 1].i : (a.aufnahmen || 0), darts.length];
+      const visit = a.ansage_id === '' || a.ansage_id == null ? -1 : +a.ansage_id;
+      const alt = this._fxAlt; this._fxAlt = { id: a.id, offen, visit };
+      if (!alt || alt.id !== a.id || !this._fxAn() || !this._sicht || document.hidden) return;
+      const neu = offen[0] === alt.offen[0] ? darts.slice(alt.offen[1]) : (offen[0] > alt.offen[0] ? darts : []);
+      const start = darts.length - neu.length, bot = !!((a.spieler || [])[a.am_zug] || {}).bot;
+      neu.forEach((d, k) => setTimeout(() => this._fxDart(d, start + k, bot), k * 170));
+      if (visit > alt.visit) {
+        const z = vl.find(v => v.i === visit);
+        if (z) setTimeout(() => this._fxAufnahme(z, a), neu.length ? 420 + (neu.length - 1) * 170 : 0);
+      }
+    }
     _zeichnen() {
       if (this._fehlt()) return;
       const h = this._h, a = att(h, this._spiel), ph = phase(a);
@@ -782,6 +1019,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
       const ansage = this._ansage(), vb = !!document.fullscreenElement;
       this._kopf(ph === 'idle' ? t('new_game') : (ph === 'finished' ? t('game_over') : t('darts')), modusText(a.einstellungen) || t('local'),
         (ph === 'running' || ph === 'bulloff' ? '<button class="ik" data-act="xabbr" title="' + t('cancel_game') + '"><ha-icon icon="mdi:close"></ha-icon></button>' : '') +
+        (this._c.effects === false ? '' : '<button class="ik' + (this._fxAn() ? ' an' : '') + '" data-act="fx" title="' + t('effects') + '"><ha-icon icon="' + (this._fxAn() ? 'mdi:creation' : 'mdi:creation-outline') + '"></ha-icon></button>') +
         '<button class="ik' + (ansage ? ' an' : '') + '" data-act="ansage" title="' + t('caller') + '"><ha-icon icon="' + (ansage ? 'mdi:volume-high' : 'mdi:volume-off') + '"></ha-icon></button>' +
         '<button class="ik" data-act="vollbild" title="' + t('fullscreen') + '"><ha-icon icon="' + (vb ? 'mdi:fullscreen-exit' : 'mdi:fullscreen') + '"></ha-icon></button>');
       if (ph !== this._phAlt) { if (ph === 'idle') this._lobbyStart(); this._phAlt = ph; this._wach(); }
@@ -794,6 +1032,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
       else html = this._lobby();
       this._setze(html);
       this._lvStrom();
+      this._fxPruefen(a, ph);
     }
     _lobby() {
       const h = this._h, L = this._lob, alle = att(h, this._spieler).spieler || [], name = id => (alle.find(s => s.id === id) || {}).name;
@@ -903,7 +1142,9 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     _klick(act, b) {
       const h = this._h, L = this._lob, a = att(h, this._spiel);
       const neu = () => { this._alt = null; this._zeichnen(); };
+      if (this._ansage()) fxKlang('');  // sounds need a tap once to be allowed
       switch (act) {
+        case 'fx': { const ein = !this._fxAn(); try { localStorage.setItem('autodarts_fx', ein ? '1' : '0'); } catch (e) {} this._kxAlt = null; this._zeichnen(); break; }
         case 'ansicht': { const f = ['1', '2', '3', 'g'], n = f[(f.indexOf(this._ansichtNr()) + 1) % 4]; try { localStorage.setItem('autodarts_view', n); } catch (e) {} neu(); break; }
         case 'netz': { try { localStorage.setItem('autodarts_grid', this._netzAn() ? '0' : '1'); } catch (e) {} neu(); break; }
         case 'ansage': { const ein = !this._ansage(); try { localStorage.setItem('autodarts_caller', ein ? '1' : '0'); } catch (e) {} if (ein && window.speechSynthesis) this._sagen(t('caller_on')); this._kxAlt = null; this._zeichnen(); break; }

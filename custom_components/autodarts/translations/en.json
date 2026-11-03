@@ -197,6 +197,34 @@
       "board_software": {
         "name": "Board software"
       }
+    },
+    "event": {
+      "game_event": {
+        "name": "Game event",
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "dart": "Dart",
+              "triple": "Treble",
+              "bull": "Bull (25)",
+              "bullseye": "Bullseye",
+              "visit": "Visit",
+              "ton": "Ton (100+)",
+              "ton_forty": "Ton-forty (140+)",
+              "one_eighty": "180",
+              "no_score": "No score",
+              "bust": "Bust",
+              "three_in_a_bed": "Three in a bed",
+              "checkout": "Checkout",
+              "high_finish": "High finish (100+)",
+              "nine_darter": "Nine-darter",
+              "leg_won": "Leg won",
+              "set_won": "Set won",
+              "match_won": "Match won"
+            }
+          }
+        }
+      }
     }
   }
 }

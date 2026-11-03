@@ -9,9 +9,10 @@ light goes back to the state it had before.
 from __future__ import annotations
 
 import asyncio
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 import colorsys
 import logging
+import random
 from typing import Any
 import uuid
 
@@ -26,7 +27,12 @@ from .const import EREIGNISSE
 
 _LOGGER = logging.getLogger(__name__)
 
-EFFEKTE = ["farbe", "blinken", "blitz", "regenbogen", "pulsieren", "lampe", "preset"]
+EFFEKTE = [
+    "farbe", "blinken", "blitz", "pulsieren", "herzschlag", "stroboskop", "ausblenden", "wechsel",
+    "regenbogen", "welle", "konfetti", "lauflicht", "funkeln", "polizei", "feuer", "gewitter",
+    "lampe", "preset",
+]
+OHNE_FARBE = {"regenbogen", "welle", "konfetti", "polizei", "feuer"}
 # "lampe" = an effect of the light itself (WLED, Hue …), "preset" = a WLED preset
 WLED_ZAHLEN = {"speed": "tempo", "segment_speed": "tempo", "intensity": "staerke", "segment_intensity": "staerke"}
 FARBMODI = {ColorMode.HS, ColorMode.XY, ColorMode.RGB, ColorMode.RGBW, ColorMode.RGBWW}
@@ -47,6 +53,9 @@ REGEL = vol.Schema({
     vol.Required("lichter"): vol.All([_licht], vol.Length(min=1)),
     vol.Optional("effekt", default="farbe"): vol.In(EFFEKTE),
     vol.Optional("farbe", default=[255, 0, 0]): vol.All(
+        vol.ExactSequence([vol.All(vol.Coerce(int), vol.Range(0, 255))] * 3), list
+    ),
+    vol.Optional("farbe2", default=[0, 0, 255]): vol.All(
         vol.ExactSequence([vol.All(vol.Coerce(int), vol.Range(0, 255))] * 3), list
     ),
     vol.Optional("helligkeit", default=100): vol.All(vol.Coerce(int), vol.Range(1, 100)),
@@ -89,6 +98,10 @@ def wled_uebersicht(hass: HomeAssistant) -> dict[str, dict[str, Any]]:
                 presets += [o for o in s.attributes["options"] if o not in presets]
         aus[e.entity_id] = {"presets": presets, "tempo": bool(teile.get("tempo") or teile.get("staerke"))}
     return aus
+
+
+def _bunt(ton: float) -> tuple[int, ...]:
+    return tuple(round(x * 255) for x in colorsys.hsv_to_rgb(ton % 1, 1, 1))
 
 
 def regel_pruefen(daten: dict[str, Any]) -> dict[str, Any]:
@@ -200,16 +213,97 @@ class Lichtshow:
         elif art == "regenbogen":
             ton = 0.0
             while noch():
-                farbe = tuple(round(x * 255) for x in colorsys.hsv_to_rgb(ton, 1, 1))
+                farbe = _bunt(ton)
                 await self._an(lichter, farbe, hell, TAKT * 1.2)
                 await asyncio.sleep(TAKT * 1.2)
                 ton = (ton + 1 / 8) % 1
-        else:  # pulsieren
+        elif art == "pulsieren":
             while noch():
                 await self._an(lichter, rgb, hell, 1)
                 await asyncio.sleep(1)
                 await self._an(lichter, rgb, max(1, hell // 8), 1)
                 await asyncio.sleep(1)
+        else:
+            await self._mehr(art, r, lichter, rgb, hell, dauer, noch)
+
+    async def _mehr(self, art: str, r: dict[str, Any], lichter: list[str], rgb: tuple[int, ...], hell: int,
+                    dauer: float, noch: Callable[[], bool]) -> None:
+        """The further effects; several of them give each light its own colour."""
+        schwach = max(1, hell // 8)
+        if art == "herzschlag":
+            while noch():
+                for h, pause in ((hell, TAKT * 0.4), (schwach, TAKT * 0.4), (hell, TAKT * 0.4), (schwach, TAKT * 2)):
+                    await self._an(lichter, rgb, h, 0)
+                    await asyncio.sleep(pause)
+        elif art == "stroboskop":
+            while noch():
+                await self._an(lichter, (255, 255, 255) if rgb == (0, 0, 0) else rgb, 100, 0)
+                await asyncio.sleep(TAKT * 0.6)
+                await self._aus(lichter)
+                await asyncio.sleep(TAKT * 0.6)
+        elif art == "ausblenden":
+            await self._an(lichter, rgb, hell, 0)
+            await asyncio.sleep(TAKT)
+            await self._an(lichter, rgb, 1, max(dauer - TAKT * 2, 0.5))
+            await asyncio.sleep(dauer - TAKT)
+        elif art == "wechsel":
+            farben = [rgb, tuple(r["farbe2"])]
+            i = 0
+            while noch():
+                await self._an(lichter, farben[i % 2], hell, TAKT)
+                await asyncio.sleep(TAKT * 2)
+                i += 1
+        elif art in ("welle", "konfetti", "feuer"):
+            ton = 0.0
+            while noch():
+                paare = []
+                for n, e in enumerate(lichter):
+                    if art == "welle":
+                        paare.append((e, _bunt(ton + n / len(lichter)), hell))
+                    elif art == "konfetti":
+                        paare.append((e, _bunt(random.random()), hell))
+                    else:  # flickering fire: orange to red, changing brightness
+                        paare.append((e, _bunt(random.uniform(0.0, 0.09)), max(1, round(hell * random.uniform(0.35, 1)))))
+                await self._einzeln(paare, TAKT * 0.8)
+                await asyncio.sleep(random.uniform(TAKT * 0.6, TAKT * 1.2) if art == "feuer" else TAKT * 1.2)
+                ton = (ton + 1 / 12) % 1
+        elif art == "polizei":
+            rot, blau = (255, 0, 0), (0, 40, 255)
+            i = 0
+            while noch():
+                await self._einzeln([(e, rot if (n + i) % 2 else blau, hell) for n, e in enumerate(lichter)], 0)
+                await asyncio.sleep(TAKT)
+                i += 1
+        elif art == "lauflicht":
+            await self._an(lichter, rgb, schwach, 0)
+            i = 0
+            while noch():
+                vorne = lichter[i % len(lichter)]
+                await self._an([vorne], rgb, hell, 0)
+                await asyncio.sleep(TAKT)
+                await self._an([vorne], rgb, schwach, TAKT * 0.5)
+                i += 1
+        elif art == "funkeln":
+            await self._an(lichter, rgb, schwach, 0)
+            while noch():
+                e = random.choice(lichter)
+                await self._an([e], rgb, hell, 0)
+                await asyncio.sleep(TAKT * 0.5)
+                await self._an([e], rgb, schwach, TAKT)
+                await asyncio.sleep(random.uniform(TAKT * 0.3, TAKT * 1.2))
+        else:  # gewitter: dim light, now and then a few bright flashes
+            await self._an(lichter, rgb, max(1, hell // 12), 0.3)
+            while noch():
+                await asyncio.sleep(random.uniform(TAKT * 1.5, TAKT * 4))
+                for _ in range(random.randint(1, 3)):
+                    await self._an(lichter, (255, 255, 255), 100, 0)
+                    await asyncio.sleep(TAKT * 0.3)
+                    await self._an(lichter, rgb, max(1, hell // 12), 0)
+                    await asyncio.sleep(TAKT * 0.4)
+
+    async def _einzeln(self, paare: list[tuple[str, tuple[int, ...], int]], uebergang: float) -> None:
+        """Each light its own colour, all at the same time."""
+        await asyncio.gather(*(self._an([e], farbe, h, uebergang) for e, farbe, h in paare))
 
     async def _lampen_effekt(self, r: dict[str, Any], lichter: list[str], rgb: tuple[int, ...], hell: int) -> None:
         """The light's own effect (e.g. WLED "Fireworks"); lights without it show the colour."""

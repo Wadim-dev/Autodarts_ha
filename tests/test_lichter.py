@@ -81,7 +81,7 @@ async def test_ws_ohne_eintrag(hass: HomeAssistant, geladen, hass_ws_client) -> 
     assert (await ws.receive_json())["result"]["regeln"] == []
 
 
-@pytest.mark.parametrize("effekt", ["farbe", "blinken", "blitz", "regenbogen", "pulsieren"])
+@pytest.mark.parametrize("effekt", [e for e in lichter_modul.EFFEKTE if e not in ("lampe", "preset")])
 async def test_effekte_und_zurueck(hass: HomeAssistant, geladen, lampen, effekt: str) -> None:
     show = geladen.runtime_data.lichter
     await _setzen(hass, [{"ereignis": "bust", "lichter": ["light.bunt", "light.weiss", "light.aus", "light.weg"],

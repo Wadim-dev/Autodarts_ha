@@ -62,7 +62,7 @@
 | 🏟️ **Tournament** | Knockout for 3–16 players with bracket, byes, next-match button and champion celebration. |
 | 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score/finish, best leg, 180s, rating (Elo), hit map, trend, badges, streak, head to head, CSV export. |
 | ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
-| 💡 **Light effects** | Lights blink, flash, pulse, show a colour or a rainbow on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
+| 💡 **Light effects** | 18 effects – blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, WLED effects and presets – on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
 | 📘 **Blueprints** | Awtrix display, caller on a speaker and push notifications – import with one click, fill in a form. |
 | 👆 **Without cameras** | Tap the drawn board or type `T20` + Enter. |
 | 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo – also with an AI agent. |
@@ -325,7 +325,7 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 Let your lights celebrate with you – no YAML needed.
 
 1. Open **Autodarts → Light effects** in the sidebar (or add the card **Autodarts Light effects** to a dashboard).
-2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, rainbow, pulse, light effect, WLED preset**), colour, brightness and duration, and tick the lights.
+2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, light effect, WLED preset**), colour, brightness and duration, and tick the lights.
 3. Tap **Test** to see it, then **Save**.
 
 Effects run in Home Assistant itself, also when no dashboard is open. Afterwards every light goes back to exactly how it was (on/off, brightness, colour). A new effect on the same light takes over smoothly. Colour lights show the colour, other lights just light up. The rules are stored by the integration and can also be set with the action `autodarts.lichteffekte_setzen`.
@@ -555,7 +555,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden
-- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … blinken, aufblitzen, pulsieren, Farbe, Regenbogen, Effekte der Lampe (WLED, Hue, mit Tempo und Stärke) oder WLED-Presets – danach zurück wie vorher
+- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … 18 Effekte: blinken, aufblitzen, pulsieren, Herzschlag, Stroboskop, Ausblenden, zwei Farben, Regenbogen, Regenbogen-Welle, Konfetti, Lauflicht, Funkeln, Polizei, Feuer, Gewitter, Effekte der Lampe (WLED, Hue, mit Tempo und Stärke) oder WLED-Presets – danach zurück wie vorher
 - Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn

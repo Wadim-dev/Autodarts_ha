@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.15.0
+
+- Eleven new light effects: heartbeat, strobe, fade out, two colours, rainbow wave, confetti, chaser, sparkle, police, fire and thunderstorm. Wave, chaser, sparkle and police spread over several lights. The effect buttons are now a tidy grid.
+
+**Deutsch**
+- Elf neue Lichteffekte: Herzschlag, Stroboskop, Ausblenden, zwei Farben, Regenbogen-Welle, Konfetti, Lauflicht, Funkeln, Polizei, Feuer und Gewitter. Welle, Lauflicht, Funkeln und Polizei verteilen sich auf mehrere Lampen. Die Effekt-Knöpfe stehen jetzt ordentlich im Raster.
+
 ## 1.14.1
 
 - Updates of the integration can now come as small patches for big files, so they arrive faster. If a patch does not fit, nothing is changed.

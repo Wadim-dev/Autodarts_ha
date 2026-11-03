@@ -57,7 +57,11 @@
 | 🏆 **Complete X01 game** | 101 to 901, straight / double / master in and out, legs and sets, bull-off, 1–8 players, bots with adjustable average. |
 | 🎯 **Cricket, training and party games** | Cricket (standard, cut-throat, no score; 15–20, 10–20, random), Around the Clock, Bob's 27, doubles, 121 checkout, highscore, Shanghai, Killer, Halve-It, Golf, Baseball – with rule text, target on the board and bots. |
 | ✏️ **Correct anything** | Undo, add, change or delete any dart of any visit – the whole score is recalculated automatically. |
-| 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score, highest finish, best leg, 180s / 140+ / 100+, wins, history. |
+| 🏟️ **Tournament** | Knockout for 3–16 players with bracket, byes, next-match button and champion celebration. |
+| 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score/finish, best leg, 180s, rating (Elo), hit map, trend, badges, streak, head to head, CSV export. |
+| ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
+| 👆 **Without cameras** | Tap the drawn board or type `T20` + Enter. |
+| 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo – also with an AI agent. |
 | 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
 | 🛠️ **Board Manager in HA** | Start/stop detection, reset, calibrate, restart, camera resolution / frame rate / standby, board software updates. |
 | 🧩 **Dashboard cards included** | Four polished cards are installed with the integration – no extra download, no resource to add. |
@@ -75,7 +79,7 @@ The cards are part of the integration and are loaded automatically in every dash
   </tr>
   <tr>
     <td><b>Overview</b> – animated board scene with the darts where they landed, current visit, running game and optional power button.</td>
-    <td><b>Game – lobby</b> – pick players and bots, start value, legs/sets, check-in/out and bull-off.</td>
+    <td><b>Game – lobby</b> – players and bots, single game or tournament, X01, Cricket, training and party games with rule text.</td>
   </tr>
   <tr>
     <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/manager.png" alt="Board Manager card"></td>
@@ -83,7 +87,15 @@ The cards are part of the integration and are loaded automatically in every dash
   </tr>
   <tr>
     <td><b>Board Manager</b> – camera images with calibration grid, system values, controls, camera settings and updates.</td>
-    <td><b>Players</b> – create and rename players, detailed statistics, recent games.</td>
+    <td><b>Players</b> – rating, hit map, trend, badges, head to head, ranking and CSV export.</td>
+  </tr>
+  <tr>
+    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/cricket.png" alt="Cricket"></td>
+    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/tournament.png" alt="Tournament"></td>
+  </tr>
+  <tr>
+    <td><b>Cricket</b> – marks board, MPR, last visits and the target on the board.</td>
+    <td><b>Tournament</b> – bracket with byes and the champion.</td>
   </tr>
 </table>
 

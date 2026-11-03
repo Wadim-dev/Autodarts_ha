@@ -209,7 +209,7 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 | `sensor.autodarts_board_number_of_throws` | Darts on the board *(disabled by default)* |
 | `binary_sensor.autodarts_board_detection_running` | Detection is running |
 | `sensor.autodarts_board_game` | Local game: `idle` / `bull_off` / `running` / `finished` (shown translated), everything else as attributes (players, scores, checkout, visits, statistics) |
-| `event.autodarts_board_game_event` | Fires on game events: `dart`, `triple`, `bull`, `bullseye`, `visit`, `ton`, `ton_forty`, `one_eighty`, `no_score`, `bust`, `three_in_a_bed`, `checkout`, `high_finish`, `nine_darter`, `leg_won`, `set_won`, `match_won`, and for the other games `nine_marks`, `shanghai`, `killer`, `eliminated`, `halved`, `hole_in_one`; attributes `player` and, depending on the event, `field`/`points` (darts), `score`/`darts`/`remaining` (visits) or `finish` (checkouts) |
+| `event.autodarts_board_game_event` | Fires on game events: `dart`, `triple`, `bull`, `bullseye`, `visit`, `ton`, `ton_forty`, `one_eighty`, `no_score`, `bust`, `three_in_a_bed`, `checkout`, `high_finish`, `nine_darter`, `leg_won`, `set_won`, `match_won`, and for the other games `nine_marks`, `shanghai`, `killer`, `eliminated`, `halved`, `hole_in_one`, plus `tournament_won`; attributes `player` and, depending on the event, `field`/`points` (darts), `score`/`darts`/`remaining` (visits) or `finish` (checkouts) |
 | `sensor.autodarts_board_players` | Number of players, attributes with all players, statistics and recent games |
 | `camera.autodarts_board_camera_1` … `_3` | Board cameras (attribute `kalibrierung` with the calibration points) |
 | `camera.autodarts_board_detection_image`, `_live_image` | Detection image and live image |
@@ -242,6 +242,10 @@ All games run completely inside Home Assistant: X01, Cricket, five training game
 
 Every game can be played as first to N legs.
 
+### Tournament
+
+For 3–16 players (bots too) the lobby offers **Tournament** next to single game: a knockout bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
+
 ### Statistics and badges
 
 The players card shows for every player: rating (Elo, also against bots), streak of days played, X01 key figures, a **hit map** of all fields (or the darts as dots, where the board detected a position) with the most hit fields, the **trend** of the X01 average over the last games, **badges** in bronze, silver and gold (180s, 100+ visits, high finish, short leg, best average, wins, games, darts, days in a row, nine marks, Shanghai, hole in one, allrounder) and the **head to head** record against every other player. A ranking by rating and a CSV export of all statistics are below the players. The game card shows the last visits of everybody next to the board. Statistics of Cricket, training and party games are kept per game (games, wins, best result; Cricket: best MPR) and shown on the players card.
@@ -263,6 +267,9 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 |--------|-------------|
 | `autodarts.spiel_starten` | Start a game. Fields: `spiel` (see table above, default `x01`), `variante`, `zahlen`, `runden`, `leben`, `spieler` (list of player IDs, bots as `bot:55`, up to 8), `startwert`, `einwurf`, `auswurf` (`straight`/`double`/`master`), `legs`, `sets`, `bull_off`. Without fields the last settings and players are used (rematch). |
 | `autodarts.spiel_abbrechen` | Cancel the running game (not counted). |
+| `autodarts.turnier_starten` | Start a knockout tournament with 3–16 `spieler`; same fields as `spiel_starten`, used for every match. Starts the first match. |
+| `autodarts.turnier_weiter` | Start the next match of the tournament. |
+| `autodarts.turnier_abbrechen` | End the tournament (bracket is removed). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
 | `autodarts.rueckgaengig` | Undo the last dart (also after the end of a game). |
 | `autodarts.wurf_aendern` | Correct, add or delete a dart: `aufnahme` (visit index, empty = current), `dart` (0–2), `feld` (`T20`, `D16`, `25`, `Bull`, `M`; empty deletes). |
@@ -454,6 +461,7 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 
 - Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
 - Lokale Spiele für 1–8 Spieler, mit Bots: X01 (Double/Master In und Out, Legs und Sets), Cricket (Standard, Cut-Throat, ohne Punkte; 15–20, 10–20, Zufall), Training (Rund um die Uhr, Bob's 27, Doppel, 121 Checkout, Highscore) und Partyspiele (Shanghai, Killer, Halve-It, Golf, Baseball) – mit Regeltext, Ziel auf der Scheibe, Bull-Off, Korrekturen und Statistik
+- Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn

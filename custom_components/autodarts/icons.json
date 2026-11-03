@@ -150,6 +150,15 @@
     },
     "statistik_loeschen": {
       "service": "mdi:delete-sweep-outline"
+    },
+    "turnier_starten": {
+      "service": "mdi:tournament"
+    },
+    "turnier_weiter": {
+      "service": "mdi:skip-next-circle-outline"
+    },
+    "turnier_abbrechen": {
+      "service": "mdi:trophy-broken"
     }
   }
 }

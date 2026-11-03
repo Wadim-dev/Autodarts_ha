@@ -79,6 +79,15 @@
     },
     "invalid_game": {
       "message": "Unknown game. Use x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf or baseball."
+    },
+    "tournament_players": {
+      "message": "A tournament needs 3 to 16 players."
+    },
+    "no_tournament": {
+      "message": "No tournament is running."
+    },
+    "tournament_over": {
+      "message": "The tournament is already decided."
     }
   },
   "entity": {
@@ -229,7 +238,8 @@
               "killer": "Became killer",
               "eliminated": "Player out",
               "halved": "Score halved",
-              "hole_in_one": "Hole in one"
+              "hole_in_one": "Hole in one",
+              "tournament_won": "Tournament won"
             }
           }
         }

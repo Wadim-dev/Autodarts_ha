@@ -79,6 +79,15 @@
     },
     "invalid_game": {
       "message": "Unbekannte Spielart. Möglich: x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball."
+    },
+    "tournament_players": {
+      "message": "Für ein Turnier braucht es 3 bis 16 Spieler."
+    },
+    "no_tournament": {
+      "message": "Es läuft kein Turnier."
+    },
+    "tournament_over": {
+      "message": "Das Turnier ist schon entschieden."
     }
   },
   "entity": {
@@ -229,7 +238,8 @@
               "killer": "Killer geworden",
               "eliminated": "Spieler raus",
               "halved": "Halbiert",
-              "hole_in_one": "Hole in one"
+              "hole_in_one": "Hole in one",
+              "tournament_won": "Turnier gewonnen"
             }
           }
         }

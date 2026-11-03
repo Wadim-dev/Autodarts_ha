@@ -1,7 +1,7 @@
 spiel_starten:
   name: Spiel starten
   description: Startet ein lokales Spiel (X01, Cricket, Training oder Partyspiel). Ohne Angaben gelten die letzten Einstellungen.
-  fields:
+  fields: &startfelder
     spiel:
       name: Spielart
       description: x01, cricket, atc (Rund um die Uhr), bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball
@@ -72,6 +72,16 @@ spiel_starten:
       name: Bull-Off
       selector:
         boolean:
+turnier_starten:
+  name: Turnier starten
+  description: K.-o.-Turnier mit 3–16 Spielern (Bots erlaubt). Gleiche Felder wie beim Spiel; jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt.
+  fields: *startfelder
+turnier_weiter:
+  name: Turnier weiter
+  description: Startet das nächste Match des laufenden Turniers.
+turnier_abbrechen:
+  name: Turnier abbrechen
+  description: Beendet das Turnier (ein laufendes Match wird normal zu Ende gespielt).
 spiel_abbrechen:
   name: Spiel abbrechen
   description: Beendet das Spiel ohne Wertung (nach Spielende zurück zur Auswahl).

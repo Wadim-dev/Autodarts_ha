@@ -20,7 +20,7 @@ from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
-from . import auswertung, spielarten, x01
+from . import auswertung, spielarten, turnier, x01
 from .api import Board
 from .const import DOMAIN
 from .coordinator import ZustandKoordinator
@@ -406,6 +406,7 @@ class Spielleiter:
             eintrag["art"] = st["art"]
         self.daten["verlauf"] = [eintrag, *self.daten.get("verlauf", [])][:MAX_VERLAUF]
         auswertung.nachtragen(self.daten, sp, st, +1, dt_util.now().date())
+        self._turnier_ergebnis(sp, st["gewinner"])
         if st["art"] != "x01":
             self._art_statistik(st, +1)
             return
@@ -446,7 +447,8 @@ class Spielleiter:
 
     # ---------- Dienste ----------
 
-    async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any]) -> None:
+    def _pruefen(self, einstellungen: dict[str, Any]) -> dict[str, Any]:
+        """Einstellungen mit den letzten zusammenführen und prüfen."""
         e = {**self.daten["letzte"], **{k: v for k, v in einstellungen.items() if v is not None}}
         if e["spiel"] not in spielarten.GRUPPEN:
             raise _fehler("invalid_game")
@@ -461,10 +463,12 @@ class Spielleiter:
         e["leben"] = max(1, min(int(e.get("leben") or 3), 9))
         e["variante"] = str(e.get("variante") or "")
         e["zahlen"] = str(e.get("zahlen") or "classic")
-        eintraege = eintraege or e.get("spieler") or []
+        return e
+
+    def _spieler_aus(self, eintraege: list[str], anzahl: int) -> list[dict[str, Any]]:
         spieler = []
         bekannt = {s["id"]: s for s in self.daten["spieler"]}
-        for x in eintraege[:MAX_SPIELER]:
+        for x in eintraege[:anzahl]:
             x = str(x)
             if x.startswith("bot:"):
                 level = max(10, min(int(x[4:] or 50), 120))
@@ -473,8 +477,14 @@ class Spielleiter:
                 spieler.append({"id": x, "name": bekannt[x]["name"]})
         if not spieler:
             raise _fehler("no_player")
-        e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
-        self.daten["letzte"] = e
+        return spieler
+
+    async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any], turnier_ref: dict[str, Any] | None = None) -> None:
+        e = self._pruefen(einstellungen)
+        spieler = self._spieler_aus(eintraege or e.get("spieler") or [], MAX_SPIELER)
+        if turnier_ref is None:
+            e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
+            self.daten["letzte"] = e
         self._bot_stoppen()
         einst = {k: e[k] for k in EINSTELLUNGEN}
         if e["spiel"] != "x01":
@@ -490,6 +500,8 @@ class Spielleiter:
             "bulloff": [],
             "aufnahmen": [],
         }
+        if turnier_ref is not None:
+            self.daten["spiel"]["turnier"] = turnier_ref
         await self._board_leeren()
         await self._erkennung_an()
         self._neu_rechnen()
@@ -516,6 +528,59 @@ class Spielleiter:
             self._board_felder = self._board_felder[: self._gesehen]
         except (HomeAssistantError, aiohttp.ClientError, TimeoutError, ValueError) as err:
             _LOGGER.debug("Board-Reset: %s", err)
+
+    # Turnier
+
+    async def turnier_starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any]) -> None:
+        e = self._pruefen(einstellungen)
+        spieler = self._spieler_aus(eintraege or [], turnier.MAX_SPIELER)
+        if len(spieler) < turnier.MIN_SPIELER:
+            raise _fehler("tournament_players")
+        teilnehmer = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
+        self.daten["letzte"] = {**e, "spieler": teilnehmer}
+        self.daten["turnier"] = {
+            "id": uuid.uuid4().hex[:8],
+            "beginn": dt_util.now().isoformat(),
+            "teilnehmer": teilnehmer,
+            "namen": [s["name"] for s in spieler],
+            "einstellungen": {k: e[k] for k in EINSTELLUNGEN if k != "spieler"},
+            "ergebnisse": {},
+        }
+        await self.turnier_weiter()
+
+    async def turnier_weiter(self) -> None:
+        """Nächstes offenes Match des Turniers starten."""
+        t = self.daten.get("turnier")
+        if not t:
+            raise _fehler("no_tournament")
+        n = turnier.naechstes(t)
+        if n is None:
+            raise _fehler("tournament_over")
+        r, m, a, b = n
+        await self.starten([t["teilnehmer"][a], t["teilnehmer"][b]], t["einstellungen"], {"id": t["id"], "r": r, "m": m, "t": [a, b]})
+
+    async def turnier_abbrechen(self) -> None:
+        self.daten["turnier"] = None
+        if self.spiel and self.spiel.get("turnier") and self.spiel["phase"] != "beendet":
+            self.spiel.pop("turnier")
+        self._speichern()
+        self._melden()
+
+    def _turnier_ergebnis(self, sp: dict[str, Any], gewinner: int | None) -> None:
+        """Sieger eines Turnier-Matches eintragen (gewinner None = wieder herausnehmen)."""
+        ref, t = sp.get("turnier"), self.daten.get("turnier")
+        if not ref or not t or t["id"] != ref["id"]:
+            return
+        schluessel = f"{ref['r']}-{ref['m']}"
+        if gewinner is None:
+            t["ergebnisse"].pop(schluessel, None)
+            t.pop("ende", None)
+            return
+        t["ergebnisse"][schluessel] = ref["t"][gewinner]
+        ch = turnier.champion(t)
+        if ch is not None:
+            t["ende"] = dt_util.now().isoformat()
+            self._ereignis("tournament_won", {"player": t["namen"][ch]})
 
     async def abbrechen(self) -> None:
         self._bot_stoppen()
@@ -556,6 +621,7 @@ class Spielleiter:
             sp.pop("ende", None)
             self.daten["verlauf"] = self.daten.get("verlauf", [])[1:]
             self._statistik_abziehen()
+            self._turnier_ergebnis(sp, None)
         auf = sp["aufnahmen"]
         while auf and not auf[-1]["d"]:
             auf.pop()
@@ -669,8 +735,11 @@ class Spielleiter:
 
     def spiel_attribute(self) -> dict[str, Any]:
         sp = self.spiel
+        t = self.daten.get("turnier")
+        ref = (sp or {}).get("turnier")
+        tur = turnier.ansicht(t, (ref["r"], ref["m"]) if ref and ref["id"] == t["id"] else None) if t else None
         if not sp:
-            return {"quelle": "HA"}
+            return {"quelle": "HA", "turnier": tur} if tur else {"quelle": "HA"}
         a: dict[str, Any] = {
             "quelle": "HA",
             "id": sp["id"],
@@ -679,6 +748,8 @@ class Spielleiter:
             "einstellungen": sp["einstellungen"],
             "beginn": sp["beginn"],
         }
+        if tur:
+            a["turnier"] = tur
         if sp["phase"] == "bulloff":
             k, w = len(sp["bulloff"]), self._bo_werfer(sp)
             liste = []

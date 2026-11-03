@@ -1,11 +1,12 @@
 name: Release
 
-# Creates a GitHub release (and tag) automatically whenever the version in
-# manifest.json changes on main. HACS / the Marketplace then shows a proper version.
+# Creates a GitHub release (and tag) whenever the version in manifest.json changes
+# on main. The release notes come from CHANGELOG.md; existing releases get their
+# notes updated when CHANGELOG.md changes, so the update dialog always shows them.
 on:
   push:
     branches: [main]
-    paths: [custom_components/autodarts/manifest.json]
+    paths: [custom_components/autodarts/manifest.json, CHANGELOG.md]
   workflow_dispatch:
 
 permissions:
@@ -19,13 +20,19 @@ jobs:
       - name: Read version
         id: v
         run: echo "version=$(jq -r .version custom_components/autodarts/manifest.json)" >> "$GITHUB_OUTPUT"
-      - name: Create release if missing
+      - name: Create or update releases
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ steps.v.outputs.version }}
         run: |
-          if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "Release v$VERSION exists"
-          else
-            gh release create "v$VERSION" --title "v$VERSION" --generate-notes --target "$GITHUB_SHA"
-          fi
+          notes() {  # section "## <version>" of CHANGELOG.md
+            awk -v v="## $1" '$0==v{f=1;next} /^## /{f=0} f' CHANGELOG.md | sed '/./,$!d'
+          }
+          for v in $(grep -oP '^## \K[0-9.]+' CHANGELOG.md); do
+            notes "$v" > notes.md
+            if gh release view "v$v" >/dev/null 2>&1; then
+              gh release edit "v$v" --notes-file notes.md
+            elif [ "$v" = "$VERSION" ]; then
+              gh release create "v$v" --title "v$v" --notes-file notes.md --target "$GITHUB_SHA"
+            fi
+          done

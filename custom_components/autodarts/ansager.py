@@ -452,9 +452,9 @@ class Ansager:
                 fehler = 0
                 await self.hass.async_add_executor_job((ordner / f"{key}.{endung}").write_bytes, daten)
                 st["fertig"] += 1
-            if not self.einst["pack"]:
-                await self.setzen({**self.einst, "pack": name})  # first pack: use it right away
-            elif name == self.einst["pack"]:
+            if name != self.einst["pack"]:
+                await self.setzen({**self.einst, "pack": name})  # the pack just made is used right away
+            else:
                 await self._pack_lesen()
         except asyncio.CancelledError:
             raise

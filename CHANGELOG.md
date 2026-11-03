@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.19.2
+
+- Championship pack: each Google AI speaker gets its own pack ("Meisterschaft Fenrir", "Meisterschaft Orus" …). Tapping a speaker that already has a pack switches to it at once; the pack just made is used right away.
+
+**Deutsch**
+- Meisterschafts-Pack: Jeder Google-AI-Sprecher bekommt ein eigenes Pack („Meisterschaft Fenrir“, „Meisterschaft Orus“ …). Antippen eines Sprechers mit fertigem Pack schaltet sofort um; das gerade erzeugte Pack wird gleich benutzt.
+
 ## 1.19.1
 
 - Championship pack: shorter style direction – Google AI read the long one out loud. "Make championship pack" speaks everything again after choosing another speaker (action option `neu`).

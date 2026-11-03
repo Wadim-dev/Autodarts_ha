@@ -216,7 +216,7 @@ One config entry is one board.
 
 ### Updates (since 1.13.0)
 
-1. Put the new version of `custom_components/autodarts` into the folder `custom_templates/autodarts_update` of the Home Assistant configuration, `manifest.json` last. A file `_entfernen.txt` (one path per line) removes files of the old version; `CHANGELOG.md` there gives the release notes.
+1. Put the new version of `custom_components/autodarts` into the folder `custom_templates/autodarts_update` of the Home Assistant configuration, `manifest.json` last. Big files can come as `<file>.patch` (unified diff, as `git diff` writes it); if a patch does not fit, nothing is changed. A file `_entfernen.txt` (one path per line) removes files of the old version; `CHANGELOG.md` there gives the release notes.
 2. **Settings → Updates** shows **Autodarts Board Integration**. Install restarts Home Assistant with the new version.
 
 ### First install

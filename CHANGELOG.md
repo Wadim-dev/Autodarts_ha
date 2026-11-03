@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.14.1
+
+- Updates of the integration can now come as small patches for big files, so they arrive faster. If a patch does not fit, nothing is changed.
+
+**Deutsch**
+- Updates der Integration können jetzt bei großen Dateien als kleine Änderungen kommen und sind dadurch schneller da. Passt eine Änderung nicht, bleibt alles unverändert.
+
 ## 1.14.0
 
 - Light effects: new effect **Light effect** uses the light's own effects (WLED *Fireworks*, *Chase* …, Hue effects) with speed and intensity for WLED.

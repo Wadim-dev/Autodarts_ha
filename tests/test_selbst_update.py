@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import shutil
 from unittest.mock import patch
 
 from homeassistant.core import HomeAssistant
@@ -62,3 +63,37 @@ def test_ablage_kaputt(tmp_path: Path) -> None:
     assert update_modul._hinweise(tmp_path, "1.0.0") is None
     (tmp_path / "CHANGELOG.md").write_text("## 2.0.0\n- x")
     assert update_modul._hinweise(tmp_path, "1.0.0") is None
+
+
+def test_patch(tmp_path: Path) -> None:
+    ziel = tmp_path / "ziel"
+    ziel.mkdir()
+    (ziel / "a.js").write_text("eins\nzwei\ndrei\nvier\nfünf\n")
+    (ziel / "b.js").write_text("x\ny")
+    ablage = tmp_path / "ablage"
+    ablage.mkdir()
+    (ablage / "a.js.patch").write_text("--- a/a.js\n+++ b/a.js\n@@ -1,3 +1,3 @@\n eins\n-zwei\n+ZWEI\n drei\n@@ -5 +5,2 @@\n fünf\n+sechs\n")
+    (ablage / "b.js.patch").write_text("@@ -2 +2 @@\n-y\n\\ No newline at end of file\n+z\n\\ No newline at end of file\n")
+    update_modul._einspielen(ablage, ziel)
+    assert (ziel / "a.js").read_text() == "eins\nZWEI\ndrei\nvier\nfünf\nsechs\n"
+    assert (ziel / "b.js").read_text() == "x\nz"
+    # a patch that does not fit changes nothing
+    ablage.mkdir()
+    (ablage / "neu.txt").write_text("neu")
+    (ablage / "a.js.patch").write_text("@@ -1 +1 @@\n-falsch\n+x\n")
+    with pytest.raises(update_modul.PatchFehler):
+        update_modul._einspielen(ablage, ziel)
+    assert not (ziel / "neu.txt").exists() and ablage.exists()
+
+
+async def test_patch_fehler_meldung(hass: HomeAssistant, geladen, tmp_path: Path) -> None:
+    ablage = Path(hass.config.path("custom_templates", "autodarts_update"))
+    ablage.mkdir(parents=True, exist_ok=True)
+    (ablage / "x.py.patch").write_text("@@ -1 +1 @@\n-a\n+b\n")
+    (ablage / "manifest.json").write_text(json.dumps({"domain": "autodarts", "version": "99.0.0"}))
+    (tmp_path / "x.py").write_text("anders\n")
+    await async_update_entity(hass, UPD)
+    with patch.object(update_modul, "ZIEL", tmp_path), pytest.raises(HomeAssistantError):
+        await hass.services.async_call("update", "install", {"entity_id": UPD}, blocking=True)
+    assert (tmp_path / "x.py").read_text() == "anders\n"
+    shutil.rmtree(ablage)

@@ -94,6 +94,9 @@
     },
     "no_update": {
       "message": "No new version of the integration is waiting."
+    },
+    "update_failed": {
+      "message": "The update could not be installed (a file does not fit). Nothing was changed."
     }
   },
   "entity": {

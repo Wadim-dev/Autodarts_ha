@@ -1,8 +1,9 @@
 """Update entities: the board software (reported by the board) and this integration.
 
 The integration is kept private. A new version is put into the folder
-custom_templates/autodarts_update (manifest.json last). The integration update entity
-offers it; installing copies the files over the integration and restarts Home Assistant.
+custom_templates/autodarts_update (manifest.json last): whole files, or "<file>.patch" with a
+unified diff for big files. The integration update entity offers it; installing copies the
+files over the integration and restarts Home Assistant.
 """
 
 from __future__ import annotations
@@ -10,6 +11,7 @@ from __future__ import annotations
 from datetime import timedelta
 import json
 from pathlib import Path
+import re
 import shutil
 from typing import Any
 
@@ -56,13 +58,54 @@ def _hinweise(ablage: Path, version: str) -> str | None:
     return teil[1].split("\n## ", 1)[0].strip() if len(teil) == 2 else None
 
 
+class PatchFehler(Exception):
+    """A patch does not fit the installed file."""
+
+
+def _patch_anwenden(alt: str, patch: str) -> str:
+    """Apply a unified diff (as written by git diff) to the text of one file."""
+    zeilen = alt.splitlines(keepends=True)
+    aus: list[str] = []
+    pos = 0
+    teile = re.split(r"^@@ -(\d+)(?:,\d+)? \+\d+(?:,\d+)? @@.*\n", patch, flags=re.MULTILINE)
+    for start, rumpf in zip(teile[1::2], teile[2::2], strict=True):
+        beginn = max(int(start) - 1, 0)
+        vorher: list[str] = []
+        nachher: list[str] = []
+        for z in rumpf.splitlines(keepends=True):
+            if z.startswith("\\"):  # "\ No newline at end of file"
+                for liste in (vorher, nachher):
+                    if liste and liste[-1].endswith("\n"):
+                        liste[-1] = liste[-1][:-1]
+                continue
+            art, text = z[:1], z[1:]
+            if art in (" ", "-"):
+                vorher.append(text)
+            if art in (" ", "+"):
+                nachher.append(text)
+        if zeilen[beginn:beginn + len(vorher)] != vorher or beginn < pos:
+            raise PatchFehler
+        aus += zeilen[pos:beginn] + nachher
+        pos = beginn + len(vorher)
+    return "".join(aus + zeilen[pos:])
+
+
 def _einspielen(ablage: Path, ziel: Path) -> None:
+    """Copy new files, apply patches and delete old files; nothing is changed if a patch does not fit."""
+    neu: dict[Path, bytes] = {}
     for datei in sorted(ablage.rglob("*")):
         rel = datei.relative_to(ablage)
         if datei.is_dir() or rel.parts[0] in NICHT_KOPIEREN or "__pycache__" in rel.parts:
             continue
-        (ziel / rel).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(datei, ziel / rel)
+        if datei.suffix == ".patch":
+            rel = rel.with_suffix("")
+            text = (neu[ziel / rel].decode() if ziel / rel in neu else (ziel / rel).read_text(encoding="utf-8"))
+            neu[ziel / rel] = _patch_anwenden(text, datei.read_text(encoding="utf-8")).encode()
+        else:
+            neu[ziel / rel] = datei.read_bytes()
+    for pfad, inhalt in neu.items():
+        pfad.parent.mkdir(parents=True, exist_ok=True)
+        pfad.write_bytes(inhalt)
     if (liste := ablage / ENTFERNEN).is_file():
         for zeile in liste.read_text(encoding="utf-8").splitlines():
             alt = (ziel / zeile.strip()).resolve()
@@ -131,7 +174,10 @@ class IntegrationUpdate(UpdateEntity):
         await self.async_update()
         if self._attr_latest_version == self._attr_installed_version:
             raise HomeAssistantError(translation_domain=DOMAIN, translation_key="no_update")
-        await self.hass.async_add_executor_job(_einspielen, self._ablage, ZIEL)
+        try:
+            await self.hass.async_add_executor_job(_einspielen, self._ablage, ZIEL)
+        except (PatchFehler, OSError, UnicodeDecodeError) as err:
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="update_failed") from err
         self._attr_installed_version = self._attr_latest_version
         self.async_write_ha_state()
         await self.hass.services.async_call("homeassistant", "restart")

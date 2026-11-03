@@ -261,6 +261,13 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
         a.ereignis("visit", {"player": "Ben", "score": 60})
         await _fertig(hass, a)
         assert lautsprecher["tts"][-1].data["message"] == ansager_modul.STIL["en"] + "60. Anna, you require 100"
+    # speak again with another speaker: files are replaced and the joined sounds removed
+    with (patch("homeassistant.components.tts.generate_media_source_id", side_effect=mid),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        texte.clear()
+        a.pack_erzeugen("Meisterschaft", [], "puck", ["180"], neu=True)
+        await a._erzeuger
+    assert len(texte) == 1 and not list((ordner / "_mix").glob("*.wav"))
 
 
 async def test_pack_fehler(hass: HomeAssistant, geladen, lautsprecher) -> None:

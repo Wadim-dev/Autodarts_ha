@@ -66,6 +66,7 @@ DIENSTE = {
         vol.Optional("name", default="Meisterschaft"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$")),
         vol.Optional("sprecher"): cv.string,
         vol.Optional("nur"): vol.All(cv.ensure_list, [cv.string]),
+        vol.Optional("neu", default=False): cv.boolean,
     }),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
@@ -144,7 +145,7 @@ async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
         return
     if name == "ansager_pack_erzeugen":
         namen = [str(p.get("name") or "") for p in _eintrag(hass).runtime_data.spiel.daten["spieler"]]
-        ansager.pack_erzeugen(d["name"], namen, d.get("sprecher"), d.get("nur"))
+        ansager.pack_erzeugen(d["name"], namen, d.get("sprecher"), d.get("nur"), d["neu"])
         return
     try:
         await ansager.setzen(d["einstellungen"])

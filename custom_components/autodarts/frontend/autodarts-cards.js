@@ -2351,7 +2351,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       else if (act === 'sprecher') { this._sprecher = b.dataset.v; this._alt = null; this._zeichnen(); }
       else if (act === 'stil') { x.stil = x.stil === false; this._speichern(x); }
       else if (act === 'erzeugen') { const sp = this._sprecher || 'fenrir'; const ent = this._h.entities && this._h.entities[x.stimme || (this._daten.stimmen || [])[0]];
-        this._h.callService('autodarts', 'ansager_pack_erzeugen', ent && ent.platform === 'google_generative_ai_conversation' ? { sprecher: sp } : {}).then(() => setTimeout(() => this._laden(), 800)); }
+        this._h.callService('autodarts', 'ansager_pack_erzeugen', Object.assign(ent && ent.platform === 'google_generative_ai_conversation' ? { sprecher: sp } : {}, this._sprecher ? { neu: true } : {})).then(() => setTimeout(() => this._laden(), 800)); }
       else if (act === 'hier') { try { localStorage.setItem('autodarts_caller', this._ansage() ? '0' : '1'); } catch (e) {} fxKlang(''); this._abo(); this._alt = null; this._zeichnen(); }
       else if (act === 'test') { fxKlang(''); this._h.callService('autodarts', 'ansager_testen', {}); }
     }

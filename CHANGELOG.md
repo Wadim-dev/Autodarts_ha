@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.19.1
+
+- Championship pack: shorter style direction – Google AI read the long one out loud. "Make championship pack" speaks everything again after choosing another speaker (action option `neu`).
+
+**Deutsch**
+- Meisterschafts-Pack: kürzere Stil-Anweisung – Google AI hat die lange mit vorgelesen. „Meisterschafts-Pack erzeugen“ spricht nach Wahl eines anderen Sprechers alles neu (Aktions-Option `neu`).
+
 ## 1.19.0
 
 - **Championship pack**: new button in the caller card. The chosen voice speaks every score, "you require", game shot, leg, set, match and the player names once and saves them as the pack "Meisterschaft" – with Google AI in the style of a world championship stage announcer (speaker selectable). Runs in the background, can be continued. New action `autodarts.ansager_pack_erzeugen`.

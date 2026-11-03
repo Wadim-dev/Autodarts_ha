@@ -223,6 +223,11 @@ ansager_pack_erzeugen:
       selector:
         text:
           multiple: true
+    neu:
+      name: Neu
+      description: Vorhandene Dateien neu sprechen (z. B. nach Wechsel des Sprechers).
+      selector:
+        boolean:
 aufnahme_eintragen:
   name: Aufnahme eintragen
   description: >-

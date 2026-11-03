@@ -40,11 +40,10 @@ MIX = "_mix"  # joined announcements of a pack (cache)
 MIX_MAX = 300
 UNMOEGLICH = {163, 166, 169, 172, 173, 175, 176, 178, 179}  # scores three darts cannot make
 GOOGLE_AI = "google_generative_ai_conversation"  # voices that follow a spoken style instruction
+# short "Say …:" direction as in the Gemini speech docs; a longer one is read out loud
 STIL = {
-    "en": ("Say this like the stage announcer of a world darts championship in a packed arena: loud, drawn out "
-           "and full of excitement, the bigger the score the more dramatic. Say only: "),
-    "de": ("Sprich das auf Deutsch wie der Bühnen-Ansager einer Darts-Weltmeisterschaft in einer vollen Halle: laut, "
-           "gedehnt und voller Begeisterung, je höher die Punktzahl, desto dramatischer. Sag nur: "),
+    "en": "Say loudly like an excited darts stage announcer: ",
+    "de": "Sag laut und begeistert wie ein Darts-Ansager: ",
 }
 
 
@@ -405,7 +404,7 @@ class Ansager:
         texte.update({_slug(n): f"{n}!" for n in namen if n})
         return texte
 
-    def pack_erzeugen(self, name: str, namen: list[str], sprecher: str | None, nur: list[str] | None) -> None:
+    def pack_erzeugen(self, name: str, namen: list[str], sprecher: str | None, nur: list[str] | None, neu: bool = False) -> None:
         """Start making a pack in the background (keeps files that already exist, so it can be resumed)."""
         if self._erzeuger and not self._erzeuger.done():
             return
@@ -413,9 +412,9 @@ class Ansager:
         if nur:
             texte = {k: v for k, v in texte.items() if k in nur}
         self.erzeugung = {"pack": name, "fertig": 0, "gesamt": len(texte), "laeuft": True, "fehler": None}
-        self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher), "autodarts caller pack")
+        self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher, neu), "autodarts caller pack")
 
-    async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None) -> None:
+    async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None, neu: bool = False) -> None:
         from homeassistant.components.tts import async_get_media_source_audio, generate_media_source_id
 
         stimme = self._stimme()
@@ -427,7 +426,9 @@ class Ansager:
                 return
             google = self._google(stimme)
             await self.hass.async_add_executor_job(lambda: ordner.mkdir(parents=True, exist_ok=True))
-            da = set(await self.hass.async_add_executor_job(_dateien, ordner))
+            da = set() if neu else set(await self.hass.async_add_executor_job(_dateien, ordner))
+            for f in await self.hass.async_add_executor_job(lambda: list((ordner / MIX).glob("*.wav"))):
+                await self.hass.async_add_executor_job(f.unlink)  # joined sounds would keep the old voice
             fehler = 0
             for key, text in texte.items():
                 if key in da:

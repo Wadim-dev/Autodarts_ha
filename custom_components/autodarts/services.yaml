@@ -199,6 +199,30 @@ ansager_testen:
       example: Einhundertachtzig!
       selector:
         text:
+ansager_pack_erzeugen:
+  name: Ansager-Pack erzeugen
+  description: >-
+    Spricht alle Punkte (0–180), „du brauchst“, Game shot, Leg, Satz, Match und die Spielernamen einmal mit der
+    gewählten Stimme und speichert sie als Pack (Medien autodarts/caller/<name>). Mit Google AI im Stil eines
+    WM-Ansagers. Läuft im Hintergrund, vorhandene Dateien bleiben (fortsetzbar). Die Ansager-Karte macht das per Klick.
+  fields:
+    name:
+      name: Name
+      example: Meisterschaft
+      selector:
+        text:
+    sprecher:
+      name: Sprecher
+      description: Stimme der Google-AI-Sprachausgabe, z. B. fenrir, algenib, puck.
+      example: fenrir
+      selector:
+        text:
+    nur:
+      name: Nur
+      description: Nur diese Dateien (z. B. 180, 140, require, leg).
+      selector:
+        text:
+          multiple: true
 aufnahme_eintragen:
   name: Aufnahme eintragen
   description: >-

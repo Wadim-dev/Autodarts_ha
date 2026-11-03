@@ -163,6 +163,10 @@
   // caller on this device (1.18)
   Object.assign(TEXTE.en, { caller_run: 'On speakers', phone_run: 'On this device', phone_hint: 'Plays the caller and the game sounds on this phone or tablet while a game card is open. Same as the speaker button in the game card.', d_caller: 'Announces scores, checkouts and walk-on songs on your speakers and phones' });
   Object.assign(TEXTE.de, { caller_run: 'Über Lautsprecher', phone_run: 'Auf diesem Gerät', phone_hint: 'Spielt Ansager und Spieltöne auf diesem Handy oder Tablet, solange eine Spielkarte offen ist. Wie der Lautsprecher-Knopf in der Spielkarte.', d_caller: 'Sagt Punkte, Checkouts und Einlaufmusik über Lautsprecher und Handys an' });
+  // championship pack (1.19)
+  Object.assign(TEXTE.en, { pack_make: 'Make championship pack', pack_make_hint: 'Speaks every score, "you require", game shot and your player names once with the chosen voice and saves them as the pack "Meisterschaft". With Google AI it sounds like the stage announcer of a world championship. Takes a few minutes; sounds already made are kept. New players: tap again.', pack_running: 'Making pack … {n} of {m}', pack_error: 'Stopped ({e}). Tap again to continue.', pack_speaker: 'Speaker', live_style: 'Live sentences in championship style' });
+  Object.assign(TEXTE.de, { pack_make: 'Meisterschafts-Pack erzeugen', pack_make_hint: 'Spricht alle Punkte, „du brauchst“, Game shot und eure Spielernamen einmal mit der gewählten Stimme und speichert sie als Pack „Meisterschaft“. Mit Google AI klingt es wie der Bühnen-Ansager einer WM. Dauert ein paar Minuten; was schon da ist, bleibt. Neue Spieler: nochmal antippen.', pack_running: 'Erzeuge Pack … {n} von {m}', pack_error: 'Angehalten ({e}). Nochmal antippen zum Fortsetzen.', pack_speaker: 'Sprecher', live_style: 'Freie Sätze im WM-Stil' });
+  const SPRECHER = [['fenrir', 'Fenrir'], ['algenib', 'Algenib'], ['alnilam', 'Alnilam'], ['orus', 'Orus'], ['puck', 'Puck'], ['charon', 'Charon']];
   // aim map (1.16)
   Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
   Object.assign(TEXTE.de, { t_aim: 'Zielen', aim_best: 'Bester Zielpunkt', aim_avg: 'etwa Ø {n} pro Aufnahme', aim_vs: 'Auf T20 Ø {n} – hier {d} mehr.', aim_t20: 'T20 ist für dich das richtige Ziel.', aim_hint: 'Berechnet aus deinem Average (Ø {a}, Streuung etwa {s} mm). Rot = die meisten Punkte.', aim_no_avg: 'Spiele zuerst ein X01-Spiel.' });
@@ -2294,7 +2298,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       try { this._daten = await this._h.callWS({ type: 'autodarts/ansager' }); } catch (e) { this._daten = { einstellungen: {}, stimmen: [], packs: {}, songs: [] }; }
       this._alt = null; this._zeichnen();
     }
-    _e() { return Object.assign({ aktiv: false, lautsprecher: [], stimme: '', pack: '', punkte: true, rest: true, ende: true, besondere: true, game_on: true, walkon: true, walkon_sekunden: 15, songs: {} }, (this._daten || {}).einstellungen || {}); }
+    _e() { return Object.assign({ stil: true, aktiv: false, lautsprecher: [], stimme: '', pack: '', punkte: true, rest: true, ende: true, besondere: true, game_on: true, walkon: true, walkon_sekunden: 15, songs: {} }, (this._daten || {}).einstellungen || {}); }
     _name(id) { const s = st(this._h, id); return (s && s.attributes.friendly_name) || id; }
     _zeichnen() {
       if (this._fehlt()) return;
@@ -2312,6 +2316,14 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       s += '<button class="schalter feld' + (hier ? ' an' : '') + '" data-act="hier" style="margin-top:12px"><ha-icon icon="' + (hier ? 'mdi:cellphone-sound' : 'mdi:cellphone-off') + '"></ha-icon>' + t('phone_run') + '<small>' + (hier ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button><div class="klein">' + t('phone_hint') + '</div>';
       s += '<label class="lb">' + t('voice') + '</label>' + (stimmen.length ? '<select data-f="stimme"><option value="">' + esc(this._name(stimmen[0])) + ' (auto)</option>' + stimmen.map(x => '<option value="' + x + '"' + (x === e.stimme ? ' selected' : '') + '>' + esc(this._name(x)) + '</option>').join('') + '</select>' : '<div class="klein">' + t('no_voice') + '</div>');
       s += '<label class="lb">' + t('pack') + '</label><div class="seg">' + [['', t('only_voice')]].concat(Object.keys(packs).map(k => [k, k + ' · ' + t('n_files', { n: packs[k].length })])).map(([k, n]) => '<button class="feld' + (k === e.pack ? ' an' : '') + '" data-act="pack" data-v="' + esc(k) + '">' + esc(n) + '</button>').join('') + '</div><div class="klein">' + t('pack_hint') + '</div>';
+      const stimme = e.stimme || stimmen[0] || '', ent = this._h.entities && this._h.entities[stimme], gki = !!ent && ent.platform === 'google_generative_ai_conversation';
+      const ez = d.erzeugung || {};
+      if (gki) s += '<label class="lb">' + t('pack_speaker') + '</label><div class="seg">' + SPRECHER.map(([k, n]) => '<button class="feld' + (k === (this._sprecher || 'fenrir') ? ' an' : '') + '" data-act="sprecher" data-v="' + k + '">' + n + '</button>').join('') + '</div>';
+      s += '<button class="schalter feld" data-act="erzeugen" style="margin-top:10px"' + (ez.laeuft || !stimme ? ' disabled' : '') + '><ha-icon icon="mdi:trophy-variant-outline"></ha-icon>' + (ez.laeuft ? t('pack_running', { n: ez.fertig, m: ez.gesamt }) : t('pack_make')) + '</button>' +
+        '<div class="klein"' + (ez.fehler && !ez.laeuft ? ' style="color:var(--red-color,#e53935)">' + esc(t('pack_error', { e: ez.fehler })) : '>' + t('pack_make_hint')) + '</div>';
+      if (gki) s += '<button class="chip feld' + (e.stil !== false ? ' an' : '') + '" data-act="stil" style="margin-top:8px"><ha-icon icon="' + (e.stil !== false ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('live_style') + '</button>';
+      clearTimeout(this._ezT);
+      if (ez.laeuft) this._ezT = setTimeout(() => { if (this.isConnected) this._laden(); }, 4000);
       s += '<label class="lb">' + t('say_what') + '</label><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
       if (e.walkon) {
         s += '<label class="lb">' + t('walkons') + '</label>';
@@ -2336,6 +2348,10 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       else if (act === 'pack') { x.pack = b.dataset.v; this._speichern(x); }
       else if (act === 'art') { x[b.dataset.v] = !x[b.dataset.v]; this._speichern(x); }
       else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +b.dataset.v)); this._speichern(x); }
+      else if (act === 'sprecher') { this._sprecher = b.dataset.v; this._alt = null; this._zeichnen(); }
+      else if (act === 'stil') { x.stil = x.stil === false; this._speichern(x); }
+      else if (act === 'erzeugen') { const sp = this._sprecher || 'fenrir'; const ent = this._h.entities && this._h.entities[x.stimme || (this._daten.stimmen || [])[0]];
+        this._h.callService('autodarts', 'ansager_pack_erzeugen', ent && ent.platform === 'google_generative_ai_conversation' ? { sprecher: sp } : {}).then(() => setTimeout(() => this._laden(), 800)); }
       else if (act === 'hier') { try { localStorage.setItem('autodarts_caller', this._ansage() ? '0' : '1'); } catch (e) {} fxKlang(''); this._abo(); this._alt = null; this._zeichnen(); }
       else if (act === 'test') { fxKlang(''); this._h.callService('autodarts', 'ansager_testen', {}); }
     }

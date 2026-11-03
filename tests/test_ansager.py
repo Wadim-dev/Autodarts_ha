@@ -197,3 +197,83 @@ async def test_handy_ohne_eintrag(hass: HomeAssistant, geladen, hass_ws_client) 
     ws = await hass_ws_client(hass)
     await ws.send_json({"id": 1, "type": "autodarts/ansager/hoeren"})
     assert not (await ws.receive_json())["success"]
+
+
+def _wav(pfad, frames: int = 800) -> bytes:
+    import io
+    import wave
+    b = io.BytesIO()
+    with wave.open(b, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(8000)
+        w.writeframes(b"\x01\x00" * frames)
+    pfad.write_bytes(b.getvalue())
+    return b.getvalue()
+
+
+async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, lautsprecher) -> None:
+    """A pack is made from the voice (resumable) and a visit with rest is joined from its files."""
+    from homeassistant.helpers import entity_registry as er
+
+    er.async_get(hass).async_get_or_create("tts", ansager_modul.GOOGLE_AI, "x", suggested_object_id="gemini")
+    hass.states.async_set("tts.gemini", "unknown")
+    a = geladen.runtime_data.ansager
+    await _setzen(hass, stimme="tts.gemini")
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Meisterschaft"
+    ordner.mkdir(parents=True)
+    _wav(ordner / "180.wav")  # already there: kept
+    texte = []
+    daten = _wav(lautsprecher["pfad"] / "x.wav")
+
+    def mid(_hass, text, engine=None, options=None, cache=None):
+        texte.append((text, engine, options))
+        return "tts:" + text
+
+    async def audio(_hass, _mid):
+        return "wav", daten
+
+    with (patch("homeassistant.components.tts.generate_media_source_id", side_effect=mid),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        await hass.services.async_call(DOMAIN, "ansager_pack_erzeugen", {"sprecher": "fenrir", "nur": ["180", "140", "require", "100", "leg"]}, blocking=True)
+        await a._erzeuger
+    assert a.erzeugung == {"pack": "Meisterschaft", "fertig": 5, "gesamt": 5, "laeuft": False, "fehler": None}
+    assert len(texte) == 4 and all(t[0].startswith(ansager_modul.STIL["en"]) and t[2] == {"voice": "fenrir"} for t in texte)
+    assert texte[-1][0].endswith("Game shot, and the leg!")
+    assert {"140.wav", "require.wav", "100.wav", "leg.wav"} <= {f.name for f in ordner.iterdir()}
+    assert "name_anna" in a.pack_texte(["Anna"]) and "163" not in a.pack_texte([])
+
+    _wav(ordner / "name_ben.wav")
+    await _setzen(hass, stimme="tts.gemini", pack="Meisterschaft")
+    stand = {"art": "x01", "gewinner": None, "am_zug": 1, "weg": ["T20", "D16"],
+             "spieler": [{"name": "Anna", "rest": 301}, {"name": "Ben", "rest": 100}]}
+    with patch.object(geladen.runtime_data.spiel, "stand", stand):
+        a.ereignis("visit", {"player": "Anna", "score": 140})
+        await _fertig(hass, a)
+        url = lautsprecher["play"][-1].data["media_content_id"]
+        assert url.startswith("media-source://media_source/local/autodarts/caller/Meisterschaft/_mix/")
+        import wave
+        with wave.open(str(ordner / "_mix" / url.rsplit("/", 1)[1]), "rb") as w:
+            assert w.getnframes() == 4 * 800 + 3 * 960
+        # a missing file (no name for Anna) → spoken, with the style instruction
+        stand["am_zug"] = 0
+        stand["spieler"][0]["rest"] = 100
+        a.ereignis("visit", {"player": "Ben", "score": 60})
+        await _fertig(hass, a)
+        assert lautsprecher["tts"][-1].data["message"] == ansager_modul.STIL["en"] + "60. Anna, you require 100"
+
+
+async def test_pack_fehler(hass: HomeAssistant, geladen, lautsprecher) -> None:
+    a = geladen.runtime_data.ansager
+    await _setzen(hass)
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=ValueError("quota")),
+          patch.object(ansager_modul.asyncio, "sleep", side_effect=_null)):
+        a.pack_erzeugen("Test", [], None, ["180"])
+        a.pack_erzeugen("Test", [], None, ["180"])  # already running: ignored
+        await a._erzeuger
+    assert a.erzeugung["fehler"] == "quota" and not a.erzeugung["laeuft"]
+    hass.states.async_remove("tts.piper")
+    a.pack_erzeugen("Test", [], None, None)
+    await a._erzeuger
+    assert a.erzeugung["fehler"] == "no voice"

@@ -8,17 +8,25 @@ autodarts/walkon.
 
 Phones and tablets get the same announcements: the game card subscribes with its speaker
 button (websocket autodarts/ansager/hoeren) and plays the URLs it is sent.
+
+A pack can also be made here (ansager_pack_erzeugen): every score, "you require", player names and
+game shot spoken once by the chosen voice – with Google AI in the style of a championship stage
+announcer – and saved as files. A visit like "140 · Ben, you require 100" is joined from these files.
 """
 
 from __future__ import annotations
 
 import asyncio
 from collections.abc import Callable
+import hashlib
 import logging
 from pathlib import Path
+import re
 from typing import Any
+import wave
 
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.storage import Store
 import voluptuous as vol
 
@@ -28,6 +36,16 @@ ORDNER = ("autodarts", "caller")
 SONG_ORDNER = ("autodarts", "walkon")
 ENDUNGEN = (".mp3", ".wav", ".ogg", ".m4a", ".flac")
 MEDIA_ANNOUNCE = 1048576  # MediaPlayerEntityFeature.MEDIA_ANNOUNCE
+MIX = "_mix"  # joined announcements of a pack (cache)
+MIX_MAX = 300
+UNMOEGLICH = {163, 166, 169, 172, 173, 175, 176, 178, 179}  # scores three darts cannot make
+GOOGLE_AI = "google_generative_ai_conversation"  # voices that follow a spoken style instruction
+STIL = {
+    "en": ("Say this like the stage announcer of a world darts championship in a packed arena: loud, drawn out "
+           "and full of excitement, the bigger the score the more dramatic. Say only: "),
+    "de": ("Sprich das auf Deutsch wie der Bühnen-Ansager einer Darts-Weltmeisterschaft in einer vollen Halle: laut, "
+           "gedehnt und voller Begeisterung, je höher die Punktzahl, desto dramatischer. Sag nur: "),
+}
 
 
 def _player(wert: Any) -> str:
@@ -50,6 +68,7 @@ EINSTELLUNGEN = vol.Schema({
     vol.Optional("walkon", default=True): bool,
     vol.Optional("walkon_sekunden", default=15): vol.All(vol.Coerce(int), vol.Range(5, 60)),
     vol.Optional("songs", default={}): {str: str},
+    vol.Optional("stil", default=True): bool,
 }, extra=vol.REMOVE_EXTRA)
 
 TEXTE = {
@@ -58,14 +77,59 @@ TEXTE = {
         "game_on": "Game on!", "leg": "Game shot, and the leg, {n}!", "set": "Game shot, and the set, {n}!",
         "match": "Game shot, and the match, {n}!", "nine": "A nine-darter! {n}!", "tournament": "{n} wins the tournament!",
         "shanghai": "Shanghai, {n}!", "killer": "{n} is a killer!", "eliminated": "{n} is out!", "walk": "Ladies and gentlemen: {n}!",
+        "require": "you require", "0": "No score!",
+        "p_require": "You require", "p_leg": "Game shot, and the leg!", "p_set": "Game shot, and the set!",
+        "p_match": "Game shot, and the match!", "p_nine": "A nine-darter!", "p_tournament": "wins the tournament!",
+        "p_walk": "Ladies and gentlemen!",
     },
     "de": {
         "180": "Einhundertachtzig!", "bust": "Überworfen!", "rest": "{n}, du brauchst {r}",
         "game_on": "Game on!", "leg": "Game shot! Leg für {n}!", "set": "Game shot! Satz für {n}!",
         "match": "Game shot! Spiel für {n}!", "nine": "Ein Neun-Darter! {n}!", "tournament": "{n} gewinnt das Turnier!",
         "shanghai": "Shanghai, {n}!", "killer": "{n} ist Killer!", "eliminated": "{n} ist raus!", "walk": "Meine Damen und Herren: {n}!",
+        "require": "du brauchst", "0": "No score!",
+        "p_require": "Du brauchst", "p_leg": "Game shot! Und das Leg!", "p_set": "Game shot! Und der Satz!",
+        "p_match": "Game shot! Und das Spiel!", "p_nine": "Ein Neun-Darter!", "p_tournament": "gewinnt das Turnier!",
+        "p_walk": "Meine Damen und Herren!",
     },
 }
+
+
+def _slug(name: Any) -> str:
+    return "name_" + (re.sub(r"\W+", "_", str(name).lower()).strip("_") or "x")
+
+
+def _mischen(ordner: Path, dateien: list[str]) -> str | None:
+    """Join the WAV files of one announcement (with a short pause) into ordner/_mix; None if not possible."""
+    name = hashlib.sha1("+".join(dateien).encode()).hexdigest()[:16] + ".wav"
+    ziel = ordner / MIX / name
+    if ziel.is_file():
+        return name
+    teile: list[bytes] = []
+    art = None
+    for d in dateien:
+        try:
+            with wave.open(str(ordner / d), "rb") as w:
+                a = (w.getnchannels(), w.getsampwidth(), w.getframerate())
+                if art not in (None, a):
+                    return None
+                art = a
+                teile.append(w.readframes(w.getnframes()))
+        except (OSError, wave.Error, EOFError):
+            return None
+    if not art:
+        return None
+    pause = b"\0" * int(art[2] * 0.12) * art[0] * art[1]
+    ziel.parent.mkdir(exist_ok=True)
+    alte = sorted(ziel.parent.glob("*.wav"), key=lambda f: f.stat().st_mtime)
+    for f in alte[: max(0, len(alte) - MIX_MAX + 1)]:
+        f.unlink(missing_ok=True)
+    with wave.open(str(ziel), "wb") as w:
+        w.setnchannels(art[0])
+        w.setsampwidth(art[1])
+        w.setframerate(art[2])
+        w.writeframes(pause.join(teile))
+    return name
 
 
 def _dateien(ordner: Path) -> dict[str, str]:
@@ -105,6 +169,8 @@ class Ansager:
         self._aufgaben: set[asyncio.Task[None]] = set()
         self._einlauf: asyncio.Task[None] | None = None
         self._hoerer: set[Callable[[dict[str, Any]], None]] = set()
+        self.erzeugung: dict[str, Any] = {}
+        self._erzeuger: asyncio.Task[None] | None = None
 
     @callback
     def hoeren(self, senden: Callable[[dict[str, Any]], None]) -> Callable[[], None]:
@@ -135,17 +201,17 @@ class Ansager:
     async def uebersicht(self) -> dict[str, Any]:
         daten = await self.hass.async_add_executor_job(_uebersicht, self._basis)
         stimmen = sorted(self.hass.states.async_entity_ids("tts"))
-        return {"einstellungen": self.einst, "stimmen": stimmen, **daten}
+        return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, **daten}
 
     async def _pack_lesen(self) -> None:
         pack = self.einst["pack"]
         self._pack = await self.hass.async_add_executor_job(_dateien, self._basis.joinpath(*ORDNER, pack)) if pack else {}
 
     async def beenden(self) -> None:
-        for t in [*self._aufgaben, self._einlauf]:
-            if t:
-                t.cancel()
-        await asyncio.gather(*[t for t in [*self._aufgaben, self._einlauf] if t], return_exceptions=True)
+        alle = [t for t in [*self._aufgaben, self._einlauf, self._erzeuger] if t]
+        for t in alle:
+            t.cancel()
+        await asyncio.gather(*alle, return_exceptions=True)
 
     # -- events ---------------------------------------------------------------------
 
@@ -173,25 +239,28 @@ class Ansager:
         if teil := self.ansage(puffer):
             self._los(self._sagen(*teil))
 
-    def ansage(self, puffer: list[tuple[str, dict[str, Any]]]) -> tuple[str, str] | None:
-        """(sound file key, text) for the events of one visit, or None."""
+    def ansage(self, puffer: list[tuple[str, dict[str, Any]]]) -> tuple[str, str, list[str]] | None:
+        """(sound file key, text, keys of the pack files to join) for the events of one visit, or None."""
         e, tx = dict(puffer), self._t()
         st = self._stand() or {}
         name = next((d.get("player") for _, d in puffer if d.get("player")), "")
         if "tournament_won" in e and self.einst["ende"]:
-            return "tournament", tx["tournament"].format(n=e["tournament_won"].get("player", name))
+            n = e["tournament_won"].get("player", name)
+            return "tournament", tx["tournament"].format(n=n), [_slug(n), "tournament"]
         if self.einst["besondere"] and "nine_darter" in e:
-            return "nine", tx["nine"].format(n=name)
+            return "nine", tx["nine"].format(n=name), ["nine", _slug(name)]
         for k, schluessel in (("match_won", "match"), ("set_won", "set"), ("leg_won", "leg")):
             if k in e and self.einst["ende"]:
-                return schluessel, tx[schluessel].format(n=e[k].get("player", name))
+                n = e[k].get("player", name)
+                return schluessel, tx[schluessel].format(n=n), [schluessel, _slug(n)]
         if self.einst["besondere"]:
             for k in ("shanghai", "killer", "eliminated"):
                 if k in e:
-                    return k, tx[k].format(n=e[k].get("player", name))
+                    return k, tx[k].format(n=e[k].get("player", name)), []
         if "visit" not in e or st.get("art", "x01") not in ("x01", "highscore"):
             return None
         teile: list[str] = []
+        keys: list[str] = []
         schluessel = ""
         if self.einst["punkte"]:
             if "bust" in e:
@@ -200,15 +269,17 @@ class Ansager:
                 p = int(e["visit"].get("score") or 0)
                 schluessel, text = str(p), (tx["180"] if p == 180 else str(p))
             teile.append(text)
+            keys.append(schluessel)
         if self.einst["rest"] and st.get("art", "x01") == "x01" and st.get("gewinner") is None:
             spieler = st.get("spieler") or []
             zug = st.get("am_zug")
             wer = spieler[zug] if isinstance(zug, int) and zug < len(spieler) else {}
             if wer and not wer.get("bot") and 1 < int(wer.get("rest") or 0) <= 170 and st.get("weg"):
                 teile.append(tx["rest"].format(n=wer.get("name", ""), r=wer["rest"]))
+                keys += [_slug(wer.get("name", "")), "require", str(wer["rest"])]
                 if len(teile) > 1:
-                    schluessel = ""  # a file would leave out the rest
-        return (schluessel, ". ".join(teile)) if teile else None
+                    schluessel = ""  # a single file would leave out the rest
+        return (schluessel, ". ".join(teile), keys) if teile else None
 
     async def _spielbeginn(self, daten: dict[str, Any]) -> None:
         """Walk-on songs of the players (each for some seconds), then "Game on"."""
@@ -218,7 +289,7 @@ class Ansager:
                     song = self.einst["songs"].get(str(sid)) if sid else None
                     if not song:
                         continue
-                    await self._sagen("", self._t()["walk"].format(n=name))
+                    await self._sagen("", self._t()["walk"].format(n=name), ["walk", _slug(name)])
                     await asyncio.sleep(3)
                     await self._spielen(self._url(SONG_ORDNER, song), ansage=False)
                     await asyncio.sleep(self.einst["walkon_sekunden"])
@@ -248,17 +319,41 @@ class Ansager:
     async def testen(self, text: str | None = None) -> None:
         await self._sagen("180", text or self._t()["180"])
 
-    async def _sagen(self, schluessel: str, text: str) -> None:
-        """Play the pack file of the key, or speak the text."""
+    def _stimme(self) -> str:
+        if self.hass.states.get(self.einst["stimme"]):
+            return str(self.einst["stimme"])
+        return next(iter(sorted(self.hass.states.async_entity_ids("tts"))), "")
+
+    def _google(self, stimme: str) -> bool:
+        e = er.async_get(self.hass).async_get(stimme)
+        return bool(e and e.platform == GOOGLE_AI)
+
+    def _stil(self, stimme: str, text: str) -> str:
+        """Text with the style instruction for voices that follow one (Google AI)."""
+        if not self._google(stimme):
+            return text
+        return STIL["de" if str(self.hass.config.language).startswith("de") else "en"] + text
+
+    async def _sagen(self, schluessel: str, text: str, keys: list[str] | None = None) -> None:
+        """Play the pack files (joined), the pack file of the key, or speak the text."""
         try:
+            if keys and len(keys) > 1 and all(k.lower() in self._pack for k in keys):
+                ordner = self._basis.joinpath(*ORDNER, self.einst["pack"])
+                datei = await self.hass.async_add_executor_job(_mischen, ordner, [self._pack[k.lower()] for k in keys])
+                if datei:
+                    await self._spielen(self._url((*ORDNER, self.einst["pack"], MIX), datei))
+                    return
+            if keys and len(keys) == 1:
+                schluessel = keys[0]
             if schluessel and schluessel.lower() in self._pack:
                 await self._spielen(self._url((*ORDNER, self.einst["pack"]), self._pack[schluessel.lower()]))
                 return
-            stimme = self.einst["stimme"] if self.hass.states.get(self.einst["stimme"]) else next(
-                iter(sorted(self.hass.states.async_entity_ids("tts"))), "")
+            stimme = self._stimme()
             if not stimme:
                 _LOGGER.warning("Caller: no voice (TTS) available")
                 return
+            if self.einst["stil"]:
+                text = self._stil(stimme, text)
             if self._boxen:
                 await self._dienst("tts", "speak", {"entity_id": stimme, "media_player_entity_id": self.einst["lautsprecher"],
                                                     "message": text, "cache": True})
@@ -298,6 +393,75 @@ class Ansager:
     def _melden(self, daten: dict[str, Any]) -> None:
         for senden in list(self._hoerer):
             senden(daten)
+
+    # -- making a pack ------------------------------------------------------------------
+
+    def pack_texte(self, namen: list[str]) -> dict[str, str]:
+        """File key → text of a full pack: scores 0–180, you require, game shot …, player names."""
+        tx = self._t()
+        texte = {str(p): (tx["180"] if p == 180 else tx["0"] if p == 0 else f"{p}!") for p in range(181) if p not in UNMOEGLICH}
+        texte.update({"bust": tx["bust"], "game_on": tx["game_on"]})
+        texte.update({k: tx["p_" + k] for k in ("require", "leg", "set", "match", "nine", "tournament", "walk")})
+        texte.update({_slug(n): f"{n}!" for n in namen if n})
+        return texte
+
+    def pack_erzeugen(self, name: str, namen: list[str], sprecher: str | None, nur: list[str] | None) -> None:
+        """Start making a pack in the background (keeps files that already exist, so it can be resumed)."""
+        if self._erzeuger and not self._erzeuger.done():
+            return
+        texte = self.pack_texte(namen)
+        if nur:
+            texte = {k: v for k, v in texte.items() if k in nur}
+        self.erzeugung = {"pack": name, "fertig": 0, "gesamt": len(texte), "laeuft": True, "fehler": None}
+        self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher), "autodarts caller pack")
+
+    async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None) -> None:
+        from homeassistant.components.tts import async_get_media_source_audio, generate_media_source_id
+
+        stimme = self._stimme()
+        ordner = self._basis.joinpath(*ORDNER, name)
+        st = self.erzeugung
+        try:
+            if not stimme:
+                st["fehler"] = "no voice"
+                return
+            google = self._google(stimme)
+            await self.hass.async_add_executor_job(lambda: ordner.mkdir(parents=True, exist_ok=True))
+            da = set(await self.hass.async_add_executor_job(_dateien, ordner))
+            fehler = 0
+            for key, text in texte.items():
+                if key in da:
+                    st["fertig"] += 1
+                    continue
+                while True:
+                    try:
+                        mid = generate_media_source_id(
+                            self.hass, STIL["de" if str(self.hass.config.language).startswith("de") else "en"] + text if google else text,
+                            engine=stimme, options={"voice": sprecher} if sprecher else None, cache=False)
+                        endung, daten = await async_get_media_source_audio(self.hass, mid)
+                        break
+                    except asyncio.CancelledError:
+                        raise
+                    except Exception as err:  # rate limit of the voice service: wait and try again
+                        fehler += 1
+                        if fehler > 6:
+                            st["fehler"] = str(err)[:200]
+                            return
+                        await asyncio.sleep(20 * fehler)
+                fehler = 0
+                await self.hass.async_add_executor_job((ordner / f"{key}.{endung}").write_bytes, daten)
+                st["fertig"] += 1
+            if not self.einst["pack"]:
+                await self.setzen({**self.einst, "pack": name})  # first pack: use it right away
+            elif name == self.einst["pack"]:
+                await self._pack_lesen()
+        except asyncio.CancelledError:
+            raise
+        except Exception as err:
+            _LOGGER.warning("Making the caller pack failed", exc_info=True)
+            st["fehler"] = str(err)[:200]
+        finally:
+            st["laeuft"] = False
 
     async def _dienst(self, domain: str, name: str, daten: dict[str, Any]) -> None:
         await self.hass.services.async_call(domain, name, daten, blocking=True)

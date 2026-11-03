@@ -345,6 +345,7 @@ What it announces:
 - **Scores** of every X01 visit, **"you require …"** when the next player can check out, **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
 - **Voice**: any text-to-speech of Home Assistant (e.g. Piper or Google Translate, Settings → Voice assistants).
 - **Sound packs**: Media → My media → `autodarts` → `caller` → new folder, upload files named `180.mp3`, `140.mp3`, `bust.mp3`, `leg.mp3`, `set.mp3`, `match.mp3`, `game_on.mp3`, `nine.mp3` … The pack appears in the card; whatever it does not have is spoken.
+- **Championship pack**: tap **Make championship pack** and the chosen voice speaks every score, "you require", game shot, leg, set, match and your player names once and saves them as the pack "Meisterschaft". With Google AI (choose a speaker such as Fenrir) it sounds like the stage announcer of a world championship. A visit like "140 · Ben, you require 100" is then joined from these sounds and plays at once, without waiting for the voice. It runs in the background and can be continued; tap again after adding players. Sentences that are not in the pack are spoken live, with Google AI in the same style.
 - **Walk-on songs**: upload music to Media → My media → `autodarts` → `walkon` and pick a song per player in the card. At the start of a game each player is introduced with their song (5–60 seconds), then "Game on".
 
 Alexa/Echo speakers that support announcements get them as an announcement, so music keeps playing.
@@ -406,6 +407,7 @@ Ready-made automations. Click the button, confirm in Home Assistant, then fill i
 | `autodarts.aufnahme_eintragen` | Enter the score of a whole X01 visit (`punkte` 0–180, optional `spieler` = name of the player whose turn it is). |
 | `autodarts.ansager_setzen` | Save the caller settings (`einstellungen`). The caller card does this for you. |
 | `autodarts.ansager_testen` | Speak a test sentence (`text`) on the caller's speakers. |
+| `autodarts.ansager_pack_erzeugen` | Make a sound pack with the chosen voice (`name`, `sprecher` for Google AI, `nur` for single sounds). The caller card does this for you. |
 | `autodarts.turnier_weiter` | Start the next match of the tournament. |
 | `autodarts.turnier_abbrechen` | End the tournament (bracket is removed). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
@@ -604,7 +606,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Eingabe ohne Kameras: Tastenfeld erscheint von selbst, wenn das Board offline ist (Double/Triple + Zahl oder Summe der Aufnahme), dazu Scheibe antippen oder Tastatur (T20 + Enter)
 - Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier: K.-o. für 3–32 Spieler mit Turnierbaum, Freilosen und Siegerfeier, oder Liga für 3–10 Spieler mit Tabelle
-- Ansager über Lautsprecher, aufs Handy oder beides: Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme
+- Ansager über Lautsprecher, aufs Handy oder beides, Meisterschafts-Pack per Klick (Google-KI-Stimme im WM-Stil): Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme
 - Punkte per Sprache: „Alex hat 140“, „Darts 60“
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Zielhilfe (bester Zielpunkt für den eigenen Average), Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden

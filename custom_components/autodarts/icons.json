@@ -175,6 +175,9 @@
     "ansager_testen": {
       "service": "mdi:bullhorn-outline"
     },
+    "ansager_pack_erzeugen": {
+      "service": "mdi:trophy-variant-outline"
+    },
     "aufnahme_eintragen": {
       "service": "mdi:numeric"
     }

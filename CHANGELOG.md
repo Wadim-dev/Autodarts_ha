@@ -3,6 +3,17 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.19.0
+
+- **Championship pack**: new button in the caller card. The chosen voice speaks every score, "you require", game shot, leg, set, match and the player names once and saves them as the pack "Meisterschaft" – with Google AI in the style of a world championship stage announcer (speaker selectable). Runs in the background, can be continued. New action `autodarts.ansager_pack_erzeugen`.
+- Visits with a checkout hint ("140 · Ben, you require 100") are joined from the pack sounds instead of being spoken.
+- Live sentences of a Google AI voice use the same style (switch "Live sentences in championship style").
+
+**Deutsch**
+- **Meisterschafts-Pack**: neuer Knopf in der Ansager-Karte. Die gewählte Stimme spricht alle Punkte, „du brauchst“, Game shot, Leg, Satz, Match und die Spielernamen einmal und speichert sie als Pack „Meisterschaft“ – mit Google AI im Stil eines WM-Bühnen-Ansagers (Sprecher wählbar). Läuft im Hintergrund, fortsetzbar. Neue Aktion `autodarts.ansager_pack_erzeugen`.
+- Aufnahmen mit Rest-Hinweis („140 · Ben, du brauchst 100“) werden aus den Pack-Tönen zusammengesetzt statt gesprochen.
+- Freie Sätze einer Google-AI-Stimme kommen im selben Stil (Schalter „Freie Sätze im WM-Stil“).
+
 ## 1.18.0
 
 - **Caller on the phone**: the speaker button in the game card (and the new switch "On this device" in the caller card) plays the caller on this phone or tablet – same voice, sound pack and walk-on songs as on the speakers. Speakers, phone or both, freely combined. Before, the phone used the browser voice, which many phones (e.g. the Android app) do not have.

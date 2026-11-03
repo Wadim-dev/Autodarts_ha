@@ -62,6 +62,11 @@ DIENSTE = {
     }),
     "ansager_setzen": vol.Schema({vol.Required("einstellungen"): dict}),
     "ansager_testen": vol.Schema({vol.Optional("text"): cv.string}),
+    "ansager_pack_erzeugen": vol.Schema({
+        vol.Optional("name", default="Meisterschaft"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$")),
+        vol.Optional("sprecher"): cv.string,
+        vol.Optional("nur"): vol.All(cv.ensure_list, [cv.string]),
+    }),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
         vol.Optional("verlauf", default=False): cv.boolean,
@@ -137,6 +142,10 @@ async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
     if name == "ansager_testen":
         await ansager.testen(d.get("text"))
         return
+    if name == "ansager_pack_erzeugen":
+        namen = [str(p.get("name") or "") for p in _eintrag(hass).runtime_data.spiel.daten["spieler"]]
+        ansager.pack_erzeugen(d["name"], namen, d.get("sprecher"), d.get("nur"))
+        return
     try:
         await ansager.setzen(d["einstellungen"])
     except vol.Invalid as err:
@@ -182,7 +191,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
-        elif name in ("ansager_setzen", "ansager_testen"):
+        elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen"):
             await _ansager(hass, name, d)
         return None
 

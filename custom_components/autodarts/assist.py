@@ -7,7 +7,6 @@ triggers are checked first). Nothing has to be set up by hand.
 from __future__ import annotations
 
 from collections.abc import Callable
-import inspect
 import logging
 import re
 from typing import Any
@@ -189,7 +188,10 @@ def async_setup_assist(hass: HomeAssistant, leiter_holen: Callable[[], Spielleit
 
     def anmelden(saetze: list[str], antwort: Any) -> CALLBACK_TYPE:
         # Home Assistant 2026.11 and newer: register_trigger(sentences, trigger_callback)
-        if "sentences" in inspect.signature(manager.register_trigger).parameters:
+        # read the parameter names from the code object: inspect.signature() evaluates the
+        # annotations, which fails on Python 3.14 for this method (2026.11)
+        code = getattr(manager.register_trigger, "__code__", None)
+        if code is not None and "sentences" in code.co_varnames[: code.co_argcount]:
             return manager.register_trigger(sentences=saetze, trigger_callback=antwort)  # type: ignore[call-arg]
         from homeassistant.components.conversation.trigger import TriggerDetails  # older versions
 
@@ -204,7 +206,13 @@ def async_setup_assist(hass: HomeAssistant, leiter_holen: Callable[[], Spielleit
                 slots = {k: v.value for k, v in result.entities.items()}
                 return await ausfuehren(leiter, befehl, sprache, slots)
 
-            abmelden.append(anmelden(saetze, antwort))
+            try:
+                abmelden.append(anmelden(saetze, antwort))
+            except Exception:  # voice must never stop the board from loading
+                _LOGGER.warning("Assist sentences for Autodarts could not be registered", exc_info=True)
+                for f in abmelden:
+                    f()
+                return None
 
     def alle_abmelden() -> None:
         for f in abmelden:

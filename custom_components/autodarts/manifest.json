@@ -6,6 +6,7 @@
     "frontend",
     "http",
     "light",
+    "panel_custom",
     "websocket_api"
   ],
   "codeowners": [
@@ -23,7 +24,7 @@
   "requirements": [
     "aioautodarts==0.1.1"
   ],
-  "version": "1.11.0",
+  "version": "1.12.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

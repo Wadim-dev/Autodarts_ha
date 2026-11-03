@@ -77,7 +77,7 @@
       ranking_elo: 'Ranking', wins_losses: '{w} wins · {l} losses', gold: 'Gold', silver: 'Silver', bronze: 'Bronze', next_at: 'next at {n}', points_hint: 'Only darts detected by the board have a position.',
       b_n180: '180s', b_ton: '100+ visits', b_high_finish: 'High finish', b_kurzes_leg: 'Short leg (darts)', b_average: 'Best average', b_siege: 'Wins', b_spiele: 'Games', b_darts: 'Darts thrown',
       b_serie: 'Days in a row', b_nine_marks: 'Nine marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in one', b_allrounder: 'Allrounder (game types)',
-      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games', d_lights: 'Light effects on game events (180, bust, checkout …)', lights_title: 'Light effects', n_rules: '{n} rules', no_rules: 'No light effect yet. Choose an event, lights and an effect – the lights go back to how they were afterwards.', new_rule: 'New light effect', edit_rule: 'Edit light effect', trigger: 'Event', effect: 'Effect', color: 'Colour', brightness: 'Brightness', duration: 'Duration', seconds: '{n} s', lights: 'Lights', search: 'Search …', test: 'Test', active: 'active', inactive: 'off', delete: 'Delete', no_lights: 'Choose at least one light.', n_lights: '{n} lights', e_farbe: 'Colour', e_blinken: 'Blink', e_blitz: 'Flash', e_regenbogen: 'Rainbow', e_pulsieren: 'Pulse', lights_hint: 'Effects run in Home Assistant, also when the dashboard is closed. Colour lights show the colour, others only light up.', ev_dart: 'Every dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Every visit', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'No score', ev_bust: 'Bust', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High finish (100+)', ev_nine_darter: 'Nine-darter', ev_leg_won: 'Leg won', ev_set_won: 'Set won', ev_match_won: 'Match won', ev_nine_marks: 'Nine marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Becomes killer', ev_eliminated: 'Player out', ev_halved: 'Halved (Halve-It)', ev_hole_in_one: 'Hole in one', ev_tournament_won: 'Tournament won'
+      d_overview: 'Dartboard scene with live darts, optional power on/off and shortcuts', d_game: 'Local games (X01, Cricket, training, party): lobby, bull-off, match, result', d_manager: 'Cameras, controls, system values, settings', d_players: 'Players, overall statistics, recent games', d_lights: 'Light effects on game events (180, bust, checkout …)', tab_board: 'Board', lights_title: 'Light effects', n_rules: '{n} rules', no_rules: 'No light effect yet. Choose an event, lights and an effect – the lights go back to how they were afterwards.', new_rule: 'New light effect', edit_rule: 'Edit light effect', trigger: 'Event', effect: 'Effect', color: 'Colour', brightness: 'Brightness', duration: 'Duration', seconds: '{n} s', lights: 'Lights', search: 'Search …', test: 'Test', active: 'active', inactive: 'off', delete: 'Delete', no_lights: 'Choose at least one light.', n_lights: '{n} lights', e_farbe: 'Colour', e_blinken: 'Blink', e_blitz: 'Flash', e_regenbogen: 'Rainbow', e_pulsieren: 'Pulse', lights_hint: 'Effects run in Home Assistant, also when the dashboard is closed. Colour lights show the colour, others only light up.', ev_dart: 'Every dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Every visit', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'No score', ev_bust: 'Bust', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High finish (100+)', ev_nine_darter: 'Nine-darter', ev_leg_won: 'Leg won', ev_set_won: 'Set won', ev_match_won: 'Match won', ev_nine_marks: 'Nine marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Becomes killer', ev_eliminated: 'Player out', ev_halved: 'Halved (Halve-It)', ev_hole_in_one: 'Hole in one', ev_tournament_won: 'Tournament won'
     },
     de: {
       dart: 'Dart', visit: 'Aufnahme', on: 'Einschalten', off: 'Ausschalten', off_q: 'Wirklich aus?', play: 'Spielen', manager: 'Board Manager', players: 'Spieler',
@@ -145,7 +145,7 @@
       ranking_elo: 'Rangliste', wins_losses: '{w} Siege · {l} Niederlagen', gold: 'Gold', silver: 'Silber', bronze: 'Bronze', next_at: 'nächste Stufe bei {n}', points_hint: 'Nur vom Board erkannte Darts haben eine Position.',
       b_n180: '180er', b_ton: '100+-Aufnahmen', b_high_finish: 'High Finish', b_kurzes_leg: 'Kurzes Leg (Darts)', b_average: 'Bester Average', b_siege: 'Siege', b_spiele: 'Spiele', b_darts: 'Geworfene Darts',
       b_serie: 'Tage in Folge', b_nine_marks: 'Neun Marks', b_shanghai: 'Shanghai', b_hole_in_one: 'Hole in One', b_allrounder: 'Allrounder (Spielarten)',
-      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele', d_lights: 'Lichteffekte bei Spielereignissen (180, Überworfen, Checkout …)', lights_title: 'Lichteffekte', n_rules: '{n} Regeln', no_rules: 'Noch kein Lichteffekt. Wähle ein Ereignis, Lampen und einen Effekt – danach gehen die Lampen zurück, wie sie waren.', new_rule: 'Neuer Lichteffekt', edit_rule: 'Lichteffekt ändern', trigger: 'Ereignis', effect: 'Effekt', color: 'Farbe', brightness: 'Helligkeit', duration: 'Dauer', seconds: '{n} s', lights: 'Lampen', search: 'Suchen …', test: 'Testen', active: 'an', inactive: 'aus', delete: 'Löschen', no_lights: 'Wähle mindestens eine Lampe.', n_lights: '{n} Lampen', e_farbe: 'Farbe', e_blinken: 'Blinken', e_blitz: 'Aufblitzen', e_regenbogen: 'Regenbogen', e_pulsieren: 'Pulsieren', lights_hint: 'Die Effekte laufen in Home Assistant, auch wenn das Dashboard zu ist. Farblampen zeigen die Farbe, andere leuchten nur auf.', ev_dart: 'Jeder Dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Jede Aufnahme', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'Kein Treffer', ev_bust: 'Überworfen', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High Finish (100+)', ev_nine_darter: 'Neun-Darter', ev_leg_won: 'Leg gewonnen', ev_set_won: 'Satz gewonnen', ev_match_won: 'Spiel gewonnen', ev_nine_marks: 'Neun Marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Wird Killer', ev_eliminated: 'Spieler raus', ev_halved: 'Halbiert (Halve-It)', ev_hole_in_one: 'Hole in One', ev_tournament_won: 'Turnier gewonnen'
+      d_overview: 'Dartscheibe mit Live-Würfen, optional Ein/Aus und Abkürzungen', d_game: 'Lokale Spiele (X01, Cricket, Training, Party): Lobby, Bull-Off, Spiel, Ergebnis', d_manager: 'Kameras, Steuerung, Systemwerte, Einstellungen', d_players: 'Spieler, Gesamtstatistik, letzte Spiele', d_lights: 'Lichteffekte bei Spielereignissen (180, Überworfen, Checkout …)', tab_board: 'Board', lights_title: 'Lichteffekte', n_rules: '{n} Regeln', no_rules: 'Noch kein Lichteffekt. Wähle ein Ereignis, Lampen und einen Effekt – danach gehen die Lampen zurück, wie sie waren.', new_rule: 'Neuer Lichteffekt', edit_rule: 'Lichteffekt ändern', trigger: 'Ereignis', effect: 'Effekt', color: 'Farbe', brightness: 'Helligkeit', duration: 'Dauer', seconds: '{n} s', lights: 'Lampen', search: 'Suchen …', test: 'Testen', active: 'an', inactive: 'aus', delete: 'Löschen', no_lights: 'Wähle mindestens eine Lampe.', n_lights: '{n} Lampen', e_farbe: 'Farbe', e_blinken: 'Blinken', e_blitz: 'Aufblitzen', e_regenbogen: 'Regenbogen', e_pulsieren: 'Pulsieren', lights_hint: 'Die Effekte laufen in Home Assistant, auch wenn das Dashboard zu ist. Farblampen zeigen die Farbe, andere leuchten nur auf.', ev_dart: 'Jeder Dart', ev_triple: 'Triple', ev_bull: 'Bull (25)', ev_bullseye: 'Bullseye', ev_visit: 'Jede Aufnahme', ev_ton: '100+', ev_ton_forty: '140+', ev_one_eighty: '180', ev_no_score: 'Kein Treffer', ev_bust: 'Überworfen', ev_three_in_a_bed: 'Three in a bed', ev_checkout: 'Checkout', ev_high_finish: 'High Finish (100+)', ev_nine_darter: 'Neun-Darter', ev_leg_won: 'Leg gewonnen', ev_set_won: 'Satz gewonnen', ev_match_won: 'Spiel gewonnen', ev_nine_marks: 'Neun Marks (Cricket)', ev_shanghai: 'Shanghai', ev_killer: 'Wird Killer', ev_eliminated: 'Spieler raus', ev_halved: 'Halbiert (Halve-It)', ev_hole_in_one: 'Hole in One', ev_tournament_won: 'Turnier gewonnen'
     }
   };
   const sprache = h => { const l = String((h && ((h.locale && h.locale.language) || h.language)) || navigator.language || 'en'); return l.slice(0, 2) === 'de' ? 'de' : 'en'; };
@@ -2063,6 +2063,67 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     }
   }
   customElements.define('autodarts-lights-card', AutodartsLightsCard);
+
+  /* ---------- Sidebar panel "Autodarts": all cards as tabs, no setup needed ---------- */
+  const PANEL_TABS = [
+    ['board', 'autodarts-overview-card', 'mdi:bullseye', 'tab_board'],
+    ['spiel', 'autodarts-game-card', 'mdi:bullseye-arrow', 'play'],
+    ['spieler', 'autodarts-players-card', 'mdi:account-group', 'players'],
+    ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title'],
+    ['manager', 'autodarts-manager-card', 'mdi:camera-iris', 'manager']
+  ];
+  const PANEL_CSS = `
+:host{display:block;min-height:100vh;background:var(--primary-background-color);color:var(--primary-text-color)}
+.leiste{position:sticky;top:0;z-index:4;display:flex;align-items:center;gap:4px;height:56px;padding:0 8px;box-sizing:border-box;
+  background:var(--app-header-background-color,var(--primary-background-color));color:var(--app-header-text-color,var(--primary-text-color));border-bottom:1px solid var(--divider-color,rgba(127,127,127,.2))}
+.leiste .name{font-size:20px;font-weight:500;margin:0 12px 0 4px;white-space:nowrap}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;height:100%;align-items:stretch}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:14px;font-weight:600;opacity:.72;border-bottom:3px solid transparent;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.tabs button.an{opacity:1;border-bottom-color:var(--primary-color);color:var(--primary-color)}
+.tabs ha-icon{--mdc-icon-size:20px}
+.inhalt{max-width:1100px;margin:0 auto;padding:16px;box-sizing:border-box}
+@media (max-width:640px){.leiste .name{display:none}.tabs button{padding:0 10px}.tabs button span{display:none}.tabs button.an span{display:inline}.inhalt{padding:8px}}`;
+  class AutodartsPanel extends HTMLElement {
+    set hass(h) { this._h = h; sprachePruefen(h); this._zeigen(); }
+    set narrow(n) { this._narrow = n; if (this._menu) this._menu.narrow = n; }
+    set route(r) { this._zeigen(); }
+    set panel(p) {}
+    connectedCallback() {
+      if (!this._r) {
+        this._r = this.attachShadow({ mode: 'open' });
+        this._r.innerHTML = '<style>' + PANEL_CSS + '</style><div class="leiste"><ha-menu-button></ha-menu-button><span class="name">Autodarts</span><div class="tabs"></div></div><div class="inhalt"></div>';
+        this._menu = this._r.querySelector('ha-menu-button');
+        this._r.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) gehe('/' + this._basis() + '/' + b.dataset.tab); });
+        this._ort = () => this._zeigen();
+        this._karten = {};
+      }
+      window.addEventListener('location-changed', this._ort);
+      window.addEventListener('popstate', this._ort);
+      this._zeigen();
+    }
+    disconnectedCallback() { window.removeEventListener('location-changed', this._ort); window.removeEventListener('popstate', this._ort); }
+    _basis() { return location.pathname.split('/')[1] || 'autodarts'; }
+    _tab() { const t2 = location.pathname.split('/')[2]; return PANEL_TABS.some(x => x[0] === t2) ? t2 : 'board'; }
+    _zeigen() {
+      if (!this._r || !this._h) return;
+      if (this._menu) { this._menu.hass = this._h; this._menu.narrow = this._narrow; }
+      const tab = this._tab(), basis = '/' + this._basis() + '/';
+      const tabs = PANEL_TABS.map(([k, , icon, txt]) => '<button data-tab="' + k + '" class="' + (k === tab ? 'an' : '') + '"><ha-icon icon="' + icon + '"></ha-icon><span>' + t(txt) + '</span></button>').join('');
+      if (this._tabsAlt !== tabs) { this._tabsAlt = tabs; this._r.querySelector('.tabs').innerHTML = tabs; }
+      let k = this._karten[tab];
+      if (!k) {
+        const def = PANEL_TABS.find(x => x[0] === tab);
+        k = document.createElement(def[1]);
+        k.setConfig(tab === 'board' ? { game_path: basis + 'spiel', manager_path: basis + 'manager', players_path: basis + 'spieler' } : { back_button: false });
+        this._karten[tab] = k;
+      }
+      const box = this._r.querySelector('.inhalt');
+      if (box.firstChild !== k) { box.innerHTML = ''; box.appendChild(k); }
+      k.hass = this._h;  // only the visible card gets updates
+    }
+  }
+  customElements.define('autodarts-panel', AutodartsPanel);
 
   SPR = sprache(document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
   window.customCards = window.customCards || [];

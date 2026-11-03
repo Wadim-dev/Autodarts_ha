@@ -68,7 +68,7 @@
 | 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo – also with an AI agent. |
 | 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
 | 🛠️ **Board Manager in HA** | Start/stop detection, reset, calibrate, restart, camera resolution / frame rate / standby, board software updates. |
-| 🧩 **Dashboard cards included** | Five polished cards are installed with the integration – no extra download, no resource to add. |
+| 🧩 **Ready-made dashboard** | A sidebar entry **Autodarts** with all five cards as tabs appears by itself – no YAML, no resource, no setup. The cards can also be added to your own dashboards. |
 | 🔌 **Works with a smart plug** | Switch the board PC off whenever you like. The integration shows `Offline` and continues on its own when the board is back. |
 | 🌍 **English and German** | Entities, errors and cards follow your Home Assistant language. |
 
@@ -91,7 +91,11 @@ Phone screenshots from a real Winmau board with three cameras: the live image is
 
 ## Dashboard cards
 
-The cards are part of the integration and are loaded automatically in every dashboard. Add them with **Edit dashboard → Add card → search "Autodarts"** or in YAML.
+**Nothing to set up:** after installing, the sidebar has a new entry **Autodarts** with everything as tabs – board, play, players, light effects and Board Manager. It works on phone, tablet and PC.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/panel.png" alt="Autodarts in the sidebar" width="72%">&nbsp;<img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/panel-phone.png" alt="Autodarts on a phone" width="22%"></p>
+
+The same cards can also be put on your own dashboards: **Edit dashboard → Add card → search "Autodarts"**. They are part of the integration and loaded automatically, no resource to add.
 
 <table>
   <tr>
@@ -322,7 +326,7 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 
 Let your lights celebrate with you – no YAML needed.
 
-1. Add the card **Autodarts Light effects** (Edit dashboard → Add card → search "Autodarts").
+1. Open **Autodarts → Light effects** in the sidebar (or add the card **Autodarts Light effects** to a dashboard).
 2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, rainbow, pulse**), colour, brightness and duration, and tick the lights.
 3. Tap **Test** to see it, then **Save**.
 
@@ -549,6 +553,7 @@ Issues and pull requests are welcome. The integration meets all rules of the Hom
 - Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
+- Eigener Menüpunkt **Autodarts** in der Seitenleiste mit allen Karten als Reiter – ohne Einrichtung
 - Fünf fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from homeassistant.components import panel_custom
 from homeassistant.components.frontend import add_extra_js_url
 from homeassistant.components.http import StaticPathConfig
 from homeassistant.const import Platform
@@ -55,7 +56,14 @@ async def _karten_anmelden(hass: HomeAssistant) -> None:
     datei = Path(__file__).parent / "frontend" / "autodarts-cards.js"
     await hass.http.async_register_static_paths([StaticPathConfig(KARTEN_URL, str(datei), True)])
     version = (await async_get_integration(hass, DOMAIN)).version
-    add_extra_js_url(hass, f"{KARTEN_URL}?v={version}")
+    url = f"{KARTEN_URL}?v={version}"
+    add_extra_js_url(hass, url)
+    # own sidebar entry "Autodarts" with all cards as tabs, ready without any setup
+    if "autodarts" not in hass.data.get("frontend_panels", {}):
+        await panel_custom.async_register_panel(
+            hass, frontend_url_path="autodarts", webcomponent_name="autodarts-panel", sidebar_title="Autodarts",
+            sidebar_icon="mdi:bullseye-arrow", module_url=url, require_admin=False,
+        )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:

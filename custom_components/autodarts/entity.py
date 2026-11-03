@@ -2,20 +2,22 @@
 
 from __future__ import annotations
 
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from typing import Any
 
-from .coordinator import DartsDaten
+from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
+
 from .const import DOMAIN
+from .coordinator import DartsDaten
 
 
-class DartsEntitaet(CoordinatorEntity):
+class DartsEntitaet(CoordinatorEntity[DataUpdateCoordinator[dict[str, Any]]]):
     """Entität am Gerät „Autodarts Board“; Name aus strings.json, Symbol aus icons.json."""
 
     _attr_has_entity_name = True
     # Wenn True: Entität ist nicht verfügbar, solange das Board nicht antwortet.
     _nur_online = False
 
-    def __init__(self, daten: DartsDaten, koordinator, schluessel: str, uebersetzung: str) -> None:
+    def __init__(self, daten: DartsDaten, koordinator: DataUpdateCoordinator[dict[str, Any]], schluessel: str, uebersetzung: str) -> None:
         super().__init__(koordinator)
         self.daten = daten
         self.schluessel = schluessel

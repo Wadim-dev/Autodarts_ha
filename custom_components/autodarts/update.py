@@ -12,7 +12,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .coordinator import DartsEntry
+from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
@@ -30,7 +30,7 @@ class BoardUpdate(DartsEntitaet, UpdateEntity):
     _attr_title = "Autodarts Board"
     _attr_device_class = UpdateDeviceClass.FIRMWARE
 
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, d.system, "board_update", "board_software")
 
     @property

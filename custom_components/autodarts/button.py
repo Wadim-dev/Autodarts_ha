@@ -9,7 +9,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .coordinator import DartsEntry
+from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
@@ -32,7 +32,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 class Knopf(DartsEntitaet, ButtonEntity):
     _nur_online = True
 
-    def __init__(self, d, schluessel, uebersetzung, pfad, kategorie) -> None:
+    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str, pfad: str, kategorie: EntityCategory | None) -> None:
         super().__init__(d, d.system, schluessel, uebersetzung)
         self._pfad = pfad
         self._attr_entity_category = kategorie

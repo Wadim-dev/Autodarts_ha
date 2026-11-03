@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-import pytest
-
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
+import pytest
+import voluptuous as vol
 
 from custom_components.autodarts.const import DOMAIN
 from custom_components.autodarts.coordinator import OFFLINE
@@ -166,7 +166,7 @@ async def test_fehler(hass: HomeAssistant, geladen) -> None:
             await _dienst(hass, "wurf_aendern", **daten)
         assert err.value.translation_key == schluessel
     # wrong mode is stopped by the schema already
-    with pytest.raises(Exception):
+    with pytest.raises(vol.Invalid):
         await _dienst(hass, "spiel_starten", einwurf="triple")
 
 

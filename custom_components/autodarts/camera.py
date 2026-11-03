@@ -5,14 +5,15 @@ Standbild über /api/img/..., Live-Bild (nur beim Öffnen) über den MJPEG-Strom
 
 from __future__ import annotations
 
-from aiohttp import ClientTimeout, web
+from typing import Any
 
+from aiohttp import ClientTimeout, web
 from homeassistant.components.camera import Camera
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_web, async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .coordinator import DartsEntry
+from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 0
@@ -31,7 +32,7 @@ class BoardKamera(DartsEntitaet, Camera):
     _unrecorded_attributes = frozenset({"kalibrierung"})
     _nur_online = True
 
-    def __init__(self, d, schluessel, uebersetzung, bild, strom, nr: str | None = None) -> None:
+    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str, bild: str, strom: str, nr: str | None = None) -> None:
         DartsEntitaet.__init__(self, d, d.system, schluessel, uebersetzung)
         Camera.__init__(self)
         self._bild = bild
@@ -40,7 +41,7 @@ class BoardKamera(DartsEntitaet, Camera):
         self._nr = nr
 
     @property
-    def extra_state_attributes(self) -> dict | None:
+    def extra_state_attributes(self) -> dict[str, Any] | None:
         if self._nr is None:
             return None
         netz = ((self.coordinator.data or {}).get("netz") or {}).get(self._nr)

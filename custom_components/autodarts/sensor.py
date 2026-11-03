@@ -2,17 +2,22 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
 from homeassistant.const import PERCENTAGE, EntityCategory, UnitOfInformation
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .coordinator import DartsEntry
+from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 0
+
+Koordinator = DataUpdateCoordinator[dict[str, Any]]
+Lesen = Callable[[dict[str, Any]], Any]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -47,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_en
 class Verbindung(DartsEntitaet, SensorEntity):
     @property
     def native_value(self) -> str:
-        return self.coordinator.data["verbindung"]
+        return str(self.coordinator.data["verbindung"])
 
     @property
     def icon(self) -> str | None:
@@ -57,7 +62,7 @@ class Verbindung(DartsEntitaet, SensorEntity):
 
 
 class Wert(DartsEntitaet, SensorEntity):
-    def __init__(self, d, k, schluessel, uebersetzung, wert, aus=False) -> None:
+    def __init__(self, d: DartsDaten, k: Koordinator, schluessel: str, uebersetzung: str, wert: Lesen, aus: bool = False) -> None:
         super().__init__(d, k, schluessel, uebersetzung)
         self._attr_entity_registry_enabled_default = not aus
         self._wert = wert
@@ -74,12 +79,12 @@ class Wurf(DartsEntitaet, SensorEntity):
 
     _nur_online = True
 
-    def __init__(self, d, k, i: int) -> None:
+    def __init__(self, d: DartsDaten, k: Koordinator, i: int) -> None:
         super().__init__(d, k, f"wurf_{i + 1}", f"throw_{i + 1}")
         self._i = i
 
-    def _wurf(self) -> dict | None:
-        w = self.coordinator.data["wuerfe"]
+    def _wurf(self) -> dict[str, Any] | None:
+        w: list[dict[str, Any]] = self.coordinator.data["wuerfe"]
         return w[self._i] if self._i < len(w) else None
 
     @property
@@ -98,7 +103,8 @@ class Wurf(DartsEntitaet, SensorEntity):
 class System(DartsEntitaet, SensorEntity):
     _attr_entity_category = EntityCategory.DIAGNOSTIC
 
-    def __init__(self, d, k, schluessel, uebersetzung, wert, einheit=None, attribute=None) -> None:
+    def __init__(self, d: DartsDaten, k: Koordinator, schluessel: str, uebersetzung: str, wert: Lesen,
+                 einheit: str | None = None, attribute: Callable[[dict[str, Any]], dict[str, Any]] | None = None) -> None:
         super().__init__(d, k, schluessel, uebersetzung)
         self._wert = wert
         self._attr_native_unit_of_measurement = einheit
@@ -128,7 +134,7 @@ class _SpielBasis(SensorEntity):
     _attr_has_entity_name = True
     _attr_should_poll = False
 
-    def __init__(self, d, schluessel: str, uebersetzung: str) -> None:
+    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str) -> None:
         self.daten = d
         self._attr_translation_key = uebersetzung
         self._attr_unique_id = f"autodarts_{schluessel}"
@@ -146,9 +152,9 @@ class SpielSensor(_SpielBasis):
                                         "ansage_id", "reihenfolge", "bot_wirft", "aufnahmen", "verlauf"})
 
     _attr_device_class = SensorDeviceClass.ENUM
-    _attr_options = ["idle", "bull_off", "running", "finished"]
+    _attr_options = ["idle", "bull_off", "running", "finished"]  # noqa: RUF012
 
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "spiel", "game")
 
     @property
@@ -165,7 +171,7 @@ class SpielerSensor(_SpielBasis):
 
     _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte"})
 
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "spieler", "players")
 
     @property

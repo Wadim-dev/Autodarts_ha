@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.select import SelectEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .coordinator import DartsEntry
+from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
@@ -22,26 +24,27 @@ class Auswahl(DartsEntitaet, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _nur_online = True
 
-    def __init__(self, d, schluessel, uebersetzung) -> None:
+    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str) -> None:
         super().__init__(d, d.system, schluessel, uebersetzung)
 
     @property
-    def konfig(self) -> dict:
-        return (self.coordinator.data or {}).get("konfig") or {}
+    def konfig(self) -> dict[str, Any]:
+        konfig: dict[str, Any] = (self.coordinator.data or {}).get("konfig") or {}
+        return konfig
 
     @property
     def available(self) -> bool:
         return super().available and bool(self.konfig)
 
-    async def _setzen(self, daten: dict) -> None:
+    async def _setzen(self, daten: dict[str, Any]) -> None:
         await self.daten.board.befehl("/api/config", daten, "PATCH")
         await self.coordinator.async_request_refresh()
 
 
 class Standby(Auswahl):
-    _attr_options = ["10", "15", "30"]
+    _attr_options = ["10", "15", "30"]  # noqa: RUF012
 
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "standby", "camera_standby")
 
     @property
@@ -53,17 +56,18 @@ class Standby(Auswahl):
         await self._setzen({"motion": {"standbyMinutes": int(option)}})
 
 
-def _mjpg(d) -> list[dict]:
+def _mjpg(d: DartsDaten) -> list[dict[str, Any]]:
     """Auflösungen/Bildraten der ersten Kamera (MJPG), wie der Board Manager sie anbietet."""
     for g in d.system.geraete or []:
         for f in g.get("formats") or []:
             if f.get("name") == "MJPG":
-                return f.get("resolutions") or []
+                aufloesungen: list[dict[str, Any]] = f.get("resolutions") or []
+                return aufloesungen
     return []
 
 
 class Bildrate(Auswahl):
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "bildrate_wahl", "camera_fps_setting")
 
     @property
@@ -84,7 +88,7 @@ class Bildrate(Auswahl):
 
 
 class Aufloesung(Auswahl):
-    def __init__(self, d) -> None:
+    def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "aufloesung", "camera_resolution")
 
     @property

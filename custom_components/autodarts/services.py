@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import voluptuous as vol
-
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
+import voluptuous as vol
 
 from .const import DOMAIN
-
+from .coordinator import DartsEntry
+from .spiel import Spielleiter
 
 MODUS = vol.In(["straight", "double", "master"])
 DIENSTE = {
@@ -43,10 +43,10 @@ DIENSTE = {
 }
 
 
-def _leiter(hass: HomeAssistant):
-    for e in hass.config_entries.async_loaded_entries(DOMAIN):
-        if e.runtime_data and e.runtime_data.spiel:
-            return e.runtime_data.spiel
+def _leiter(hass: HomeAssistant) -> Spielleiter:
+    eintrag: DartsEntry
+    for eintrag in hass.config_entries.async_loaded_entries(DOMAIN):
+        return eintrag.runtime_data.spiel
     raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_set_up")
 
 

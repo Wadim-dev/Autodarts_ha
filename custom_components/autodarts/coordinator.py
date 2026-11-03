@@ -10,10 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import timedelta
 import logging
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import aiohttp
-
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
@@ -21,6 +20,9 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .api import Board
 from .const import DOMAIN
+
+if TYPE_CHECKING:
+    from .spiel import Spielleiter
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -31,8 +33,8 @@ TAKT_SYSTEM = timedelta(seconds=15)
 
 def wurf_lesen(t: dict[str, Any]) -> dict[str, Any]:
     """Einen Wurf in eine feste Form bringen (altes und neues Board-Format)."""
-    seg = t.get("segment") if isinstance(t.get("segment"), dict) else {}
-    koord = t.get("coords") if isinstance(t.get("coords"), dict) else {}
+    seg: dict[str, Any] = t["segment"] if isinstance(t.get("segment"), dict) else {}
+    koord: dict[str, Any] = t["coords"] if isinstance(t.get("coords"), dict) else {}
     zahl = seg.get("number", t.get("segmentNumber")) or 0
     mult = seg.get("multiplier", t.get("multiplier")) or 0
     name = seg.get("name") or t.get("segmentName") or "?"
@@ -114,7 +116,7 @@ class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         super().__init__(hass, _LOGGER, name=f"{DOMAIN} System", update_interval=TAKT_SYSTEM, config_entry=entry)
         self.board = board
         self.zustand = zustand
-        self.geraete: list[dict] = []
+        self.geraete: list[dict[str, Any]] = []
 
     async def _async_update_data(self) -> dict[str, Any]:
         if not self.zustand.online:
@@ -165,7 +167,7 @@ class DartsDaten:
     zustand: ZustandKoordinator
     system: SystemKoordinator
     geraet: DeviceInfo
-    spiel: Any = None
+    spiel: Spielleiter
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

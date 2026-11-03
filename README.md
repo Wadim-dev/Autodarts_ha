@@ -368,7 +368,7 @@ logger:
 
 ## Contributing
 
-Issues and pull requests are welcome. The repository runs hassfest, the HACS check and the test suite (> 95 % coverage) on every push.
+Issues and pull requests are welcome. The repository runs hassfest, the HACS check and the test suite (99 % coverage), ruff and mypy --strict on every push.
 
 ## License
 

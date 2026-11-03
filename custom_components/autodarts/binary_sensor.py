@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from homeassistant.components.binary_sensor import BinarySensorDeviceClass, BinarySensorEntity
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
@@ -42,5 +44,5 @@ class Kalibriert(DartsEntitaet, BinarySensorEntity):
         return bool(self.coordinator.data.get("kalibriert"))
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {"kalibriert_gerade": self.coordinator.data.get("kalibriert_wird", False)}

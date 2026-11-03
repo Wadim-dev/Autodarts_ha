@@ -7,11 +7,10 @@ from ipaddress import IPv4Address
 from typing import Any
 
 import aiohttp
-import voluptuous as vol
-
 from homeassistant.config_entries import SOURCE_RECONFIGURE, ConfigFlow, ConfigFlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.service_info.zeroconf import ZeroconfServiceInfo
+import voluptuous as vol
 
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 
@@ -29,7 +28,7 @@ async def board_testen(flow: ConfigFlow, host: str, port: int) -> None:
             antwort.raise_for_status()
             daten = await antwort.json(content_type=None)
     if not isinstance(daten, dict):
-        raise ValueError("unexpected answer")
+        raise TypeError("unexpected answer")  # noqa: TRY003
 
 
 def _adresse(info: ZeroconfServiceInfo) -> str | None:
@@ -65,7 +64,7 @@ class DartsConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 await board_testen(self, user_input[CONF_HOST], user_input[CONF_PORT])
-            except (aiohttp.ClientError, TimeoutError, ValueError):
+            except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
                 fehler["base"] = "cannot_connect"
             else:
                 return None
@@ -95,16 +94,16 @@ class DartsConfigFlow(ConfigFlow, domain=DOMAIN):
         if eintrag is not None and (eintrag.data[CONF_HOST], eintrag.data.get(CONF_PORT, STANDARD_PORT)) != (host, port):
             try:
                 await board_testen(self, eintrag.data[CONF_HOST], eintrag.data.get(CONF_PORT, STANDARD_PORT))
-            except (aiohttp.ClientError, TimeoutError, ValueError):
+            except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
                 try:
                     await board_testen(self, host, port)
-                except (aiohttp.ClientError, TimeoutError, ValueError):
+                except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
                     return self.async_abort(reason="already_configured")
                 self._abort_if_unique_id_configured(updates={CONF_HOST: host, CONF_PORT: port})
         self._abort_if_unique_id_configured()
         try:
             await board_testen(self, host, port)
-        except (aiohttp.ClientError, TimeoutError, ValueError):
+        except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
             return self.async_abort(reason="cannot_connect")
         self._gefunden = {CONF_HOST: host, CONF_PORT: port}
         self.context["title_placeholders"] = {"host": host}

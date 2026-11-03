@@ -8,21 +8,22 @@ Verlauf und ein laufendes Spiel liegen in .storage/autodarts.spiel (übersteht N
 from __future__ import annotations
 
 import asyncio
-
-import aiohttp
 from collections.abc import Callable
 import logging
 import random
 from typing import Any
 import uuid
 
+import aiohttp
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from . import x01
+from .api import Board
 from .const import DOMAIN
+from .coordinator import ZustandKoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -40,17 +41,17 @@ def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
 
 
 class Spielleiter:
-    def __init__(self, hass: HomeAssistant, board, zustand) -> None:
+    def __init__(self, hass: HomeAssistant, board: Board, zustand: ZustandKoordinator) -> None:
         self.hass = hass
         self.board = board
         self.zustand = zustand
-        self._store = Store(hass, SPEICHER_VERSION, "autodarts.spiel")
+        self._store: Store[dict[str, Any]] = Store(hass, SPEICHER_VERSION, "autodarts.spiel")
         self.daten: dict[str, Any] = {"spieler": [], "statistik": {}, "verlauf": [], "letzte": dict(STANDARD), "spiel": None}
         self.stand: dict[str, Any] | None = None
         self._hoerer: list[Callable[[], None]] = []
         self._gesehen = 0
         self._board_felder: list[str] = []
-        self._bot_aufgabe: asyncio.Task | None = None
+        self._bot_aufgabe: asyncio.Task[None] | None = None
         self._zufall = random.Random()
         self._sigma: dict[int, float] = {}
 
@@ -70,7 +71,21 @@ class Spielleiter:
 
     @property
     def spiel(self) -> dict[str, Any] | None:
-        return self.daten.get("spiel")
+        spiel: dict[str, Any] | None = self.daten.get("spiel")
+        return spiel
+
+    @property
+    def _laufend(self) -> dict[str, Any]:
+        """The current game where the caller already checked that one exists."""
+        spiel = self.spiel
+        assert spiel is not None
+        return spiel
+
+    @property
+    def _stand(self) -> dict[str, Any]:
+        """The evaluated state of the current game (exists whenever a game exists)."""
+        assert self.stand is not None
+        return self.stand
 
     def _speichern(self) -> None:
         self._store.async_delay_save(lambda: self.daten, 2)
@@ -132,10 +147,11 @@ class Spielleiter:
             self._neu_rechnen()
 
     def _offene_aufnahme(self) -> dict[str, Any]:
-        sp = self.spiel
+        sp = self._laufend
         if not sp["aufnahmen"] or sp["aufnahmen"][-1].get("zu"):
             sp["aufnahmen"].append({"d": [], "zu": False})
-        return sp["aufnahmen"][-1]
+        aufnahme: dict[str, Any] = sp["aufnahmen"][-1]
+        return aufnahme
 
     @staticmethod
     def _bo_werfer(sp: dict[str, Any]) -> list[int]:
@@ -189,7 +205,7 @@ class Spielleiter:
         return True
 
     def _bulloff_auswerten(self) -> None:
-        sp = self.spiel
+        sp = self._laufend
         w = self._bo_werfer(sp)
         abstaende = [x01.bull_abstand(d) for d in sp["bulloff"]]
         best = min(abstaende)
@@ -237,12 +253,12 @@ class Spielleiter:
             self._bot_aufgabe = None
             self._neu_rechnen()
             return
-        p = self.stand["am_zug"]
+        p = self._stand["am_zug"]
         level = int(sp["spieler"][p]["bot"])
         sigma = await self._sigma_fuer(level)
         e = sp["einstellungen"]
         while True:
-            st = self.stand
+            st = self._stand
             if not self.spiel or self.spiel["phase"] != "laeuft" or st["am_zug"] != p or st["gewinner"] is not None:
                 return
             if st["aufnahme"]["fertig"] or st["leg_gewinner"] is not None:
@@ -257,7 +273,7 @@ class Spielleiter:
         self._aufnahme_schliessen()
 
     def _neu_rechnen_ohne_bot(self) -> None:
-        sp = self.spiel
+        sp = self._laufend
         self.stand = x01.auswerten(sp)
         if self.stand["gewinner"] is not None:
             self._spiel_abschliessen()
@@ -267,10 +283,10 @@ class Spielleiter:
     # ---------- Spielende ----------
 
     def _spiel_abschliessen(self) -> None:
-        sp = self.spiel
+        sp = self._laufend
         sp["phase"] = "beendet"
         sp["ende"] = dt_util.now().isoformat()
-        st = self.stand
+        st = self._stand
         eintrag = {
             "zeit": sp["ende"],
             "modus": modus_text(sp["einstellungen"]),
@@ -280,7 +296,7 @@ class Spielleiter:
                 for k, s in enumerate(st["spieler"])
             ],
         }
-        self.daten["verlauf"] = ([eintrag] + self.daten.get("verlauf", []))[:MAX_VERLAUF]
+        self.daten["verlauf"] = [eintrag, *self.daten.get("verlauf", [])][:MAX_VERLAUF]
         for k, s in enumerate(sp["spieler"]):
             if not s.get("id"):
                 continue
@@ -416,8 +432,8 @@ class Spielleiter:
 
     def _statistik_abziehen(self) -> None:
         """Rückgängig nach Spielende: Gesamtstatistik wieder abziehen (Bestwerte bleiben)."""
-        st = x01.auswerten(self.spiel)
-        for k, s in enumerate(self.spiel["spieler"]):
+        st = x01.auswerten(self._laufend)
+        for k, s in enumerate(self._laufend["spieler"]):
             ges = self.daten["statistik"].get(s.get("id") or "")
             if not ges:
                 continue
@@ -458,8 +474,6 @@ class Spielleiter:
             aufn["d"][dart] = {"f": feld, "q": "hand"}
         elif len(aufn["d"]) < 3:
             aufn["d"].append({"f": feld, "q": "hand"})
-        if sp["phase"] == "beendet":
-            pass
         self._neu_rechnen()
 
     # Spieler

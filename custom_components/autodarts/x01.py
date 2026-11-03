@@ -7,6 +7,7 @@ Mal neu aus. Dadurch sind Korrekturen und Rückgängig einfach und immer stimmig
 
 from __future__ import annotations
 
+from itertools import pairwise
 import math
 import random
 from typing import Any
@@ -136,7 +137,7 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
     sets = [0] * n
     legs = [0] * n
 
-    def neues_leg():
+    def neues_leg() -> tuple[list[int], list[bool], list[int], list[int], list[Any]]:
         return [start] * n, [ein == "straight"] * n, [0] * n, [0] * n, [None] * n
 
     rest, offen, leg_darts, leg_aufn, letzte = neues_leg()
@@ -330,7 +331,7 @@ def streuung(average: float) -> float:
     global _TABELLE
     if not _TABELLE:
         _TABELLE = _streuung_tabelle()
-    for (s1, a1), (s2, a2) in zip(_TABELLE, _TABELLE[1:]):
+    for (s1, a1), (s2, a2) in pairwise(_TABELLE):
         if a1 >= average >= a2:
             return s1 + (s2 - s1) * ((a1 - average) / (a1 - a2) if a1 != a2 else 0)
     return _TABELLE[0][0] if average > _TABELLE[0][1] else _TABELLE[-1][0]
@@ -367,4 +368,4 @@ def bull_abstand(dart: dict[str, Any]) -> float:
     x, y = dart.get("x"), dart.get("y")
     if isinstance(x, (int, float)) and isinstance(y, (int, float)):
         return math.hypot(x, y)
-    return {"D25": 0.02, "S25": 0.06}.get(dart.get("f"), 9.0)
+    return {"D25": 0.02, "S25": 0.06}.get(str(dart.get("f")), 9.0)

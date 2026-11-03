@@ -9,6 +9,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .api import befehl
 from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
@@ -37,7 +38,7 @@ class Auswahl(DartsEntitaet, SelectEntity):
         return super().available and bool(self.konfig)
 
     async def _setzen(self, daten: dict[str, Any]) -> None:
-        await self.daten.board.befehl("/api/config", daten, "PATCH")
+        await befehl(self.daten.board.set_config(daten))
         await self.coordinator.async_request_refresh()
 
 

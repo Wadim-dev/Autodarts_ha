@@ -5,8 +5,8 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, patch
 
+from aioautodarts import AutodartsConnectionError
 from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.autodarts import x01
 
@@ -96,7 +96,8 @@ async def test_board_fehler_beim_start_und_weiter(hass: HomeAssistant, geladen) 
     (anna,) = await _spieler(hass, "Anna")
     spiel = geladen.runtime_data.spiel
     _board(hass, geladen, ["T20"], laeuft=False)
-    with patch.object(spiel.board, "befehl", AsyncMock(side_effect=HomeAssistantError("weg"))):
+    fehler = AsyncMock(side_effect=AutodartsConnectionError("weg"))
+    with patch.object(spiel.board, "start", fehler), patch.object(spiel.board, "reset", fehler):
         # detection stopped and the board does not take the start: the game starts anyway
         await _dienst(hass, "spiel_starten", spieler=[anna], startwert=501)
         assert hass.states.get(SPIEL).state == "running"

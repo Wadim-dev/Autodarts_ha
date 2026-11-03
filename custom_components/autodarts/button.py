@@ -9,18 +9,19 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .api import befehl
 from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
 PARALLEL_UPDATES = 1
 
-# Schlüssel, Übersetzungsschlüssel, Pfad, Kategorie (Symbole in icons.json)
+# Schlüssel, Übersetzungsschlüssel, Methode von aioautodarts, Kategorie (Symbole in icons.json)
 KNOEPFE = [
-    ("start", "start_detection", "/api/start", None),
-    ("stop", "stop_detection", "/api/stop", None),
-    ("reset", "reset_throws", "/api/reset", None),
-    ("kalibrieren", "calibrate", "/api/config/calibration/auto", EntityCategory.CONFIG),
-    ("neustart", "restart_software", "/api/restart", EntityCategory.CONFIG),
+    ("start", "start_detection", "start", None),
+    ("stop", "stop_detection", "stop", None),
+    ("reset", "reset_throws", "reset", None),
+    ("kalibrieren", "calibrate", "calibrate", EntityCategory.CONFIG),
+    ("neustart", "restart_software", "restart", EntityCategory.CONFIG),
 ]
 
 
@@ -42,9 +43,9 @@ class Knopf(DartsEntitaet, ButtonEntity):
     async def async_press(self) -> None:
         if self.schluessel == "kalibrieren" and not (self.daten.zustand.data or {}).get("laeuft"):
             # Kalibrieren braucht laufende Kameras
-            await self.daten.board.befehl("/api/start")
+            await befehl(self.daten.board.start())
             await asyncio.sleep(4)
-        await self.daten.board.befehl(self._pfad)
+        await befehl(getattr(self.daten.board, self._pfad)())
         await self.daten.zustand.async_request_refresh()
         if self.schluessel in ("kalibrieren", "neustart"):
             await self.daten.system.async_request_refresh()

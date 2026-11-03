@@ -14,7 +14,7 @@
 <p align="center">
   <a href="https://github.com/Wadim-dev/Autodarts_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/Autodarts_ha?style=flat-square" alt="Release"></a>
   <a href="https://github.com/Wadim-dev/Autodarts_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/Autodarts_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
-  <img src="https://img.shields.io/badge/quality%20scale-gold-ffd700?style=flat-square" alt="Quality scale: Gold">
+  <img src="https://img.shields.io/badge/quality%20scale-platinum-e5e4e2?style=flat-square" alt="Quality scale: Platinum">
   <img src="https://img.shields.io/badge/IoT%20class-local%20polling-00a37a?style=flat-square" alt="Local polling">
   <img src="https://img.shields.io/badge/languages-EN%20%7C%20DE-blue?style=flat-square" alt="English and German">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/Autodarts_ha?style=flat-square" alt="License"></a>
@@ -438,12 +438,12 @@ actions:
 Board PC (Autodarts Board Manager, port 3180)
    │  GET /api/state every second · /api/system every 15 s · camera images on demand
    ▼
-Home Assistant ── Autodarts integration ── entities, actions, local games (.storage)
+Home Assistant ── Autodarts integration (via aioautodarts) ── entities, actions, local games (.storage)
    ▼
 Dashboard cards (loaded automatically) · automations · voice assistants
 ```
 
-Only the documented local endpoints of the Board Manager are used. Camera images are only fetched while a card or the more-info dialog shows them.
+Only the documented local endpoints of the Board Manager are used. The connection itself lives in the typed async library [aioautodarts](https://github.com/Wadim-dev/aioautodarts) (on [PyPI](https://pypi.org/project/aioautodarts/)), which uses the web session of Home Assistant. Home Assistant installs it automatically. Camera images are only fetched while a card or the more-info dialog shows them.
 
 ## Known limitations
 
@@ -492,7 +492,7 @@ logger:
 
 ## Contributing
 
-Issues and pull requests are welcome. The repository runs hassfest, the HACS check and the test suite (99 % coverage), ruff and mypy --strict on every push.
+Issues and pull requests are welcome. The integration meets all rules of the Home Assistant quality scale up to **Platinum** (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the HACS check and the test suite (98 % coverage), ruff and mypy --strict on every push. Board connection issues belong to [aioautodarts](https://github.com/Wadim-dev/aioautodarts).
 
 ## License
 
@@ -510,6 +510,7 @@ Issues and pull requests are welcome. The repository runs hassfest, the HACS che
 - Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier (K.-o.) für 3–16 Spieler mit Turnierbaum, Freilosen und Siegerfeier
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
+- Qualitätsstufe Platinum der Home-Assistant-Quality-Scale; die Board-Verbindung steckt in der Bibliothek aioautodarts (PyPI), die Home Assistant selbst mitinstalliert
 - Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
 - Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
 - Vier fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist

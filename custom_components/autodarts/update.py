@@ -12,6 +12,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
+from .api import befehl
 from .coordinator import DartsDaten, DartsEntry
 from .entity import DartsEntitaet
 
@@ -47,5 +48,5 @@ class BoardUpdate(DartsEntitaet, UpdateEntity):
         return neu or self.installed_version
 
     async def async_install(self, version: str | None, backup: bool, **kwargs: Any) -> None:
-        await self.daten.board.befehl("/api/update/apply")
+        await befehl(self.daten.board.apply_update())
         await self.coordinator.async_request_refresh()

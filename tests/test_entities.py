@@ -12,6 +12,8 @@ from homeassistant.util import dt as dt_util
 import pytest
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
+from custom_components.autodarts.api import befehl
+
 from .conftest import BASIS, STATE
 
 
@@ -108,18 +110,18 @@ async def test_befehl_put_und_fehler(hass: HomeAssistant, geladen, aioclient_moc
     aioclient_mock.clear_requests()
     aioclient_mock.post(f"{BASIS}/api/neu", status=405)
     aioclient_mock.put(f"{BASIS}/api/neu", status=200)
-    await board.befehl("/api/neu")
+    await befehl(board.command("neu"))
     assert _aufrufe(aioclient_mock, "PUT", "/api/neu")
 
     aioclient_mock.post(f"{BASIS}/api/kaputt", status=500)
     with pytest.raises(HomeAssistantError) as err:
-        await board.befehl("/api/kaputt")
+        await befehl(board.command("kaputt"))
     assert err.value.translation_key == "board_error"
     assert err.value.translation_placeholders == {"status": "500", "path": "/api/kaputt"}
 
     aioclient_mock.post(f"{BASIS}/api/weg", exc=TimeoutError)
     with pytest.raises(HomeAssistantError) as err:
-        await board.befehl("/api/weg")
+        await befehl(board.command("weg"))
     assert err.value.translation_key == "board_unreachable"
 
 

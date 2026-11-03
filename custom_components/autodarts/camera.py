@@ -1,12 +1,13 @@
 """Kameras: die drei Board-Kameras und das Erkennungsbild.
 
-Standbild über /api/img/..., Live-Bild (nur beim Öffnen) über den MJPEG-Strom des Boards.
+Standbild über aioautodarts, Live-Bild (nur beim Öffnen) über den MJPEG-Strom des Boards.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from aioautodarts import Stream
 from aiohttp import ClientTimeout, web
 from homeassistant.components.camera import Camera
 from homeassistant.core import HomeAssistant
@@ -21,9 +22,10 @@ PARALLEL_UPDATES = 0
 
 async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry, async_add_entities: AddEntitiesCallback) -> None:
     d = entry.runtime_data
-    liste = [BoardKamera(d, f"kamera_{i + 1}", f"camera_{i + 1}", f"/api/img/cams/{i}", f"/api/streams/cams/{i}", str(i)) for i in range(3)]
-    liste.append(BoardKamera(d, "erkennung_bild", "detection_image", "/api/img/detection", "/api/streams/detection"))
-    liste.append(BoardKamera(d, "live_bild", "live_image", "/api/img/live", "/api/streams/live"))
+    kameras: tuple[Stream, ...] = ("cam0", "cam1", "cam2")
+    liste = [BoardKamera(d, f"kamera_{i + 1}", f"camera_{i + 1}", k, str(i)) for i, k in enumerate(kameras)]
+    liste.append(BoardKamera(d, "erkennung_bild", "detection_image", "detection"))
+    liste.append(BoardKamera(d, "live_bild", "live_image", "live"))
     async_add_entities(liste)
 
 
@@ -32,10 +34,9 @@ class BoardKamera(DartsEntitaet, Camera):
     _unrecorded_attributes = frozenset({"kalibrierung"})
     _nur_online = True
 
-    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str, bild: str, strom: str, nr: str | None = None) -> None:
+    def __init__(self, d: DartsDaten, schluessel: str, uebersetzung: str, strom: Stream, nr: str | None = None) -> None:
         DartsEntitaet.__init__(self, d, d.system, schluessel, uebersetzung)
         Camera.__init__(self)
-        self._bild = bild
         self._strom = strom
         self.content_type = "image/jpeg"
         self._nr = nr
@@ -48,9 +49,9 @@ class BoardKamera(DartsEntitaet, Camera):
         return {"kalibrierung": netz} if netz else None
 
     async def async_camera_image(self, width: int | None = None, height: int | None = None) -> bytes | None:
-        return await self.daten.board.bild(self._bild)
+        return await self.daten.board.image(self._strom)
 
     async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse | None:
         session = async_get_clientsession(self.hass)
-        stream = session.get(self.daten.board.basis + self._strom, timeout=ClientTimeout(total=None, sock_connect=5))
+        stream = session.get(self.daten.board.stream_url(self._strom), timeout=ClientTimeout(total=None, sock_connect=5))
         return await async_aiohttp_proxy_web(self.hass, request, stream)

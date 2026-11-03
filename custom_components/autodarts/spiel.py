@@ -14,14 +14,13 @@ import random
 from typing import Any
 import uuid
 
-import aiohttp
+from aioautodarts import AutodartsBoard, AutodartsError
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 
 from . import auswertung, spielarten, turnier, x01
-from .api import Board
 from .const import DOMAIN
 from .coordinator import ZustandKoordinator
 
@@ -43,7 +42,7 @@ def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
 
 
 class Spielleiter:
-    def __init__(self, hass: HomeAssistant, board: Board, zustand: ZustandKoordinator) -> None:
+    def __init__(self, hass: HomeAssistant, board: AutodartsBoard, zustand: ZustandKoordinator) -> None:
         self.hass = hass
         self.board = board
         self.zustand = zustand
@@ -511,8 +510,8 @@ class Spielleiter:
         if not self.zustand.online or (self.zustand.data or {}).get("laeuft"):
             return
         try:
-            await self.board.befehl("/api/start")
-        except (HomeAssistantError, aiohttp.ClientError, TimeoutError) as err:
+            await self.board.start()
+        except AutodartsError as err:
             _LOGGER.debug("Board-Start: %s", err)
 
     async def _board_leeren(self) -> None:
@@ -521,12 +520,12 @@ class Spielleiter:
         if not (self.zustand.online and self._gesehen):
             return
         try:
-            await self.board.befehl("/api/reset")
+            await self.board.reset()
             await _pause(0.3)
-            jetzt = await self.board.holen("/api/state", 2)
+            jetzt = await self.board.state()
             self._gesehen = len(jetzt.get("throws") or [])
             self._board_felder = self._board_felder[: self._gesehen]
-        except (HomeAssistantError, aiohttp.ClientError, TimeoutError, ValueError) as err:
+        except AutodartsError as err:
             _LOGGER.debug("Board-Reset: %s", err)
 
     # Turnier

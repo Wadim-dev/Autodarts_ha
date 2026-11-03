@@ -17,7 +17,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
 from homeassistant.loader import async_get_integration
 
-from .api import Board
+from .api import board_erstellen
 from .assist import async_setup_assist
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
@@ -63,7 +63,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     The board PC is often switched off by a smart plug. The integration still loads and
     reports "Offline" until the board answers again (see quality_scale.yaml).
     """
-    board = Board(hass, entry.data[CONF_HOST], entry.data.get(CONF_PORT, STANDARD_PORT))
+    board = board_erstellen(hass, entry.data[CONF_HOST], entry.data.get(CONF_PORT, STANDARD_PORT))
     zustand = ZustandKoordinator(hass, entry, board)
     system = SystemKoordinator(hass, entry, board, zustand)
     await zustand.async_config_entry_first_refresh()
@@ -73,7 +73,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
         name=GERAETENAME,
         manufacturer="Autodarts",
         model="Board Manager (local)",
-        configuration_url=board.basis,
+        configuration_url=board.url,
     )
     spiel = Spielleiter(hass, board, zustand)
     await spiel.laden()

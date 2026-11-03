@@ -12,13 +12,12 @@ from datetime import timedelta
 import logging
 from typing import TYPE_CHECKING, Any
 
-import aiohttp
+from aioautodarts import AutodartsBoard, AutodartsError
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
-from .api import Board
 from .const import DOMAIN
 
 if TYPE_CHECKING:
@@ -64,15 +63,15 @@ OFFLINE = {
 class ZustandKoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Fragt jede Sekunde den Spielzustand ab (Board aus: alle 30 s)."""
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, board: Board) -> None:
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, board: AutodartsBoard) -> None:
         super().__init__(hass, _LOGGER, name=f"{DOMAIN} Zustand", update_interval=TAKT_ONLINE, config_entry=entry)
         self.board = board
         self.online = False
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
-            daten = await self.board.holen("/api/state", 2)
-        except (aiohttp.ClientError, TimeoutError, ValueError):
+            daten = await self.board.state()
+        except AutodartsError:
             if self.online:
                 _LOGGER.info("Autodarts Board nicht mehr erreichbar")
             self.online = False
@@ -112,7 +111,7 @@ def _netz(daten: Any) -> dict[str, Any]:
 class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Holt alle 15 s Systemdaten (nur wenn das Board erreichbar ist)."""
 
-    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, board: Board, zustand: ZustandKoordinator) -> None:
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, board: AutodartsBoard, zustand: ZustandKoordinator) -> None:
         super().__init__(hass, _LOGGER, name=f"{DOMAIN} System", update_interval=TAKT_SYSTEM, config_entry=entry)
         self.board = board
         self.zustand = zustand
@@ -122,14 +121,14 @@ class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if not self.zustand.online:
             return {}
         try:
-            s = await self.board.holen("/api/system", 5)
+            s = await self.board.system()
             if not self.geraete:
-                self.geraete = await self.board.holen("/api/devices", 5) or []
+                self.geraete = await self.board.devices()
             if not (self.data or {}).get("host"):
-                host = await self.board.holen("/api/host", 5)
+                host = await self.board.host_info()
             else:
                 host = self.data["host"]
-        except (aiohttp.ClientError, TimeoutError, ValueError):
+        except AutodartsError:
             return {}
         kal = s.get("calibration") or {}
         kams = [k for k in (kal.get("cams") or []) if isinstance(k, dict)]
@@ -138,8 +137,8 @@ class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if not netz or fehler != (self.data or {}).get("kalibrierfehler"):
             # Kalibriernetz nur nach neuer Kalibrierung holen (für Entzerrung und Netz in den Karten)
             try:
-                netz = _netz(await self.board.holen("/api/config/calibration/ellipses", 5)) or netz
-            except (aiohttp.ClientError, TimeoutError, ValueError):
+                netz = _netz(await self.board.calibration_ellipses()) or netz
+            except AutodartsError:
                 pass
         status = s.get("status") or {}
         stats = s.get("stats") or {}
@@ -163,7 +162,7 @@ class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
 @dataclass
 class DartsDaten:
-    board: Board
+    board: AutodartsBoard
     zustand: ZustandKoordinator
     system: SystemKoordinator
     geraet: DeviceInfo

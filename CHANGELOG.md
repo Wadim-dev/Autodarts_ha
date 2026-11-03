@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.18.0
+
+- **Caller on the phone**: the speaker button in the game card (and the new switch "On this device" in the caller card) plays the caller on this phone or tablet – same voice, sound pack and walk-on songs as on the speakers. Speakers, phone or both, freely combined. Before, the phone used the browser voice, which many phones (e.g. the Android app) do not have.
+
+**Deutsch**
+- **Ansager aufs Handy**: Der Lautsprecher-Knopf in der Spielkarte (und der neue Schalter „Auf diesem Gerät“ in der Ansager-Karte) spielt den Ansager auf diesem Handy oder Tablet – gleiche Stimme, gleiches Sound-Pack und Einlaufmusik wie auf den Lautsprechern. Lautsprecher, Handy oder beides, frei kombinierbar. Vorher nutzte das Handy die Browser-Stimme, die viele Handys (z. B. die Android-App) nicht haben.
+
 ## 1.17.0
 
 - **Keypad** in the game card: while the board is offline a keypad replaces the drawn board by itself (Double/Triple + 1–20, 25, Bull, Miss); for X01 also **Total** for the whole visit. When the board is back online the camera returns. Keys, Total, Board and Camera can be switched above the keypad.

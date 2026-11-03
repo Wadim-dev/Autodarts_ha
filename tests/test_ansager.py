@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import patch
 
+from homeassistant.components import media_source, tts  # noqa: F401  (loaded for patching)
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ServiceValidationError
 import pytest
@@ -153,3 +154,46 @@ _echt = asyncio.sleep
 
 async def _null(sekunden: float) -> None:
     await _echt(0)
+
+
+async def test_handy_hoert_mit(hass: HomeAssistant, geladen, lautsprecher, hass_ws_client) -> None:
+    """The game card on a phone gets every announcement as an address, also without speakers."""
+    a = geladen.runtime_data.ansager
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 7, "type": "autodarts/ansager/hoeren"})
+    assert (await ws.receive_json())["success"]
+
+    class Item:
+        def __init__(self, url: str) -> None:
+            self.url = url
+
+    async def aufloesen(_hass, media_id, _ziel):
+        return Item("/api/tts_proxy/x.mp3" if media_id.startswith("tts:") else "/media/local/" + media_id.rsplit("local/", 1)[1])
+
+    stand = {"art": "x01", "gewinner": 0, "spieler": []}
+    with (patch.object(geladen.runtime_data.spiel, "stand", stand),
+          patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:140") as tts_id,
+          patch("homeassistant.components.media_source.async_resolve_media", side_effect=aufloesen)):
+        a.ereignis("visit", {"player": "Anna", "score": 140})
+        await _fertig(hass, a)
+        assert (await ws.receive_json())["event"] == {"url": "/api/tts_proxy/x.mp3"}
+        assert tts_id.call_args.kwargs["engine"] == "tts.piper"
+        assert not lautsprecher["tts"]  # caller switched off for the speakers
+        await _setzen(hass, songs={"a1": "tiger.mp3"}, walkon_sekunden=5)
+        with patch.object(ansager_modul.asyncio, "sleep", side_effect=_null):
+            a.ereignis("game_started", {"players": ["Anna"], "player_ids": ["a1"]})
+            await _fertig(hass, a)
+    events = [(await ws.receive_json())["event"] for _ in range(4)]
+    assert events[1]["url"].startswith("/media/local/autodarts/walkon/tiger.mp3?authSig=")
+    assert events[2] == {"stop": True}
+    assert lautsprecher["tts"] and lautsprecher["stop"]  # speakers too
+    await ws.send_json({"id": 8, "type": "unsubscribe_events", "subscription": 7})
+    await ws.receive_json()
+    assert not a._hoerer
+
+
+async def test_handy_ohne_eintrag(hass: HomeAssistant, geladen, hass_ws_client) -> None:
+    await hass.config_entries.async_unload(geladen.entry_id)
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "autodarts/ansager/hoeren"})
+    assert not (await ws.receive_json())["success"]

@@ -60,7 +60,7 @@
 | 🎯 **Cricket, training and party games** | Cricket (standard, cut-throat, no score; 15–20, 10–20, random), Around the Clock, Bob's 27, doubles, 121 checkout, highscore, Shanghai, Killer, Halve-It, Golf, Baseball – with rule text, target on the board and bots. |
 | ✏️ **Correct anything** | Undo, add, change or delete any dart of any visit – the whole score is recalculated automatically. |
 | 🏟️ **Tournament** | Knockout for 3–32 players with bracket, byes, next-match button and champion celebration – or a league for 3–10 players with table. |
-| 📣 **Caller** | Scores, "you require …", game shot, 180 and walk-on songs per player on your speakers – own sound packs by upload, missing sounds are spoken. |
+| 📣 **Caller** | Scores, "you require …", game shot, 180 and walk-on songs per player on your speakers, on your phone or both – own sound packs by upload, missing sounds are spoken. |
 | 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score/finish, best leg, 180s, rating (Elo), hit map, **aim map** (best aim point for your average), trend, badges, streak, head to head, CSV export. |
 | ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
 | 💡 **Light effects** | 18 effects – blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, WLED effects and presets – on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
@@ -153,7 +153,7 @@ The game card is made for a tablet next to the board (full screen button include
 - the board as graphic **or as straightened live camera image** (tap the board to switch camera 1/2/3/graphic, "Grid" shows the calibration grid)
 - visit history – tap any visit to correct it
 - live statistics and the result screen with rematch
-- optional **caller**: announces scores, "One hundred and eighty!", checkouts and what you require (browser speech, English or German)
+- optional **caller**: announces scores, "One hundred and eighty!", checkouts and what you require (the caller of Home Assistant with its voice and sound pack; the browser voice only as a fallback)
 - keeps the screen awake during a game
 - **effects** for what happens at a real board: dart flight with wobble, sparks on trebles and doubles, bull flash, "MISS" falling off, board jolt; big scenes for 180 (spotlights, shockwave, confetti), ton-forty, ton, three in a bed, bed & breakfast, no score (tumbleweed), bust (cracks and stamp), game shot, high finish, 170 "big fish", set, match (fireworks and trophy) and the nine-darter (rainbow). Sounds play only while the caller is on. The ✨ button switches effects off per device; they respect "reduce motion" and stop while the card is hidden.
 
@@ -335,7 +335,12 @@ The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3
 
 ### Caller
 
-Open **Autodarts → Caller**, switch it on and tick one or more speakers. It announces in Home Assistant itself, also with no dashboard open:
+Open **Autodarts → Caller** and choose where it plays – freely combined:
+
+- **On speakers**: switch it on and tick one or more speakers. It announces in Home Assistant itself, also with no dashboard open.
+- **On this device**: plays the same announcements (voice, sound pack, walk-on songs) and the game sounds on the phone or tablet you are holding, while a game card is open. The speaker button at the top of the game card switches the same thing. Set per device.
+
+What it announces:
 
 - **Scores** of every X01 visit, **"you require …"** when the next player can check out, **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
 - **Voice**: any text-to-speech of Home Assistant (e.g. Piper or Google Translate, Settings → Voice assistants).
@@ -599,7 +604,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Eingabe ohne Kameras: Tastenfeld erscheint von selbst, wenn das Board offline ist (Double/Triple + Zahl oder Summe der Aufnahme), dazu Scheibe antippen oder Tastatur (T20 + Enter)
 - Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
 - Turnier: K.-o. für 3–32 Spieler mit Turnierbaum, Freilosen und Siegerfeier, oder Liga für 3–10 Spieler mit Tabelle
-- Ansager über die Lautsprecher: Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme
+- Ansager über Lautsprecher, aufs Handy oder beides: Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme
 - Punkte per Sprache: „Alex hat 140“, „Darts 60“
 - Spielerseite mit Wertung (Elo), Serie, Trefferbild, Zielhilfe (bester Zielpunkt für den eigenen Average), Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
 - Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden

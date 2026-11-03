@@ -7,6 +7,7 @@ from typing import Any
 from homeassistant.components.websocket_api import async_register_command
 from homeassistant.components.websocket_api.connection import ActiveConnection
 from homeassistant.components.websocket_api.decorators import async_response, websocket_command
+from homeassistant.components.websocket_api.messages import event_message
 from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse, SupportsResponse, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
@@ -114,6 +115,23 @@ async def ws_ansager(hass: HomeAssistant, connection: ActiveConnection, msg: dic
     connection.send_result(msg["id"], await eintraege[0].runtime_data.ansager.uebersicht())
 
 
+@websocket_command({vol.Required("type"): "autodarts/ansager/hoeren"})
+@callback
+def ws_ansager_hoeren(hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]) -> None:
+    """The game card plays the caller on this phone or tablet: sends {"url"} or {"stop"} per announcement."""
+    eintraege = hass.config_entries.async_loaded_entries(DOMAIN)
+    if not eintraege:
+        connection.send_error(msg["id"], "not_loaded", "Autodarts is not set up")
+        return
+
+    @callback
+    def senden(daten: dict[str, Any]) -> None:
+        connection.send_message(event_message(msg["id"], daten))
+
+    connection.subscriptions[msg["id"]] = eintraege[0].runtime_data.ansager.hoeren(senden)
+    connection.send_result(msg["id"])
+
+
 async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
     ansager = _eintrag(hass).runtime_data.ansager
     if name == "ansager_testen":
@@ -131,6 +149,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
     """Register all actions of the integration."""
     async_register_command(hass, ws_lichteffekte)
     async_register_command(hass, ws_ansager)
+    async_register_command(hass, ws_ansager_hoeren)
 
     async def ausfuehren(call: ServiceCall) -> ServiceResponse:
         s = _leiter(hass)

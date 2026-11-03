@@ -6,7 +6,10 @@
     "frontend",
     "http",
     "light",
+    "media_player",
+    "media_source",
     "panel_custom",
+    "tts",
     "websocket_api"
   ],
   "codeowners": [
@@ -20,7 +23,7 @@
   "issue_tracker": "https://github.com/Wadim-dev/autodarts_ha/issues",
   "loggers": [],
   "requirements": [],
-  "version": "1.17.0",
+  "version": "1.18.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

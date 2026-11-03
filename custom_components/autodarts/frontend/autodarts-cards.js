@@ -160,6 +160,9 @@
   // keypad (1.17)
   Object.assign(TEXTE.en, { kp_keys: 'Keys', kp_sum: 'Total', kp_board: 'Board', kp_cam: 'Camera', kp_miss: 'Miss', kp_sum_hint: 'points of the visit' });
   Object.assign(TEXTE.de, { kp_keys: 'Tasten', kp_sum: 'Summe', kp_board: 'Scheibe', kp_cam: 'Kamera', kp_miss: 'Daneben', kp_sum_hint: 'Punkte der Aufnahme' });
+  // caller on this device (1.18)
+  Object.assign(TEXTE.en, { caller_run: 'On speakers', phone_run: 'On this device', phone_hint: 'Plays the caller and the game sounds on this phone or tablet while a game card is open. Same as the speaker button in the game card.', d_caller: 'Announces scores, checkouts and walk-on songs on your speakers and phones' });
+  Object.assign(TEXTE.de, { caller_run: 'Über Lautsprecher', phone_run: 'Auf diesem Gerät', phone_hint: 'Spielt Ansager und Spieltöne auf diesem Handy oder Tablet, solange eine Spielkarte offen ist. Wie der Lautsprecher-Knopf in der Spielkarte.', d_caller: 'Sagt Punkte, Checkouts und Einlaufmusik über Lautsprecher und Handys an' });
   // aim map (1.16)
   Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
   Object.assign(TEXTE.de, { t_aim: 'Zielen', aim_best: 'Bester Zielpunkt', aim_avg: 'etwa Ø {n} pro Aufnahme', aim_vs: 'Auf T20 Ø {n} – hier {d} mehr.', aim_t20: 'T20 ist für dich das richtige Ziel.', aim_hint: 'Berechnet aus deinem Average (Ø {a}, Streuung etwa {s} mm). Rot = die meisten Punkte.', aim_no_avg: 'Spiele zuerst ein X01-Spiel.' });
@@ -1081,6 +1084,33 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   const RISS_SVG = '<svg class="riss" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 48 L38 40 L30 44 L18 30 M50 48 L62 36 L70 40 L84 24 M50 48 L46 62 L36 70 L30 88 M50 48 L60 60 L74 64 L86 80 M50 48 L52 30 L48 18 L54 6"/></svg>';
   // synthesized sounds (no audio files): thud of a dart, crowd cheer, buzzer
   let fxAudio = null;
+  /* caller on this phone/tablet (1.18): while a game card has its speaker button on, Home Assistant sends the
+     same announcements as to the speakers (voice, sound packs, walk-on songs) as addresses; played one after another */
+  const hoerKarten = new Set();
+  let hoerAbo = null, hoerOk = false, hoerKette = Promise.resolve(), hoerQuelle = null, hoerNr = 0;
+  const hoerStop = () => { hoerNr++; if (hoerQuelle) try { hoerQuelle.stop(); } catch (e) {} hoerQuelle = null; };
+  const hoerSpielen = (h, m) => {
+    if (m.stop) { hoerStop(); return; }
+    if (!m.url) return;
+    const nr = hoerNr, laden = fetch(h.hassUrl(m.url)).then(r => r.arrayBuffer());
+    hoerKette = hoerKette.then(() => laden).then(buf => {
+      if (nr !== hoerNr) return;
+      if (!fxAudio) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; fxAudio = new C(); }
+      return fxAudio.decodeAudioData(buf).then(b => new Promise(fertig => {
+        if (nr !== hoerNr) { fertig(); return; }
+        if (fxAudio.state === 'suspended') fxAudio.resume();
+        const q = fxAudio.createBufferSource(); q.buffer = b; q.connect(fxAudio.destination);
+        q.onended = () => { if (hoerQuelle === q) hoerQuelle = null; fertig(); };
+        hoerQuelle = q; q.start();
+      }));
+    }).catch(() => {});
+  };
+  const hoerPruefen = h => {
+    if (hoerKarten.size && !hoerAbo && h && h.connection) {
+      hoerAbo = h.connection.subscribeMessage(m => hoerSpielen(h, m), { type: 'autodarts/ansager/hoeren' })
+        .then(ab => { hoerOk = true; return ab; }, () => null);  // older integration: the phone voice speaks instead
+    } else if (!hoerKarten.size && hoerAbo) { const p = hoerAbo; hoerAbo = null; hoerOk = false; p.then(ab => ab && ab()); hoerStop(); }
+  };
   const fxKlang = art => {
     try {
       if (!fxAudio) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return; fxAudio = new C(); }
@@ -1119,7 +1149,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         spiel: l.spiel || 'x01', variante: l.variante || '', zahlen: l.zahlen || 'classic', runden: l.runden || 0, leben: l.leben || 3
       };
     }
-    _sichtbar() { this._wach(); this._lvStrom(); }
+    _sichtbar() { this._wach(); this._lvStrom(); this._abo(); }
+    _abo() { if (this._ansage() && this.isConnected) hoerKarten.add(this); else hoerKarten.delete(this); hoerPruefen(this._h); }
     // view: camera 1–3 (index) or graphic; stored per device
     _ansichtNr() { let v = '1'; try { v = localStorage.getItem('autodarts_view') || v; } catch (e) {} return v; }
     _ansicht() { const n = this._ansichtNr(); return n === 'g' ? 'grafik' : E(this._h, KAMERA_KEYS[(+n || 2) - 1]); }
@@ -1200,8 +1231,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       this._ausblenden(true);
       if (!this._tasteFn) this._tasteFn = ev => this._taste(ev);
       window.addEventListener('keydown', this._tasteFn);
+      if (this._h) this._abo();
     }
-    disconnectedCallback() { this._ausblenden(false); this._lvStrom(); window.removeEventListener('keydown', this._tasteFn); }
+    disconnectedCallback() { this._ausblenden(false); this._lvStrom(); window.removeEventListener('keydown', this._tasteFn); this._abo(); }
     // keyboard input while a game runs: T20, D16, S5, 25, 50/BULL, 0/M + Enter; Enter alone = next, Backspace = undo / delete, Esc = clear
     _taste(ev) {
       if (!this._h || ev.ctrlKey || ev.metaKey || ev.altKey) return;
@@ -1274,7 +1306,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (this._zugAlt !== undefined && zug !== this._zugAlt && a.gewinner == null && a.leg_gewinner == null && !((a.aufnahme || {}).darts || []).length && wer.rest <= 170 && wer.weg && !wer.bot)
         x += (x ? '. ' : '') + t('say_need', { n: wer.name, r: wer.rest });
       this._ansId = a.ansage_id; this._zugAlt = zug;
-      if (x) this._sagen(x);
+      if (x && !hoerOk) this._sagen(x);
     }
     // ---------- effects ----------
     _fxAn() {
@@ -1744,7 +1776,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           this._dienst('wurf_aendern', { dart: +b.dataset.n, feld: feldAn(x, y) }); break;
         }
         case 'netz': { try { localStorage.setItem('autodarts_grid', this._netzAn() ? '0' : '1'); } catch (e) {} neu(); break; }
-        case 'ansage': { const ein = !this._ansage(); try { localStorage.setItem('autodarts_caller', ein ? '1' : '0'); } catch (e) {} if (ein && window.speechSynthesis) this._sagen(t('caller_on')); this._kxAlt = null; this._zeichnen(); break; }
+        case 'ansage': { const ein = !this._ansage(); try { localStorage.setItem('autodarts_caller', ein ? '1' : '0'); } catch (e) {} this._abo(); if (ein) this._toast(t('caller_on')); this._kxAlt = null; this._zeichnen(); break; }
         case 'vollbild':
           if (document.fullscreenElement) document.exitFullscreen(); else if (this.requestFullscreen) this.requestFullscreen().catch(() => {});
           setTimeout(() => { this._kxAlt = null; this._zeichnen(); }, 300); break;
@@ -2253,7 +2285,12 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   class AutodartsCallerCard extends DartsSeite {
     static get CSS() { return LICHT_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer}.schalter ha-icon{--mdc-icon-size:28px}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter small{margin-left:auto;font-weight:600;color:var(--secondary-text-color)}.chips{display:flex;flex-wrap:wrap;gap:6px}.wl{display:flex;align-items:center;gap:10px;margin:6px 0}.wl b{flex:1;min-width:0;font-size:14px}.wl select{width:auto;flex:1.4;min-width:0}.lb{display:block;font-size:12.5px;font-weight:700;color:var(--secondary-text-color);margin:16px 2px 6px}.inhalt select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:14px;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 7%,transparent);border:1px solid color-mix(in srgb,var(--primary-text-color) 18%,transparent)}.inhalt select option{color:#000}'; }
     getCardSize() { return 8; }
+    _ansage() { try { return localStorage.getItem('autodarts_caller') === '1'; } catch (e) { return false; } }
+    _abo() { if (this._ansage() && this.isConnected) hoerKarten.add(this); else hoerKarten.delete(this); hoerPruefen(this._h); }
+    connectedCallback() { if (this._h) this._abo(); }
+    disconnectedCallback() { this._abo(); }
     async _laden() {
+      this._abo();
       try { this._daten = await this._h.callWS({ type: 'autodarts/ansager' }); } catch (e) { this._daten = { einstellungen: {}, stimmen: [], packs: {}, songs: [] }; }
       this._alt = null; this._zeichnen();
     }
@@ -2271,6 +2308,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       let s = '<button class="schalter feld' + (an ? ' an' : '') + '" data-act="aktiv"><ha-icon icon="' + (an ? 'mdi:account-voice' : 'mdi:account-voice-off') + '"></ha-icon>' + t('caller_run') + '<small>' + (an ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button>';
       s += '<label class="lb">' + t('speakers') + '</label><div class="ll feld">' + lp.map(id => '<label><input type="checkbox" data-lp="' + id + '"' + (e.lautsprecher.includes(id) ? ' checked' : '') + '>' + esc(this._name(id)) + '<small>' + id.slice(13) + '</small></label>').join('') + '</div>';
       if (an && !e.lautsprecher.length) s += '<div class="klein" style="color:var(--red-color,#e53935)">' + t('no_speakers') + '</div>';
+      const hier = this._ansage();
+      s += '<button class="schalter feld' + (hier ? ' an' : '') + '" data-act="hier" style="margin-top:12px"><ha-icon icon="' + (hier ? 'mdi:cellphone-sound' : 'mdi:cellphone-off') + '"></ha-icon>' + t('phone_run') + '<small>' + (hier ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button><div class="klein">' + t('phone_hint') + '</div>';
       s += '<label class="lb">' + t('voice') + '</label>' + (stimmen.length ? '<select data-f="stimme"><option value="">' + esc(this._name(stimmen[0])) + ' (auto)</option>' + stimmen.map(x => '<option value="' + x + '"' + (x === e.stimme ? ' selected' : '') + '>' + esc(this._name(x)) + '</option>').join('') + '</select>' : '<div class="klein">' + t('no_voice') + '</div>');
       s += '<label class="lb">' + t('pack') + '</label><div class="seg">' + [['', t('only_voice')]].concat(Object.keys(packs).map(k => [k, k + ' · ' + t('n_files', { n: packs[k].length })])).map(([k, n]) => '<button class="feld' + (k === e.pack ? ' an' : '') + '" data-act="pack" data-v="' + esc(k) + '">' + esc(n) + '</button>').join('') + '</div><div class="klein">' + t('pack_hint') + '</div>';
       s += '<label class="lb">' + t('say_what') + '</label><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
@@ -2281,7 +2320,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         else s += spieler.map(p => '<div class="wl"><b>' + esc(p.name) + '</b><select data-song="' + esc(p.id) + '"><option value="">' + t('no_song') + '</option>' + songs.map(x => '<option' + (e.songs[p.id] === x ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select></div>').join('');
         s += '<label class="lb">' + t('walk_secs') + '</label><div class="stepper"><button class="feld" data-act="sek" data-v="-5">−</button><b>' + t('seconds', { n: e.walkon_sekunden }) + '</b><button class="feld" data-act="sek" data-v="5">+</button></div><div class="klein">' + t('songs_hint') + '</div>';
       }
-      s += '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:16px 0 0"' + (e.lautsprecher.length ? '' : ' disabled') + ' data-act="test"><ha-icon icon="mdi:bullhorn-outline"></ha-icon>' + t('test_caller') + '</button>';
+      s += '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:16px 0 0"' + (e.lautsprecher.length || hier ? '' : ' disabled') + ' data-act="test"><ha-icon icon="mdi:bullhorn-outline"></ha-icon>' + t('test_caller') + '</button>';
       this._setze(s);
       this._in.querySelectorAll('[data-lp]').forEach(c => c.onchange = () => { const x = this._e(); x.lautsprecher = c.checked ? x.lautsprecher.concat(c.dataset.lp) : x.lautsprecher.filter(y => y !== c.dataset.lp); this._speichern(x); });
       this._in.querySelectorAll('[data-f=stimme]').forEach(c => c.onchange = () => { const x = this._e(); x.stimme = c.value; this._speichern(x); });
@@ -2297,7 +2336,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       else if (act === 'pack') { x.pack = b.dataset.v; this._speichern(x); }
       else if (act === 'art') { x[b.dataset.v] = !x[b.dataset.v]; this._speichern(x); }
       else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +b.dataset.v)); this._speichern(x); }
-      else if (act === 'test') this._h.callService('autodarts', 'ansager_testen', {});
+      else if (act === 'hier') { try { localStorage.setItem('autodarts_caller', this._ansage() ? '0' : '1'); } catch (e) {} fxKlang(''); this._abo(); this._alt = null; this._zeichnen(); }
+      else if (act === 'test') { fxKlang(''); this._h.callService('autodarts', 'ansager_testen', {}); }
     }
   }
   customElements.define('autodarts-caller-card', AutodartsCallerCard);

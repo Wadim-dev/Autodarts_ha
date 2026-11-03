@@ -5,6 +5,9 @@ autodarts.ansager and edited in the caller card. Sound packs are folders in the 
 folder autodarts/caller/<pack> with files like 180.mp3, bust.mp3, leg.mp3; whatever a pack
 does not have is spoken by the chosen voice (TTS). Walk-on songs are files in
 autodarts/walkon.
+
+Phones and tablets get the same announcements: the game card subscribes with its speaker
+button (websocket autodarts/ansager/hoeren) and plays the URLs it is sent.
 """
 
 from __future__ import annotations
@@ -101,6 +104,17 @@ class Ansager:
         self._pack: dict[str, str] = {}
         self._aufgaben: set[asyncio.Task[None]] = set()
         self._einlauf: asyncio.Task[None] | None = None
+        self._hoerer: set[Callable[[dict[str, Any]], None]] = set()
+
+    @callback
+    def hoeren(self, senden: Callable[[dict[str, Any]], None]) -> Callable[[], None]:
+        """A phone or tablet that plays the announcements itself; returns the function to stop."""
+        self._hoerer.add(senden)
+        return lambda: self._hoerer.discard(senden)
+
+    @property
+    def _boxen(self) -> bool:
+        return bool(self.einst["aktiv"] and self.einst["lautsprecher"])
 
     @property
     def _basis(self) -> Path:
@@ -138,7 +152,7 @@ class Ansager:
     @callback
     def ereignis(self, typ: str, daten: dict[str, Any]) -> None:
         """Game event from the game manager; events of one visit come together and give one announcement."""
-        if not self.einst["aktiv"] or not self.einst["lautsprecher"]:
+        if not self._boxen and not self._hoerer:
             return
         if typ == "game_started":
             if self._einlauf:
@@ -208,7 +222,9 @@ class Ansager:
                     await asyncio.sleep(3)
                     await self._spielen(self._url(SONG_ORDNER, song), ansage=False)
                     await asyncio.sleep(self.einst["walkon_sekunden"])
-                    await self._dienst("media_player", "media_stop", {"entity_id": self.einst["lautsprecher"]})
+                    if self._boxen:
+                        await self._dienst("media_player", "media_stop", {"entity_id": self.einst["lautsprecher"]})
+                    self._melden({"stop": True})
             if self.einst["game_on"]:
                 await self._sagen("game_on", self._t()["game_on"])
         except asyncio.CancelledError:
@@ -243,14 +259,23 @@ class Ansager:
             if not stimme:
                 _LOGGER.warning("Caller: no voice (TTS) available")
                 return
-            await self._dienst("tts", "speak", {"entity_id": stimme, "media_player_entity_id": self.einst["lautsprecher"],
-                                                "message": text, "cache": True})
+            if self._boxen:
+                await self._dienst("tts", "speak", {"entity_id": stimme, "media_player_entity_id": self.einst["lautsprecher"],
+                                                    "message": text, "cache": True})
+            if self._hoerer:
+                from homeassistant.components.tts import generate_media_source_id
+
+                await self._handy(generate_media_source_id(self.hass, text, engine=stimme, cache=True))
         except asyncio.CancelledError:
             raise
         except Exception:
             _LOGGER.warning("Caller could not play %s", schluessel or text, exc_info=True)
 
     async def _spielen(self, url: str, ansage: bool = True) -> None:
+        if self._hoerer:
+            await self._handy(url)
+        if not self._boxen:
+            return
         mit: list[str] = []
         ohne: list[str] = []
         for e in self.einst["lautsprecher"]:
@@ -260,6 +285,19 @@ class Ansager:
             if liste:
                 await self._dienst("media_player", "play_media", {"entity_id": liste, "media_content_id": url,
                                                                   "media_content_type": "music", **extra})
+
+    async def _handy(self, media_id: str) -> None:
+        """Send a playable address (TTS or media file) to the phones and tablets that listen."""
+        from homeassistant.components import media_source
+        from homeassistant.components.media_player.browse_media import async_process_play_media_url
+
+        item = await media_source.async_resolve_media(self.hass, media_id, None)
+        self._melden({"url": async_process_play_media_url(self.hass, item.url, allow_relative_url=True)})
+
+    @callback
+    def _melden(self, daten: dict[str, Any]) -> None:
+        for senden in list(self._hoerer):
+            senden(daten)
 
     async def _dienst(self, domain: str, name: str, daten: dict[str, Any]) -> None:
         await self.hass.services.async_call(domain, name, daten, blocking=True)

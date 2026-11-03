@@ -396,7 +396,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
       const kn = [];
       if (c.power_on) kn.push(k('haupt', 'ein', t('on'), 'mdi:power', G));
       if (c.game_path) kn.push(k('feld', 'spielen', t('play'), 'mdi:bullseye-arrow', R));
-      if (c.manager_path) kn.push(k('feld', 'mgr', t('manager'), 'mdi:camera-iris', 'var(--purple-color,#9c27b0)'));
+      if (c.manager_path) kn.push(k('feld', 'mgr', c.manager_label || t('manager'), c.manager_icon || 'mdi:camera-iris', 'var(--purple-color,#9c27b0)'));
       if (c.players_path) kn.push(k('feld', 'spieler', t('players'), 'mdi:account-group', B));
       this._r.innerHTML = '<style>' + BASIS + B_CSS + '</style><ha-card><div class="szene">' + SZENE +
         '<div class="ueber"><div class="zt"><ha-icon></ha-icon><span class="zn"></span></div><div class="art"></div></div></div>' +

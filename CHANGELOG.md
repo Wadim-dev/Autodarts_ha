@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.16.1
+
+- Overview card: new options `manager_label` and `manager_icon` give the Board Manager button its own text and icon (e.g. "Settings" for a page with Board Manager, light effects and caller).
+
+**Deutsch**
+- Übersichtskarte: neue Optionen `manager_label` und `manager_icon` geben dem Board-Manager-Knopf eigenen Text und eigenes Symbol (z. B. „Einstellungen“ für eine Seite mit Board Manager, Lichteffekten und Ansager).
+
 ## 1.16.0
 
 - **Caller**: new card and sidebar tab. Announces scores, "you require …", game shot, specials and "Game on" on any speakers; own sound packs by upload (Media → autodarts → caller), missing sounds are spoken. Walk-on song per player at the start of a game.

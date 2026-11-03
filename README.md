@@ -165,6 +165,8 @@ All options are optional. Entities of the integration are found automatically.
 type: custom:autodarts-overview-card
 game_path: /dashboard-darts/game        # shortcut buttons (shown only when set)
 manager_path: /dashboard-darts/manager
+manager_label: Settings                 # own text and icon for that button
+manager_icon: mdi:cog
 players_path: /dashboard-darts/players
 power_on: script.dartboard_on           # power button: script, switch, button or automation
 power_off: script.dartboard_off

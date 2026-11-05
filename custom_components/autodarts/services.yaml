@@ -253,6 +253,15 @@ ansager_pack_pruefen:
       default: true
       selector:
         boolean:
+    anhoeren:
+      name: Anhören
+      description: >-
+        Hört jeden Punkte-Ton mit der Spracherkennung von Home Assistant an (z. B. Home Assistant Cloud). Töne, die
+        nicht ihre Zahl sagen, werden im Hintergrund neu gesprochen; bis dahin spielt der alte Ton. Passiert für
+        Meisterschafts-Packs auch einmal von selbst.
+      default: false
+      selector:
+        boolean:
 ansager_pack_loeschen:
   name: Ansager-Pack löschen
   description: Löscht ein Pack (Ordner unter Medien autodarts/caller). Die Ansager-Karte macht das per Klick.

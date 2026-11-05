@@ -15,6 +15,11 @@ A visit like "140 · Ben, you require 100" is joined from these files. The text 
 a style direction in front of it ("Say loudly …:") was read out loud by Google AI (1.19), so packs
 made then are repaired once (ansager_pack_pruefen): the spoken direction is cut off at the pause
 after it, files where that does not work are made again.
+
+Scores are sent to the voice as words in the language of Home Assistant ("Einhundertvierzig!"), not
+as digits: with "140!" the voice had to guess the language and sometimes said another number (1.23).
+When Home Assistant has speech-to-text, every score sound is listened to once: a sound that does not
+say its number is spoken again (right when it is made, and once for packs made before 1.23).
 """
 
 from __future__ import annotations
@@ -53,6 +58,78 @@ ORIGINAL = "_original"  # copies of pack files before a repair (1.20)
 FENSTER = 0.02  # seconds per window when looking for pauses in a sound
 STILLE = 0.2  # a pause of at least this long separates two parts of a sound
 MEHRTEILIG = {"leg", "set", "match", "nine", "tournament", "walk"}  # pack sounds that may have a pause of their own
+VERSUCHE = 3  # a score sound that does not say its number is spoken this often at most
+HOER_RATE = 16000  # speech-to-text gets 16 kHz 16-bit mono PCM
+
+
+def _zahlwort(n: int, sprache: str) -> str:
+    """A number 1–999 as one word in German ("Einhundertvierzig") or as words in English."""
+    if sprache == "de":
+        eins = ["", "eins", "zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun"]
+        zehner = ["", "zehn", "zwanzig", "dreißig", "vierzig", "fünfzig", "sechzig", "siebzig", "achtzig", "neunzig"]
+        teen = {11: "elf", 12: "zwölf", 16: "sechzehn", 17: "siebzehn"}
+
+        def klein(x: int) -> str:
+            if x < 10:
+                return eins[x]
+            if x in teen:
+                return teen[x]
+            if x < 20:
+                return eins[x - 10] + "zehn"
+            e, z = x % 10, x // 10
+            return ((("ein" if e == 1 else eins[e]) + "und") if e else "") + zehner[z]
+
+        wort = (("ein" if n // 100 == 1 else eins[n // 100]) + "hundert" if n >= 100 else "") + klein(n % 100)
+        return wort[:1].upper() + wort[1:]
+    eins_en = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
+               "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+    zehner_en = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+    def klein_en(x: int) -> str:
+        if x < 20:
+            return eins_en[x]
+        return zehner_en[x // 10] + ("-" + eins_en[x % 10] if x % 10 else "")
+
+    if n < 100:
+        wort = klein_en(n)
+    else:
+        wort = eins_en[n // 100] + " hundred" + (" and " + klein_en(n % 100) if n % 100 else "")
+    return wort[:1].upper() + wort[1:]
+
+
+def _passt(gehoert: str, n: int, sprache: str) -> bool | None:
+    """Does what speech-to-text heard say the number n? None when nothing was heard."""
+    t = gehoert.lower()
+    if not re.sub(r"[\W_]+", "", t):
+        return None
+    ziffern = re.findall(r"\d+", t.replace(".", "").replace(",", ""))
+    if ziffern:
+        return str(n) in ziffern
+
+    def norm(x: str) -> str:
+        x = re.sub(r"[^a-zäöüß]+", " ", x.lower())
+        x = re.sub(r"\b(and|und)\b", " ", x) if sprache != "de" else x
+        x = x.replace(" ", "")
+        if sprache == "de":
+            x = x.replace("hundertund", "hundert")
+            x = x[3:] if x.startswith("einhundert") else x
+        else:
+            x = re.sub(r"^(a|one)hundred", "hundred", x)
+        return x
+
+    return norm(_zahlwort(n, sprache)) == norm(t) if n else None
+
+
+def _pcm(ffmpeg: str, pfad: Path) -> bytes | None:
+    """A sound file as 16 kHz 16-bit mono PCM for speech-to-text."""
+    import subprocess
+
+    try:
+        r = subprocess.run([ffmpeg, "-v", "error", "-i", str(pfad), "-ac", "1", "-ar", str(HOER_RATE), "-f", "s16le", "-"],
+                           capture_output=True, timeout=60, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 and r.stdout else None
 
 
 def _player(wert: Any) -> str:
@@ -307,6 +384,10 @@ class Ansager:
         # a pack that is still being made (survives a restart; continues by itself after the daily limit)
         self._auftrag_store: Store[dict[str, Any]] = Store(hass, 1, "autodarts.ansager_auftrag")
         self._auftrag: dict[str, Any] = {}
+        # packs whose score sounds were listened to (speech-to-text) once
+        self._gehoert_store: Store[dict[str, Any]] = Store(hass, 1, "autodarts.ansager_gehoert")
+        self._gehoert: dict[str, Any] = {}
+        self._hoerprobe: asyncio.Task[None] | None = None
         self._wecker: Callable[[], None] | None = None
         self.einst: dict[str, Any] = EINSTELLUNGEN({})
         self._puffer: list[tuple[str, dict[str, Any]]] = []
@@ -341,8 +422,11 @@ class Ansager:
             _LOGGER.warning("Caller settings ignored: %s", err)
         await self._pack_lesen()
         self._auftrag = (await self._auftrag_store.async_load()) or {}
+        self._gehoert = (await self._gehoert_store.async_load()) or {}
         if self._auftrag.get("pack"):
             self._wecken(120)  # continue a pack that was not finished before the restart
+        elif await self.hass.async_add_executor_job(self._ungehoert):
+            self._wecken(180)  # packs made before 1.23: listen to their score sounds once
 
     async def setzen(self, einst: dict[str, Any]) -> None:
         self.einst = EINSTELLUNGEN(dict(einst))
@@ -356,7 +440,7 @@ class Ansager:
         info = {k: {"toene": len(v), "fehlen": len(soll - set(v)) if k.startswith("Meisterschaft") else None}
                 for k, v in daten["packs"].items()}
         return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, "pruefung": self.pruefung,
-                "info": info, "auftrag": self._auftrag, **daten}
+                "info": info, "auftrag": self._auftrag, "hoeren": self._stt() is not None, "gehoert": self._gehoert, **daten}
 
     async def _pack_lesen(self) -> None:
         pack = self.einst["pack"]
@@ -366,7 +450,7 @@ class Ansager:
         if self._wecker:
             self._wecker()
             self._wecker = None
-        alle = [t for t in [*self._aufgaben, self._einlauf, self._erzeuger] if t]
+        alle = [t for t in [*self._aufgaben, self._einlauf, self._erzeuger, self._hoerprobe] if t]
         for t in alle:
             t.cancel()
         await asyncio.gather(*alle, return_exceptions=True)
@@ -425,7 +509,7 @@ class Ansager:
                 schluessel, text = "bust", tx["bust"]
             else:
                 p = int(e["visit"].get("score") or 0)
-                schluessel, text = str(p), tx.get(str(p), str(p))
+                schluessel, text = str(p), tx.get(str(p)) or _zahlwort(p, self._sprache())
             teile.append(text)
             keys.append(schluessel)
         if self.einst["rest"] and st.get("art", "x01") == "x01" and st.get("gewinner") is None:
@@ -463,8 +547,11 @@ class Ansager:
 
     # -- output -----------------------------------------------------------------------
 
+    def _sprache(self) -> str:
+        return "de" if str(self.hass.config.language).startswith("de") else "en"
+
     def _t(self) -> dict[str, str]:
-        return TEXTE["de" if str(self.hass.config.language).startswith("de") else "en"]
+        return TEXTE[self._sprache()]
 
     def _url(self, teil: tuple[str, ...], datei: str) -> str:
         return "media-source://media_source/local/" + "/".join((*teil, datei))
@@ -488,7 +575,7 @@ class Ansager:
         tx = self._t()
         name = next((k for k in self._pack if k.startswith("name_")), "")
         wer = name[5:].replace("_", " ").title() if name else "Alex"
-        await self._sagen("", "140. " + tx["rest"].format(n=wer, r=92), ["140", name or _slug(wer), "require", "92"])
+        await self._sagen("", _zahlwort(140, self._sprache()) + ". " + tx["rest"].format(n=wer, r=92), ["140", name or _slug(wer), "require", "92"])
 
     def _stimme(self) -> str:
         if self.hass.states.get(self.einst["stimme"]):
@@ -594,25 +681,35 @@ class Ansager:
     def pack_texte(self, namen: list[str]) -> dict[str, str]:
         """File key → text of a full pack: scores 0–180, you require, game shot …, player names."""
         tx = self._t()
-        texte = {str(p): (tx["180"] if p == 180 else tx["0"] if p == 0 else f"{p}!") for p in range(181) if p not in UNMOEGLICH}
+        # as words: with digits ("140!") the voice guessed the language and sometimes said another number
+        texte = {str(p): (tx["180"] if p == 180 else tx["0"] if p == 0 else _zahlwort(p, self._sprache()) + "!")
+                 for p in range(181) if p not in UNMOEGLICH}
         texte.update({"bust": tx["bust"], "game_on": tx["game_on"]})
         texte.update({k: tx["p_" + k] for k in ("require", "leg", "set", "match", "nine", "tournament", "walk")})
         texte.update({_slug(n): f"{n}!" for n in namen if n})
         return texte
 
-    def pack_erzeugen(self, name: str, namen: list[str], sprecher: str | None, nur: list[str] | None, neu: bool = False) -> None:
-        """Start making a pack in the background (keeps files that already exist, so it can be resumed)."""
+    def pack_erzeugen(self, name: str, namen: list[str], sprecher: str | None, nur: list[str] | None, neu: bool = False,
+                      merken: bool = False) -> None:
+        """Start making a pack in the background (keeps files that already exist, so it can be resumed).
+
+        A whole pack is remembered, so it continues after the daily limit or a restart; with merken also
+        only some sounds made again (the ones the listening check found wrong).
+        """
         if self._erzeuger and not self._erzeuger.done():
             return
         texte = self.pack_texte(namen)
         if nur:
             texte = {k: v for k, v in texte.items() if k in nur}
-        self.erzeugung = {"pack": name, "fertig": 0, "gesamt": len(texte), "laeuft": True, "fehler": None}
-        self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher, neu), "autodarts caller pack")
-        if not nur:  # a whole pack: remember it, so it continues after the daily limit or a restart
+        self.erzeugung = {"pack": name, "fertig": 0, "gesamt": len(texte), "laeuft": True, "fehler": None, "falsch": []}
+        nutzen = not (merken and nur)  # sounds made again after listening: the pack in use stays
+        self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher, neu, nutzen), "autodarts caller pack")
+        if not nur:
             self.hass.async_create_task(self._auftrag_setzen({"pack": name, "sprecher": sprecher}))
+        elif merken:
+            self.hass.async_create_task(self._auftrag_setzen({"pack": name, "sprecher": sprecher, "nur": list(texte)}))
 
-    async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None, neu: bool = False) -> None:
+    async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None, neu: bool = False, nutzen: bool = True) -> None:
         from homeassistant.components.tts import async_get_media_source_audio, generate_media_source_id
 
         stimme = self._stimme()
@@ -633,33 +730,45 @@ class Ansager:
                 if key in da:
                     st["fertig"] += 1
                     continue
-                while True:
-                    try:
-                        mid = generate_media_source_id(
-                            self.hass, text, engine=stimme, options={"preferred_format": "wav", **({"voice": sprecher} if sprecher else {})}, cache=False)
-                        endung, daten = await async_get_media_source_audio(self.hass, mid)
+                for versuch in range(VERSUCHE):
+                    while True:
+                        try:
+                            mid = generate_media_source_id(
+                                self.hass, text, engine=stimme, options={"preferred_format": "wav", **({"voice": sprecher} if sprecher else {})}, cache=False)
+                            endung, daten = await async_get_media_source_audio(self.hass, mid)
+                            break
+                        except asyncio.CancelledError:
+                            raise
+                        except Exception as err:  # rate limit of the voice service: wait and try again
+                            fehler += 1
+                            if "per_day" in str(err) or "PerDay" in str(err):
+                                st["fehler"] = "daily limit"  # the voice allows only so many a day: continues by itself later
+                                self._wecken(NOCHMAL)
+                                return
+                            if fehler > 6:
+                                st["fehler"] = str(err)[:200]
+                                return
+                            await asyncio.sleep(20 * fehler)
+                    fehler = 0
+                    await self.hass.async_add_executor_job(self._speichern_wav, ordner, key, endung, daten)
+                    if google:
+                        await asyncio.sleep(PAUSE)
+                    # listen to a score sound: the voice sometimes says another number
+                    if not key.isdigit() or await self._anhoeren(ordner, key) is not False:
                         break
-                    except asyncio.CancelledError:
-                        raise
-                    except Exception as err:  # rate limit of the voice service: wait and try again
-                        fehler += 1
-                        if "per_day" in str(err) or "PerDay" in str(err):
-                            st["fehler"] = "daily limit"  # the voice allows only so many a day: continues by itself later
-                            self._wecken(NOCHMAL)
-                            return
-                        if fehler > 6:
-                            st["fehler"] = str(err)[:200]
-                            return
-                        await asyncio.sleep(20 * fehler)
-                fehler = 0
-                await self.hass.async_add_executor_job(self._speichern_wav, ordner, key, endung, daten)
+                    _LOGGER.info("Caller pack %s: sound %s did not say its number (try %s)", name, key, versuch + 1)
+                    if versuch == VERSUCHE - 1:
+                        st["falsch"].append(key)
                 st["fertig"] += 1
-                if google:
-                    await asyncio.sleep(PAUSE)
+                if (nur := self._auftrag.get("nur")) and self._auftrag.get("pack") == name and key in nur:
+                    await self._auftrag_setzen({**self._auftrag, "nur": [k for k in nur if k != key]})
             await self._auftrag_setzen({})
-            if name != self.einst["pack"]:
+            if self._stt() is not None and not da:
+                await self._gehoert_setzen(name, True)  # every score sound was listened to when it was made
+            self._wecken(60)  # listen to packs made before 1.23
+            if name != self.einst["pack"] and nutzen:
                 await self.setzen({**self.einst, "pack": name})  # the pack just made is used right away
-            else:
+            elif name == self.einst["pack"]:
                 await self._pack_lesen()
         except asyncio.CancelledError:
             raise
@@ -707,10 +816,152 @@ class Ansager:
         @callback
         def weiter(_jetzt: Any) -> None:
             self._wecker = None
-            if (a := self._auftrag).get("pack") and not (self._erzeuger and not self._erzeuger.done()):
-                self.pack_erzeugen(a["pack"], self._namen(), a.get("sprecher"), None)
+            if self._erzeuger and not self._erzeuger.done():
+                return
+            if (a := self._auftrag).get("pack"):
+                nur = a.get("nur")
+                if nur == []:  # all sounds made again
+                    self.hass.async_create_task(self._auftrag_setzen({}))
+                    return
+                self.pack_erzeugen(a["pack"], self._namen(), a.get("sprecher"), nur, neu=bool(nur), merken=True)
+            elif not (self._hoerprobe and not self._hoerprobe.done()):
+                self.hass.async_create_task(self._naechstes_anhoeren())
 
         self._wecker = async_call_later(self.hass, sekunden, weiter)
+
+    # -- listening to the score sounds (speech-to-text) ---------------------------------------
+
+    def _stt(self) -> str | None:
+        """A speech-to-text entity that understands the language of Home Assistant (Home Assistant Cloud first)."""
+        try:
+            from homeassistant.components import stt
+        except ImportError:
+            return None
+        if stt.DOMAIN not in self.hass.config.components:
+            return None
+        ids = sorted(self.hass.states.async_entity_ids("stt"), key=lambda x: x != "stt.home_assistant_cloud")
+        for eid in ids:
+            ent = stt.async_get_speech_to_text_entity(self.hass, eid)
+            if ent and self._stt_sprache(ent) and stt.AudioSampleRates.SAMPLERATE_16000 in ent.supported_sample_rates \
+                    and stt.AudioFormats.WAV in ent.supported_formats and stt.AudioCodecs.PCM in ent.supported_codecs:
+                return eid
+        return None
+
+    def _stt_sprache(self, ent: Any) -> str | None:
+        sprache = str(self.hass.config.language)
+        tags = list(ent.supported_languages)
+        return next((t for t in tags if t.lower() == sprache.lower()), None) \
+            or next((t for t in tags if t.lower().split("-")[0] == sprache.lower().split("-")[0]), None)
+
+    async def _anhoeren(self, ordner: Path, key: str) -> bool | None:
+        """Does the score sound of the key say its number? None when it cannot be told (no speech-to-text …)."""
+        from homeassistant.components import stt
+
+        eid = self._stt()
+        datei = (await self.hass.async_add_executor_job(_dateien, ordner)).get(key)
+        ent = stt.async_get_speech_to_text_entity(self.hass, eid) if eid else None
+        if not ent or not datei:
+            return None
+        pcm = await self.hass.async_add_executor_job(_pcm, self._ffmpeg_bin, ordner / datei)
+        if not pcm:
+            return None
+        meta = stt.SpeechMetadata(language=self._stt_sprache(ent) or "", format=stt.AudioFormats.WAV, codec=stt.AudioCodecs.PCM,
+                                  bit_rate=stt.AudioBitRates.BITRATE_16, sample_rate=stt.AudioSampleRates.SAMPLERATE_16000,
+                                  channel=stt.AudioChannels.CHANNEL_MONO)
+
+        async def strom() -> Any:
+            for i in range(0, len(pcm), 3200):
+                yield pcm[i:i + 3200]
+
+        try:
+            ergebnis = await ent.internal_async_process_audio_stream(meta, strom())
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            _LOGGER.debug("Speech-to-text failed for %s", key, exc_info=True)
+            return None
+        if ergebnis.result != stt.SpeechResultState.SUCCESS:
+            return None
+        gut = _passt(ergebnis.text or "", int(key), self._sprache())
+        if gut is False:
+            _LOGGER.info("Caller sound %s heard as %r", key, ergebnis.text)
+        return gut
+
+    def _ungehoert(self) -> list[str]:
+        """Packs made by the voice (Meisterschaft …) whose score sounds were not listened to yet."""
+        basis = self._basis.joinpath(*ORDNER)
+        try:
+            packs = [d.name for d in sorted(basis.iterdir()) if d.is_dir()] if basis.is_dir() else []
+        except OSError:
+            return []
+        packs = [p for p in packs if p.startswith("Meisterschaft") and p not in self._gehoert]
+        return sorted(packs, key=lambda p: p != self.einst["pack"])  # the pack in use first
+
+    async def _gehoert_setzen(self, name: str, wert: bool | None) -> None:
+        g = dict(self._gehoert)
+        if wert:
+            g[name] = True
+        else:
+            g.pop(name, None)
+        if g != self._gehoert:
+            self._gehoert = g
+            await self._gehoert_store.async_save(g)
+
+    async def _naechstes_anhoeren(self) -> None:
+        if offen := await self.hass.async_add_executor_job(self._ungehoert):
+            self.pack_anhoeren(offen[0])
+
+    def pack_anhoeren(self, name: str) -> bool:
+        """Listen to every score sound of a pack in the background; wrong ones are spoken again. False without speech-to-text."""
+        if self._stt() is None or (self._hoerprobe and not self._hoerprobe.done()):
+            return False
+        self.pruefung = {"pack": name, "hoeren": True, "laeuft": True, "fertig": 0, "gesamt": 0, "falsch": [], "unklar": 0}
+        self._hoerprobe = self.hass.async_create_background_task(self._pack_anhoeren(name), "autodarts caller listen")
+        return True
+
+    async def _pack_anhoeren(self, name: str) -> None:
+        ordner = self._basis.joinpath(*ORDNER, name)
+        st = self.pruefung
+        self._ffmpeg_bin = self._ffmpeg()
+        try:
+            if ordner.parent != self._basis.joinpath(*ORDNER):
+                return
+            da = await self.hass.async_add_executor_job(_dateien, ordner)
+            keys = sorted((k for k in da if k.isdigit() and k != "0"), key=int)
+            st["gesamt"] = len(keys)
+            for key in keys:
+                gut = await self._anhoeren(ordner, key)
+                if gut is False:
+                    st["falsch"].append(key)
+                elif gut is None:
+                    st["unklar"] += 1
+                st["fertig"] += 1
+            if st["unklar"] > len(keys) / 2:
+                return  # speech-to-text did not work: try again after the next start
+            _LOGGER.info("Caller pack %s listened to: %s wrong (%s)", name, len(st["falsch"]), st["falsch"])
+            if (auf := self._auftrag.get("pack")) and auf != name:
+                return  # another pack is being made: this one is listened to again afterwards
+            await self._gehoert_setzen(name, True)
+            if not st["falsch"]:
+                if not auf:
+                    self._wecken(30)  # the next pack
+                return
+            # speak the wrong ones again (and what is still missing of a pack being made);
+            # the old sound plays until the new one is there
+            fehlt = [k for k in self.pack_texte(self._namen()) if k not in da] if auf == name else []
+            nur = st["falsch"] + [k for k in fehlt if k not in st["falsch"]]
+            if self._erzeuger and not self._erzeuger.done():
+                self._erzeuger.cancel()
+                await asyncio.gather(self._erzeuger, return_exceptions=True)
+            m = re.fullmatch(r"Meisterschaft (\w+)", name)
+            sprecher = m.group(1).lower() if m else self._auftrag.get("sprecher")
+            self.pack_erzeugen(name, self._namen(), sprecher, nur, neu=True, merken=True)
+        except asyncio.CancelledError:
+            raise
+        except Exception:
+            _LOGGER.warning("Listening to the caller pack failed", exc_info=True)
+        finally:
+            st["laeuft"] = False
 
     async def pack_loeschen(self, name: str) -> None:
         """Delete a pack folder (only below autodarts/caller)."""
@@ -721,6 +972,7 @@ class Ansager:
         ordner = self._basis.joinpath(*ORDNER, name)
         if ordner.parent == self._basis.joinpath(*ORDNER):
             await self.hass.async_add_executor_job(lambda: shutil.rmtree(ordner, ignore_errors=True))
+        await self._gehoert_setzen(name, None)
         if self.einst["pack"] == name:
             await self.setzen({**self.einst, "pack": ""})
 

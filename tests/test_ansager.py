@@ -82,7 +82,7 @@ async def test_punkte_rest_und_pack(hass: HomeAssistant, geladen, lautsprecher) 
         a.ereignis("ton_forty", {"player": "Anna", "score": 140})
         await _fertig(hass, a)
         assert lautsprecher["tts"][-1].data == {"entity_id": "tts.piper", "media_player_entity_id": ["media_player.kueche"],
-                                                "message": "140. Ben, you require 100", "cache": True}
+                                                "message": "One hundred and forty. Ben, you require 100", "cache": True}
         # a pack file is used when the key exists and nothing else must be said
         pack = lautsprecher["pfad"] / "autodarts" / "caller" / "Classic"
         pack.mkdir(parents=True)
@@ -115,7 +115,7 @@ async def test_ansagen(hass: HomeAssistant, geladen, ereignisse, text) -> None:
 async def test_nicht_x01_und_abgeschaltet(hass: HomeAssistant, geladen) -> None:
     a = geladen.runtime_data.ansager
     with patch.object(geladen.runtime_data.spiel, "stand", {"art": "baseball"}):
-        assert a.ansage([("visit", {"score": 40})]) == ("40", "40", ["40"])  # points of every game mode, no rest
+        assert a.ansage([("visit", {"score": 40})]) == ("40", "Forty", ["40"])  # points of every game mode, no rest
     a.einst = {**a.einst, "ende": False, "punkte": False, "rest": False}
     with patch.object(geladen.runtime_data.spiel, "stand", {"art": "x01"}):
         assert a.ansage([("visit", {"score": 40}), ("leg_won", {"player": "A"})]) is None
@@ -139,7 +139,7 @@ async def test_testen_und_fehler(hass: HomeAssistant, geladen, lautsprecher, cap
     await hass.services.async_call(DOMAIN, "ansager_testen", {"text": "Hallo"}, blocking=True)
     assert lautsprecher["tts"][-1].data["message"] == "Hallo"
     await hass.services.async_call(DOMAIN, "ansager_testen", {}, blocking=True)
-    assert lautsprecher["tts"][-1].data["message"] == "140. Alex, you require 92"  # an example visit
+    assert lautsprecher["tts"][-1].data["message"] == "One hundred and forty. Alex, you require 92"  # an example visit
     hass.states.async_remove("tts.piper")
     await hass.services.async_call(DOMAIN, "ansager_testen", {}, blocking=True)
     assert "no voice" in caplog.text
@@ -241,7 +241,7 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
           patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
         await hass.services.async_call(DOMAIN, "ansager_pack_erzeugen", {"sprecher": "fenrir", "nur": ["180", "140", "require", "100", "leg"]}, blocking=True)
         await a._erzeuger
-    assert a.erzeugung == {"pack": "Meisterschaft", "fertig": 5, "gesamt": 5, "laeuft": False, "fehler": None}
+    assert a.erzeugung == {"pack": "Meisterschaft", "fertig": 5, "gesamt": 5, "laeuft": False, "fehler": None, "falsch": []}
     assert len(texte) == 4 and all(t[2] == {"preferred_format": "wav", "voice": "fenrir"} for t in texte)
     assert texte[-1][0] == "Game shot, and the leg!"  # the text as it is: a direction in front was read out loud
     assert {"140.wav", "require.wav", "100.wav", "leg.wav"} <= {f.name for f in ordner.iterdir()}
@@ -264,7 +264,7 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
         stand["spieler"][0]["rest"] = 100
         a.ereignis("visit", {"player": "Ben", "score": 60})
         await _fertig(hass, a)
-        assert lautsprecher["tts"][-1].data["message"] == "60. Anna, you require 100"
+        assert lautsprecher["tts"][-1].data["message"] == "Sixty. Anna, you require 100"
     # speak again with another speaker: files are replaced and the joined sounds removed
     with (patch("homeassistant.components.tts.generate_media_source_id", side_effect=mid),
           patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
@@ -458,4 +458,172 @@ async def test_wecker_setzt_fort(hass: HomeAssistant, geladen, lautsprecher) -> 
         async_fire_time_changed(hass, dt_util.utcnow())
         await hass.async_block_till_done()
     assert erz.call_args[0][0] == "P"
+    await a.beenden()
+
+
+def test_zahlwort_und_passt() -> None:
+    """Scores go to the voice as words; what speech-to-text heard is compared with the number."""
+    z, p = ansager_modul._zahlwort, ansager_modul._passt
+    assert [z(n, "de") for n in (1, 11, 16, 21, 100, 101, 117, 141, 180)] == [
+        "Eins", "Elf", "Sechzehn", "Einundzwanzig", "Einhundert", "Einhunderteins", "Einhundertsiebzehn",
+        "Einhunderteinundvierzig", "Einhundertachtzig"]
+    assert [z(n, "en") for n in (7, 15, 40, 99, 100, 141)] == [
+        "Seven", "Fifteen", "Forty", "Ninety-nine", "One hundred", "One hundred and forty-one"]
+    assert p("100.", 100, "de") and p("Einhundert!", 100, "de") and p("Hundert", 100, "de") and p("hundert vierzig", 140, "de")
+    assert p("180", 100, "de") is False and p("One hundred and eighty!", 100, "de") is False and p("Vierzig", 140, "de") is False
+    assert p("a hundred and forty", 140, "en") and p("1 hundred", 100, "en") is False
+    assert p("", 5, "de") is None and p("...", 5, "de") is None and p("No score", 0, "en") is None
+
+
+class _Ohr:
+    """A speech-to-text entity that hears the given answers one after the other."""
+
+    def __init__(self, antworten: list[str]) -> None:
+        from homeassistant.components import stt
+
+        self.antworten = antworten
+        self.bytes: list[int] = []
+        self.supported_languages = ["de-DE", "en-US"]
+        self.supported_formats = [stt.AudioFormats.WAV]
+        self.supported_codecs = [stt.AudioCodecs.PCM]
+        self.supported_sample_rates = [stt.AudioSampleRates.SAMPLERATE_16000]
+
+    async def internal_async_process_audio_stream(self, meta, strom):
+        from homeassistant.components import stt
+
+        assert meta.language == "en-US" and meta.sample_rate == stt.AudioSampleRates.SAMPLERATE_16000
+        self.bytes.append(sum([len(b) async for b in strom]))
+        text = self.antworten.pop(0)
+        if text == "!":
+            raise ValueError("cloud down")  # noqa: TRY003
+        return stt.SpeechResult(text, stt.SpeechResultState.SUCCESS if text != "?" else stt.SpeechResultState.ERROR)
+
+
+@pytest.fixture
+def ohr(hass: HomeAssistant, geladen, monkeypatch):
+    from homeassistant.components import stt
+
+    o = _Ohr([])
+    monkeypatch.setattr(geladen.runtime_data.ansager, "_stt", lambda: "stt.ohr")
+    monkeypatch.setattr(stt, "async_get_speech_to_text_entity", lambda _h, eid: o if eid == "stt.ohr" else None)
+    monkeypatch.setattr(ansager_modul, "PAUSE", 0)
+    return o
+
+
+async def test_pack_erzeugen_hoert_nach(hass: HomeAssistant, geladen, lautsprecher, ohr) -> None:
+    """A score sound that does not say its number is spoken again, at most three times."""
+    a = geladen.runtime_data.ansager
+    await _setzen(hass)
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Meisterschaft Fenrir"
+    texte = []
+    daten = _wav(lautsprecher["pfad"] / "x.wav")
+
+    def mid(_hass, text, engine=None, options=None, cache=None):
+        texte.append(text)
+        return "tts:" + text
+
+    async def audio(_hass, _mid):
+        return "wav", daten
+
+    ohr.antworten = ["180", "100", "120", "One hundred and twenty", "One hundred and eighty"]
+    with (patch("homeassistant.components.tts.generate_media_source_id", side_effect=mid),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        a.pack_erzeugen("Meisterschaft Fenrir", [], "fenrir", ["100", "140", "leg"])
+        await a._erzeuger
+    assert texte == ["One hundred!", "One hundred!", "One hundred and forty!", "One hundred and forty!",
+                     "One hundred and forty!", "Game shot, and the leg!"]
+    assert a.erzeugung["falsch"] == ["140"] and a.erzeugung["fertig"] == 3 and all(ohr.bytes)
+    assert {"100.wav", "140.wav", "leg.wav"} <= {f.name for f in ordner.iterdir()}
+    assert a._gehoert == {"Meisterschaft Fenrir": True}  # made new: every score was listened to
+
+
+async def test_pack_anhoeren(hass: HomeAssistant, geladen, lautsprecher, ohr, hass_storage, hass_ws_client) -> None:
+    """Packs made before 1.23 are listened to once; wrong sounds are made again, the old one plays until then."""
+    a = geladen.runtime_data.ansager
+    basis = lautsprecher["pfad"] / "autodarts" / "caller"
+    ordner = basis / "Meisterschaft Fenrir"
+    ordner.mkdir(parents=True)
+    for k in ("100", "140", "26", "0", "bust"):
+        _wav(ordner / f"{k}.wav")
+    (basis / "Eigenes").mkdir()
+    await _setzen(hass, pack="Meisterschaft Fenrir")
+    assert await hass.async_add_executor_job(a._ungehoert) == ["Meisterschaft Fenrir"]  # own packs are not listened to
+
+    ohr.antworten = ["26", "100", "180"]
+    daten = _wav(lautsprecher["pfad"] / "x.wav")
+
+    async def audio(_hass, _mid):
+        ohr.antworten.append("140")  # the new sound is right
+        return "wav", daten
+
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        await hass.services.async_call(DOMAIN, "ansager_pack_pruefen", {"name": "Meisterschaft Fenrir", "anhoeren": True}, blocking=True)
+        await a._hoerprobe
+        assert a.pruefung["falsch"] == ["140"] and a.pruefung["fertig"] == 3 and not a.pruefung["laeuft"]
+        assert a._auftrag == {"pack": "Meisterschaft Fenrir", "sprecher": "fenrir", "nur": ["140"]}
+        await a._erzeuger
+        await hass.async_block_till_done()
+    assert a._auftrag == {} and a.erzeugung["fertig"] == 1 and not a.erzeugung["falsch"]
+    assert hass_storage["autodarts.ansager_gehoert"]["data"] == {"Meisterschaft Fenrir": True}
+    assert await hass.async_add_executor_job(a._ungehoert) == []
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "autodarts/ansager"})
+    r = (await ws.receive_json())["result"]
+    assert r["hoeren"] is True and r["gehoert"] == {"Meisterschaft Fenrir": True}
+
+    # speech-to-text that does not work: nothing is changed, it is tried again later
+    await a._gehoert_setzen("Meisterschaft Fenrir", None)
+    ohr.antworten = ["!", "?", "26"]
+    assert a.pack_anhoeren("Meisterschaft Fenrir")
+    assert not a.pack_anhoeren("Meisterschaft Fenrir")  # already running
+    await a._hoerprobe
+    assert a.pruefung["unklar"] == 2 and "Meisterschaft Fenrir" not in a._gehoert
+    await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Meisterschaft Fenrir"}, blocking=True)
+
+
+async def test_anhoeren_ohne_spracherkennung(hass: HomeAssistant, geladen, lautsprecher) -> None:
+    a = geladen.runtime_data.ansager
+    assert a._stt() is None and not a.pack_anhoeren("Meisterschaft Fenrir")
+    assert await a._anhoeren(lautsprecher["pfad"], "100") is None
+
+
+async def test_wecker_macht_weiter(hass: HomeAssistant, geladen, lautsprecher, ohr) -> None:
+    """After the daily limit or a restart: sounds to make again continue, then packs not listened to yet."""
+    from datetime import timedelta
+
+    from homeassistant.util import dt as dt_util
+    from pytest_homeassistant_custom_component.common import async_fire_time_changed
+
+    a = geladen.runtime_data.ansager
+    await _setzen(hass, pack="Eigenes")
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Meisterschaft Puck"
+    ordner.mkdir(parents=True)
+    _wav(ordner / "100.wav")
+    daten = _wav(lautsprecher["pfad"] / "x.wav")
+
+    async def audio(_hass, _mid):
+        return "wav", daten
+
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        await a._auftrag_setzen({"pack": "Meisterschaft Puck", "sprecher": "puck", "nur": ["100"]})
+        ohr.antworten = ["100"]
+        a._wecken(10)
+        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=11))
+        await hass.async_block_till_done()
+        await a._erzeuger
+        assert a._auftrag == {} and a.einst["pack"] == "Eigenes"  # made again, the pack in use stays
+        await a._auftrag_setzen({"pack": "Meisterschaft Puck", "nur": []})
+        a._wecken(10)
+        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=22))
+        await hass.async_block_till_done()
+        assert a._auftrag == {}
+        await a._gehoert_setzen("Meisterschaft Puck", None)
+        ohr.antworten = ["100"]
+        a._wecken(10)
+        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=33))
+        await hass.async_block_till_done()
+        await a._hoerprobe
+        assert a._gehoert == {"Meisterschaft Puck": True}
     await a.beenden()

@@ -77,6 +77,22 @@ TEXTE: dict[str, dict[str, str]] = {
 
 # spoken game names -> settings
 SPIELE: list[tuple[str, dict[str, Any]]] = [
+    (r"121", {"spiel": "checkout121"}),
+    (r"wild(e)? ?m(o|au)use?|дикая мышь", {"spiel": "wild_mouse"}),
+    (r"mi(c)?ke?y|микки", {"spiel": "mickey"}),
+    (r"hidden|verdeckt|скрыт", {"spiel": "cricket", "zahlen": "hidden"}),
+    (r"tactics|тактик", {"spiel": "cricket", "zahlen": "tactics"}),
+    (r"round the world|um die welt|вокруг света", {"spiel": "rtw"}),
+    (r"count ?up|hochzähl", {"spiel": "highscore"}),
+    (r"bermuda|бермуд", {"spiel": "bermuda"}),
+    (r"gotcha|готча", {"spiel": "gotcha"}),
+    (r"nine lives|neun leben|девять жизней", {"spiel": "nine_lives"}),
+    (r"fu(ß|ss)ball|football|soccer|футбол", {"spiel": "football"}),
+    (r"scram|скрам", {"spiel": "scram"}),
+    (r"catch ?(40|forty|vierzig)", {"spiel": "catch40"}),
+    (r"jdc", {"spiel": "jdc"}),
+    (r"singles|einzel|синглы", {"spiel": "singles"}),
+    (r"checkout|finish|чекаут", {"spiel": "checkout"}),
     (r"cricket|крикет", {"spiel": "cricket"}),
     (r"shanghai|шанхай", {"spiel": "shanghai"}),
     (r"killer|киллер", {"spiel": "killer"}),
@@ -86,7 +102,6 @@ SPIELE: list[tuple[str, dict[str, Any]]] = [
     (r"halve|halbier", {"spiel": "halve_it"}),
     (r"bob|боб", {"spiel": "bobs27"}),
     (r"uhr|clock|круг", {"spiel": "atc"}),
-    (r"121", {"spiel": "checkout121"}),
     (r"doppel|double|дубл", {"spiel": "doppel"}),
     (r"(101|170|301|501|701|901)", {"spiel": "x01"}),
 ]

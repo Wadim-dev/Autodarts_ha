@@ -23,9 +23,10 @@ MODUS = vol.In(["straight", "double", "master"])
 START = {
     vol.Optional("spiel"): vol.In(list(GRUPPEN)),
     vol.Optional("variante"): cv.string,
-    vol.Optional("zahlen"): vol.In(["classic", "tactics", "random"]),
+    vol.Optional("zahlen"): vol.In(["classic", "tactics", "random", "hidden"]),
     vol.Optional("runden"): vol.Coerce(int),
     vol.Optional("leben"): vol.Coerce(int),
+    vol.Optional("zielwert"): vol.Coerce(int),
     vol.Optional("spieler"): vol.All(cv.ensure_list, [cv.string]),
     vol.Optional("startwert"): vol.Coerce(int),
     vol.Optional("einwurf"): MODUS,

@@ -92,3 +92,49 @@ async def test_bot_cricket_und_golf(hass: HomeAssistant, geladen) -> None:
 def test_modus_text_spielarten() -> None:
     assert modus_text({"spiel": "cricket", "variante": "cut_throat", "zahlen": "tactics", "legs": 3}) == "Cricket · Cut-Throat · Tactics · Erster bis 3 Legs"
     assert modus_text({"spiel": "golf", "legs": 1}) == "Golf"
+
+
+async def test_spielerzahl_je_spielart(hass: HomeAssistant, geladen) -> None:
+    anna, ben, cem = await _spieler(hass, "Anna", "Ben", "Cem")
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "spiel_starten", spieler=[anna, ben, cem], spiel="scram")
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "spiel_starten", spieler=[anna], spiel="killer")
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], spiel="scram")
+    assert _attr(hass, "art") == "scram"
+    assert [p["rolle"] for p in _attr(hass, "spieler")] == ["stopper", "scorer"]
+
+
+async def test_gotcha_und_fussball_ereignisse(hass: HomeAssistant, geladen) -> None:
+    anna, ben = await _spieler(hass, "Anna", "Ben")
+    liste = _sammeln(geladen)
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], spiel="gotcha", zielwert=101, variante="double")
+    assert _attr(hass, "modus") == "Gotcha · 101"
+    assert _attr(hass, "spieler")[0]["zielwert"] == 101
+    _board(hass, geladen, [])
+    _board(hass, geladen, ["T20", "M", "M"])
+    _board(hass, geladen, [])
+    _board(hass, geladen, ["T20", "M", "M"])
+    assert ("gotcha", {"player": "Ben", "victim": "Anna"}) in [(t, {k: d[k] for k in ("player", "victim") if k in d}) for t, d in liste]
+    assert [p["rest"] for p in _attr(hass, "spieler")] == [0, 60]
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], spiel="football", zielwert=5)
+    assert _attr(hass, "modus") == "Fußball · 5 Tore"
+    _board(hass, geladen, [])
+    _board(hass, geladen, ["S25", "D20", "M"])
+    assert "goal" in [t for t, _ in liste]
+    assert _attr(hass, "spieler")[0]["rest"] == 1
+
+
+async def test_neue_spielarten_per_bot(hass: HomeAssistant, geladen) -> None:
+    """Bots spielen jede neue Spielart bis zum Ende."""
+    with patch("custom_components.autodarts.spiel._pause"), patch(
+        "custom_components.autodarts.x01.streuung", side_effect=lambda level: 0.001 if level > 70 else 30.0
+    ):
+        for art in ("wild_mouse", "mickey", "catch40", "checkout", "jdc", "singles", "bermuda", "rtw", "gotcha", "nine_lives", "football", "scram", "highscore"):
+            await _dienst(hass, "spiel_starten", spieler=["bot:60", "bot:80"], spiel=art)
+            for _ in range(400):
+                await hass.async_block_till_done()
+                if hass.states.get(SPIEL).state == "finished":
+                    break
+            assert hass.states.get(SPIEL).state == "finished", art
+            assert _attr(hass, "gewinner") in (0, 1), art

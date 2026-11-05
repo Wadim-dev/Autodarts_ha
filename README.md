@@ -38,7 +38,7 @@
 <table>
   <tr>
     <td width="33%" valign="top"><h3>🧩 Ready in two minutes</h3>Install, confirm the board that Home Assistant finds by itself – done. A new <b>DartNest</b> entry in the sidebar holds every screen. Nothing to configure, no YAML, no dashboard to build.</td>
-    <td width="33%" valign="top"><h3>🎯 A real darts night</h3>X01, Cricket, training and party games for 1–8 players and bots, a caller with walk-on songs, stadium effects on a 180 and your lights flashing along.</td>
+    <td width="33%" valign="top"><h3>🎯 A real darts night</h3>29 games – X01, Cricket, training and party – for 1–8 players and bots, a caller with walk-on songs, stadium effects on a 180 and your lights flashing along.</td>
     <td width="33%" valign="top"><h3>🏠 Stays at home</h3>Talks only to the board PC in your own network. No cloud, no account, no subscription. Players and statistics never leave your Home Assistant.</td>
   </tr>
 </table>
@@ -68,20 +68,17 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-game.png" alt="Game screen with the live camera image" width="900"><br><sub>Real board: the straightened camera image right in the game screen.</sub></p>
 
-<table>
-  <tr>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lobby.png" alt="New game"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/cricket.png" alt="Cricket"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/keypad.png" alt="Keypad"></td>
-  </tr>
-  <tr>
-    <td><b>New game</b> – pick players and bots, game and rules with a few taps.</td>
-    <td><b>Cricket</b> – marks, MPR and the target on the board.</td>
-    <td><b>Keypad</b> – score by tap when the cameras are off.</td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/games.png" alt="29 games in four groups" width="900"></p>
 
-**12 games:** X01 (101–901, double/master in and out, legs and sets) · Cricket (standard, cut-throat, no score) · Around the Clock · Bob's 27 · Doubles · 121 Checkout · Highscore · Shanghai · Killer · Halve-It · Golf · Baseball – each with a short rule text on screen.
+**29 games in four groups.** Pick X01, Cricket, Training or Party, then tap a tile – the rules are right below it.
+
+| X01 | Cricket (8) | Training (8) | Party (12) |
+|---|---|---|---|
+| 101 – 901<br>double / master in and out<br>legs and sets | Cricket · Cut-Throat · No Score<br>Tactics · Random · Hidden<br>Wild Mouse · Mickey Mouse | Around the Clock · Doubles<br>Singles · Bob's 27<br>121 Checkout · Checkout Training<br>Catch 40 · JDC Challenge | Count-Up · Shanghai · Killer<br>Halve-It · Bermuda · Golf<br>Baseball · Round the World<br>Gotcha · Nine Lives · Football · Scram |
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/new-games.png" alt="Gotcha, Wild Mouse, Football and Scram" width="900"></p>
+
+Every game knows its own rules: whose turn it is, what to aim for, who is ahead. A tie in a points game such as Count-Up or Golf goes to extra rounds. No cameras or board off? A keypad appears by itself.
 
 ## Celebrate
 
@@ -241,23 +238,48 @@ The game card is made for a tablet next to the board (full screen button include
 <details>
 <summary><b>Local games and rules</b></summary>
 
-All games run completely inside Home Assistant: X01, Cricket, five training games and five party games, for 1–8 players, people and bots mixed. The game card shows a short rule text for every game, highlights the current target on the board and has its own effects (nine marks, Shanghai, killer, hole in one …).
+All games run completely inside Home Assistant, for 1–8 players, people and bots mixed (Scram is for exactly two, Killer needs at least two). The game card shows a short rule text for every game, highlights the current target on the board and has its own effects (nine marks, Shanghai, gotcha, goal, killer, hole in one …). Bots play every game.
+
+**X01 and Cricket**
 
 | Game | `spiel` | Rules in short | Options |
 |------|---------|----------------|---------|
 | X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets |
-| Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` |
+| Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` (6 random numbers), `hidden` (6 random numbers, shown when someone hits them) |
+| Wild Mouse | `wild_mouse` | Cricket on 20–15 and bull plus three extra targets: any double, any treble and 3 in a bed (three darts in the same field). A dart marks its own number first, then the double or treble | `variante`: `ohne_3b` (without 3 in a bed) |
+| Mickey Mouse | `mickey` | Close 20–12, any double, any treble and bull; no points, first to close everything wins | – |
+
+**Training**
+
+| Game | `spiel` | Rules in short | Options |
+|------|---------|----------------|---------|
 | Around the Clock | `atc` | 1 to 20, then bull; first through wins | `variante`: `single` (any segment), `double`, `triple` |
-| Bob's 27 | `bobs27` | Start 27; three darts at D1 … D20 and bull; hits add, no hit subtracts; below 0 you are out | – |
 | Doubles | `doppel` | Three darts at every double, one point per hit | – |
+| Singles | `singles` | One visit at every number 1–20 and bull; single 1, double 2, treble 3 points | – |
+| Bob's 27 | `bobs27` | Start 27; three darts at D1 … D20 and bull; hits add, no hit subtracts; below 0 you are out | – |
 | 121 Checkout | `checkout121` | Nine darts to check out (double out); done +1, missed −1 | `runden` (attempts, default 10) |
-| Highscore | `highscore` | Most points in N visits | `runden` (default 10) |
+| Checkout Training | `checkout` | Random finishes from 2 to 170, three visits each (double out); everyone gets the same finishes; most checkouts win | `runden` (default 10) |
+| Catch 40 | `catch40` | Finishes 61 to 100, two visits each; 3 points with two darts, 2 with three, 1 in the second visit | – |
+| JDC Challenge | `jdc` | Shanghai 10–15, one dart at every double and bull, Shanghai 15–20 – the junior darts test with 57 darts | – |
+
+**Party**
+
+| Game | `spiel` | Rules in short | Options |
+|------|---------|----------------|---------|
+| Count-Up | `highscore` | Most points in N visits | `runden` (default 8) |
 | Shanghai | `shanghai` | Round n counts number n; single, double and treble in one visit wins at once | `runden`: 7 or 20 |
 | Killer | `killer` | Hit your double to become a killer, then take the lives of the others with their double | `leben` (default 3) |
 | Halve-It | `halve_it` | 15, 16, any double, 17, 18, any treble, 19, 20, bull; no hit halves your score | – |
+| Bermuda | `bermuda` | Like Halve-It with 13 targets: 12, 13, 14, double, 15, 16, 17, treble, 18, 19, 20, bull, bullseye | `variante`: `ohne_halbieren` (no halving) |
 | Golf | `golf` | Hole n = number n; last dart counts (treble 1, double 2, single 3, miss 5); fewest strokes win | `runden`: 9 or 18 holes |
 | Baseball | `baseball` | Nine innings, inning n = number n; single 1, double 2, treble 3 runs | – |
+| Round the World | `rtw` | 1 to 20, then bull; every hit scores its points; first to hit the bull wins | `variante`: `auf` (up), `ab` (down), `zufall` (random order) |
+| Gotcha | `gotcha` | Everyone counts up from 0; land exactly on another player's score and they go back to 0; hit the target exactly to win | `zielwert` (101–1001, default 301); `variante`: `straight`, `double`, `master` (check-out) |
+| Nine Lives | `nine_lives` | 1 to 20 in order; a visit without a hit on your number costs a life | `leben` (default 3) |
+| Football | `football` | Hit the bull to get the ball, then every double is a goal; first to N goals wins | `zielwert` (goals, default 10) |
+| Scram | `scram` | Two players: the stopper closes 20–15 and bull, the scorer scores on everything still open; then the roles swap | – |
 
+Points games (Count-Up, Shanghai, Halve-It, Bermuda, Golf, Baseball) that end in a tie get extra rounds, up to five.
 Every game can be played as first to N legs.
 
 #### Without cameras: tap or type
@@ -716,7 +738,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 
 **Was drin ist**
 
-- **Spielen:** X01, Cricket, 5 Trainings- und 5 Partyspiele für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
+- **Spielen:** 29 Spiele: X01, 8 Cricket-Spiele (u. a. Tactics, Verdeckt, Wild Mouse, Mickey Mouse), 8 Trainings (u. a. Catch 40, JDC, Checkout-Training) und 12 Partyspiele (u. a. Gotcha, Fußball, Scram, Nine Lives, Bermuda) für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
 - **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck, jeder Punkte-Ton per Spracherkennung geprüft) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.

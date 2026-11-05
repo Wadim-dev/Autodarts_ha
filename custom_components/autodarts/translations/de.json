@@ -77,8 +77,11 @@
     "player_not_found": {
       "message": "Spieler nicht gefunden."
     },
+    "player_count": {
+      "message": "Diese Spielart braucht {min} bis {max} Spieler."
+    },
     "invalid_game": {
-      "message": "Unbekannte Spielart. Möglich: x01, cricket, atc, bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball."
+      "message": "Unbekannte Spielart. Möglich: x01, cricket, wild_mouse, mickey, atc, bobs27, doppel, checkout121, checkout, catch40, jdc, singles, highscore, shanghai, killer, halve_it, golf, baseball, bermuda, rtw, gotcha, nine_lives, football, scram."
     },
     "tournament_players": {
       "message": "Ein Turnier braucht 3 bis {max} Spieler."
@@ -264,7 +267,9 @@
               "eliminated": "Spieler raus",
               "halved": "Halbiert",
               "hole_in_one": "Hole in one",
-              "tournament_won": "Turnier gewonnen"
+              "tournament_won": "Turnier gewonnen",
+              "goal": "Tor (Fußball)",
+              "gotcha": "Gotcha (Stand zurückgesetzt)"
             }
           }
         }

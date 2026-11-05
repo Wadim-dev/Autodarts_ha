@@ -30,8 +30,8 @@ SPEICHER_VERSION = 1
 MAX_SPIELER = 8
 MAX_VERLAUF = 50
 STANDARD = {"spiel": "x01", "startwert": 501, "einwurf": "straight", "auswurf": "double", "legs": 1, "sets": 0, "bull_off": False,
-            "variante": "", "zahlen": "classic", "runden": 0, "leben": 3}
-EINSTELLUNGEN = ("spiel", "startwert", "einwurf", "auswurf", "legs", "sets", "bull_off", "variante", "zahlen", "runden", "leben")
+            "variante": "", "zahlen": "classic", "runden": 0, "leben": 3, "zielwert": 0}
+EINSTELLUNGEN = ("spiel", "startwert", "einwurf", "auswurf", "legs", "sets", "bull_off", "variante", "zahlen", "runden", "leben", "zielwert")
 MODI = ("straight", "double", "master")
 STAT_FELDER = ("punkte", "darts", "f9p", "f9d", "versuche", "treffer", "n180", "n140", "n100", "legs", "sets")
 
@@ -182,10 +182,13 @@ class Spielleiter:
         name = daten["player"]
         if st["art"] == "highscore" and z["p"] == 180:
             self._ereignis("one_eighty", daten)
-        namen = {"nine_marks": "nine_marks", "shanghai": "shanghai", "killer": "killer", "halbiert": "halved", "hole_in_one": "hole_in_one"}
+        namen = {"nine_marks": "nine_marks", "shanghai": "shanghai", "killer": "killer", "halbiert": "halved", "hole_in_one": "hole_in_one",
+                 "tor": "goal", "check": "checkout"}
         for tag in z.get("x") or []:
             if tag in namen:
                 self._ereignis(namen[tag], daten)
+            elif tag.startswith("gotcha:"):
+                self._ereignis("gotcha", {**daten, "victim": st["spieler"][int(tag[7:])]["name"]})
             elif tag.startswith("raus"):
                 q = int(tag[5:]) if tag.startswith("raus:") else z["s"]
                 self._ereignis("eliminated", {"player": st["spieler"][q]["name"]})
@@ -439,8 +442,9 @@ class Spielleiter:
                 ges[f] = max(0, ges.get(f, 0) + vorzeichen * roh[f])
             if vorzeichen > 0:
                 # Cricket: beste MPR; sonst Endstand (Golf: weniger ist besser)
-                wert = st["spieler"][k]["avg" if art == "cricket" else "rest"]
-                besser = art == "cricket" or spielarten.ARTEN[art].mehr_ist_besser
+                cricket = issubclass(spielarten.ARTEN[art], spielarten.Cricket)
+                wert = st["spieler"][k]["avg" if cricket else "rest"]
+                besser = cricket or spielarten.ARTEN[art].mehr_ist_besser
                 if "best" not in ges or (wert > ges["best"] if besser else wert < ges["best"]):
                     ges["best"] = wert
 
@@ -462,6 +466,7 @@ class Spielleiter:
         e["leben"] = max(1, min(int(e.get("leben") or 3), 9))
         e["variante"] = str(e.get("variante") or "")
         e["zahlen"] = str(e.get("zahlen") or "classic")
+        e["zielwert"] = max(0, min(int(e.get("zielwert") or 0), 1001))
         return e
 
     def _spieler_aus(self, eintraege: list[str], anzahl: int) -> list[dict[str, Any]]:
@@ -481,6 +486,9 @@ class Spielleiter:
     async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any], turnier_ref: dict[str, Any] | None = None) -> None:
         e = self._pruefen(einstellungen)
         spieler = self._spieler_aus(eintraege or e.get("spieler") or [], MAX_SPIELER)
+        lo, hi = spielarten.SPIELER_GRENZEN.get(e["spiel"], (1, MAX_SPIELER))
+        if not lo <= len(spieler) <= hi:
+            raise _fehler("player_count", min=str(lo), max=str(hi))
         if turnier_ref is None:
             e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
             self.daten["letzte"] = e
@@ -798,7 +806,7 @@ class Spielleiter:
             return a
         st = self.stand or {}
         a.update({k: st.get(k) for k in ("am_zug", "aufnahme", "weg", "spieler", "gewinner", "leg_gewinner", "leg", "set", "ansage", "ansage_id",
-                                         "art", "zahlen", "runden", "ziel")})
+                                         "art", "zahlen", "verdeckt", "runden", "ziel")})
         a["reihenfolge"] = sp["reihenfolge"]
         a["bot_wirft"] = bool(self._bot_aufgabe and not self._bot_aufgabe.done())
         a["aufnahmen"] = len(sp["aufnahmen"])
@@ -850,8 +858,11 @@ def _rund(v: Any) -> Any:
     return round(v, 3) if isinstance(v, (int, float)) else None
 
 
-ART_NAMEN = {"cricket": "Cricket", "atc": "Rund um die Uhr", "bobs27": "Bob's 27", "doppel": "Doppel-Training", "checkout121": "121 Checkout",
-             "highscore": "Highscore", "shanghai": "Shanghai", "killer": "Killer", "halve_it": "Halve-It", "golf": "Golf", "baseball": "Baseball"}
+ART_NAMEN = {"cricket": "Cricket", "wild_mouse": "Wild Mouse", "mickey": "Mickey Mouse",
+             "atc": "Rund um die Uhr", "bobs27": "Bob's 27", "doppel": "Doppel-Training", "checkout121": "121 Checkout",
+             "checkout": "Checkout-Training", "catch40": "Catch 40", "jdc": "JDC Challenge", "singles": "Singles-Training",
+             "highscore": "Count-Up", "shanghai": "Shanghai", "killer": "Killer", "halve_it": "Halve-It", "golf": "Golf", "baseball": "Baseball",
+             "bermuda": "Bermuda", "rtw": "Round the World", "gotcha": "Gotcha", "nine_lives": "Nine Lives", "football": "Fußball", "scram": "Scram"}
 
 
 def modus_text(e: dict[str, Any]) -> str:
@@ -860,8 +871,12 @@ def modus_text(e: dict[str, Any]) -> str:
         teile = [ART_NAMEN.get(art, art)]
         if art == "cricket":
             teile += [{"cut_throat": "Cut-Throat", "no_score": "Ohne Punkte"}.get(e.get("variante") or "", "Standard")]
-            if e.get("zahlen") in ("tactics", "random"):
-                teile.append({"tactics": "Tactics", "random": "Zufall"}[e["zahlen"]])
+            if e.get("zahlen") in ("tactics", "random", "hidden"):
+                teile.append({"tactics": "Tactics", "random": "Zufall", "hidden": "Verdeckt"}[e["zahlen"]])
+        if art == "gotcha":
+            teile.append(str(e.get("zielwert") or 301))
+        if art == "football":
+            teile.append(f"{e.get('zielwert') or 10} Tore")
         if int(e.get("legs") or 1) > 1:
             teile.append(f"Erster bis {e['legs']} Legs")
         return " · ".join(teile)

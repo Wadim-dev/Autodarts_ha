@@ -84,7 +84,7 @@
       "message": "Unknown game. Use x01, cricket, wild_mouse, mickey, atc, bobs27, doppel, checkout121, checkout, catch40, jdc, singles, highscore, shanghai, killer, halve_it, golf, baseball, bermuda, rtw, gotcha, nine_lives, football, scram."
     },
     "tournament_players": {
-      "message": "A tournament needs 3 to {max} players."
+      "message": "A tournament with this format needs {min} to {max} players."
     },
     "no_tournament": {
       "message": "No tournament is running."

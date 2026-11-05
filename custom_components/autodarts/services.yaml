@@ -81,7 +81,7 @@ spiel_starten:
         boolean:
 turnier_starten:
   name: Turnier starten
-  description: K.-o.-Turnier mit 3–32 Spielern oder Liga (jeder gegen jeden) mit 3–10 Spielern, Bots erlaubt. Gleiche Felder wie beim Spiel, dazu turnier_modus ko oder liga; jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt.
+  description: "Turnier mit Bots erlaubt. Gleiche Felder wie beim Spiel, dazu turnier_modus: ko (K.-o., 3–32 Spieler), doppel_ko (Doppel-K.-o., 3–16), gruppen (Gruppen + K.-o., 6–32) oder liga (jeder gegen jeden, 3–10). Jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt."
   fields: *startfelder
 turnier_weiter:
   name: Turnier weiter

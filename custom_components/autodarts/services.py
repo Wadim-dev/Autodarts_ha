@@ -38,7 +38,7 @@ START = {
 
 DIENSTE = {
     "spiel_starten": vol.Schema(START),
-    "turnier_starten": vol.Schema({**START, vol.Optional("turnier_modus", default="ko"): vol.In(["ko", "liga"])}),
+    "turnier_starten": vol.Schema({**START, vol.Optional("turnier_modus", default="ko"): vol.In(["ko", "doppel_ko", "gruppen", "liga"])}),
     "spiel_abbrechen": vol.Schema({}),
     "turnier_weiter": vol.Schema({}),
     "turnier_abbrechen": vol.Schema({}),

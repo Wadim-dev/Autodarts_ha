@@ -84,7 +84,7 @@
       "message": "Unbekannte Spielart. Möglich: x01, cricket, wild_mouse, mickey, atc, bobs27, doppel, checkout121, checkout, catch40, jdc, singles, highscore, shanghai, killer, halve_it, golf, baseball, bermuda, rtw, gotcha, nine_lives, football, scram."
     },
     "tournament_players": {
-      "message": "Ein Turnier braucht 3 bis {max} Spieler."
+      "message": "Ein Turnier in dieser Form braucht {min} bis {max} Spieler."
     },
     "no_tournament": {
       "message": "Es läuft kein Turnier."

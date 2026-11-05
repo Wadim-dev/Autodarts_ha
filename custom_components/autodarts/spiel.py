@@ -541,9 +541,11 @@ class Spielleiter:
 
     async def turnier_starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any], modus: str = "ko") -> None:
         e = self._pruefen(einstellungen)
+        modus = modus if modus in turnier.MODI else "ko"
         spieler = self._spieler_aus(eintraege or [], turnier.MAX_SPIELER)
-        if not turnier.MIN_SPIELER <= len(spieler) <= (turnier.LIGA_MAX if modus == "liga" else turnier.MAX_SPIELER):
-            raise _fehler("tournament_players", max=str(turnier.LIGA_MAX if modus == "liga" else turnier.MAX_SPIELER))
+        lo, hi = turnier.GRENZEN[modus]
+        if not lo <= len(spieler) <= hi:
+            raise _fehler("tournament_players", min=str(lo), max=str(hi))
         teilnehmer = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
         self.daten["letzte"] = {**e, "spieler": teilnehmer}
         self.daten["turnier"] = {
@@ -553,7 +555,7 @@ class Spielleiter:
             "namen": [s["name"] for s in spieler],
             "einstellungen": {k: e[k] for k in EINSTELLUNGEN if k != "spieler"},
             "ergebnisse": {},
-            "modus": modus if modus in turnier.MODI else "ko",
+            "modus": modus,
             "legs": {},
         }
         await self.turnier_weiter()
@@ -563,11 +565,11 @@ class Spielleiter:
         t = self.daten.get("turnier")
         if not t:
             raise _fehler("no_tournament")
-        n = turnier.naechstes(t)
+        n = turnier.naechstes_match(t)
         if n is None:
             raise _fehler("tournament_over")
-        r, m, a, b = n
-        await self.starten([t["teilnehmer"][a], t["teilnehmer"][b]], t["einstellungen"], {"id": t["id"], "r": r, "m": m, "t": [a, b]})
+        k, a, b = n
+        await self.starten([t["teilnehmer"][a], t["teilnehmer"][b]], t["einstellungen"], {"id": t["id"], "k": k, "t": [a, b]})
 
     async def turnier_abbrechen(self) -> None:
         self.daten["turnier"] = None
@@ -581,7 +583,7 @@ class Spielleiter:
         ref, t = sp.get("turnier"), self.daten.get("turnier")
         if not ref or not t or t["id"] != ref["id"]:
             return
-        schluessel = f"{ref['r']}-{ref['m']}"
+        schluessel = _ref_schluessel(ref)
         if gewinner is None:
             t["ergebnisse"].pop(schluessel, None)
             t.get("legs", {}).pop(schluessel, None)
@@ -777,7 +779,7 @@ class Spielleiter:
         sp = self.spiel
         t = self.daten.get("turnier")
         ref = (sp or {}).get("turnier")
-        tur = turnier.ansicht(t, (ref["r"], ref["m"]) if ref and ref["id"] == t["id"] else None) if t else None
+        tur = turnier.ansicht(t, _ref_schluessel(ref) if ref and ref["id"] == t["id"] else None) if t else None
         if not sp:
             return {"quelle": "HA", "turnier": tur} if tur else {"quelle": "HA"}
         a: dict[str, Any] = {
@@ -847,6 +849,11 @@ class Spielleiter:
                 "abzeichen": auswertung.abzeichen(g, pr, beste),
             })
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte")}
+
+
+def _ref_schluessel(ref: dict[str, Any]) -> str:
+    """Schlüssel des Turnier-Matches (vor 1.26 als Runde/Match gespeichert)."""
+    return str(ref.get("k") or f"{ref['r']}-{ref['m']}")
 
 
 async def _pause(sekunden: float) -> None:

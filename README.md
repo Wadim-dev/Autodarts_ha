@@ -59,12 +59,13 @@
       <b>The game screen</b> is made for a tablet next to the board: big scores, average, checkout ways and every dart where it landed.<br><br>
       ✏️ Tap any visit to correct it – the score is recalculated.<br>
       📷 Show the straightened camera image instead of the drawn board.<br>
-      <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/camera-view.png" alt="Camera image in the game screen" width="220"><br>
       🖐️ No cameras or board off? A keypad appears by itself.<br>
       🔒 The screen stays awake during a game.
     </td>
   </tr>
 </table>
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-game.png" alt="Game screen with the live camera image" width="900"><br><sub>Real board: the straightened camera image right in the game screen.</sub></p>
 
 <table>
   <tr>
@@ -160,7 +161,9 @@ Bots from beginner to pro (average adjustable) make every evening a match – ev
   </tr>
 </table>
 
-<sub>Screenshots in this section and the aim map, light editor and camera image come from a real board with the German interface.</sub>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/camera-settings.png" alt="Camera settings" width="700"><br><sub>Camera resolution, frame rate and standby by tap.</sub></p>
+
+<sub>Screenshots with the German interface come from a real board at home.</sub>
 
 ## Everywhere
 

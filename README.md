@@ -226,16 +226,19 @@ One config entry is one board.
 
 ## Installation
 
-> **Private project.** This repository is private and only meant for its owner's own Home Assistant. It is not published in HACS or any other store.
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=Autodarts_ha&category=integration)
 
-### Updates (since 1.13.0)
+### Marketplace (recommended)
 
-1. Put the new version of `custom_components/autodarts` into the folder `custom_templates/autodarts_update` of the Home Assistant configuration, `manifest.json` last. Big files can come as `<file>.patch` (unified diff, as `git diff` writes it); if a patch does not fit, nothing is changed. A file `_entfernen.txt` (one path per line) removes files of the old version; `CHANGELOG.md` there gives the release notes.
-2. **Settings → Updates** shows **Autodarts Board Integration**. Install restarts Home Assistant with the new version.
+1. Click the button above, or in Home Assistant open the **Marketplace**, choose **Add by link** and enter `https://github.com/Wadim-dev/Autodarts_ha` (type **Integration**).
+2. Install **Autodarts (unofficial)** and restart Home Assistant.
+3. Add the integration (see [Configuration](#configuration)).
 
-### First install
+New versions show up under **Settings → Updates** like any other Marketplace update.
 
-Copy `custom_components/autodarts` into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
+### Manual
+
+Copy `custom_components/autodarts` from the [latest release](https://github.com/Wadim-dev/Autodarts_ha/releases/latest) into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
 
 ## Configuration
 
@@ -620,7 +623,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Sechs fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte, Ansager) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 
-**Privates Projekt:** nur für das eigene Home Assistant, nicht veröffentlicht. **Updates:** neue Version in den Ordner `custom_templates/autodarts_update` legen (manifest.json zuletzt) → Einstellungen → Updates → „Autodarts Board Integration“ installieren (startet Home Assistant neu).
+**Installation:** Knopf oben unter „Installation“ antippen oder im Home Assistant **Marketplace** „Hinzufügen per Link“ → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → installieren → neu starten. **Updates** erscheinen danach unter Einstellungen → Updates.
 **Einrichtung:** Boards mit Board Manager 2.x werden automatisch gefunden („Autodarts Board gefunden“ unter Geräte & Dienste, nur bestätigen). Sonst: Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein. Adresse später ändern: drei Punkte → Neu konfigurieren.
 
 > Kein offizielles Projekt von Autodarts. Der Name dient nur zur Beschreibung der Kompatibilität.

@@ -94,7 +94,7 @@ Average, first 9, checkout rate, rating, trend, badges, head to head and a ranki
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
 
-All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** switch the board PC off whenever you like. DartNest shows *Off* and carries on by itself when the board is back.
+All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** pick the plug of the board PC once under *Board Manager → Board PC power plug* – every DartNest screen then has the on/off button. DartNest shows *Off* and carries on by itself when the board is back.
 
 <sub>Screenshots with the German interface come from a real board at home.</sub>
 
@@ -675,7 +675,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck, jeder Punkte-Ton per Spracherkennung geprüft) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
-- **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein.
+- **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.
 

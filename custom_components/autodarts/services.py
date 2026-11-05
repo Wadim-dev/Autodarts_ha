@@ -56,6 +56,10 @@ DIENSTE = {
         vol.Optional("loeschen", default=False): cv.boolean,
     }),
     "lichteffekte_setzen": vol.Schema({vol.Required("regeln"): [dict]}),
+    "strom_setzen": vol.Schema({
+        vol.Optional("schalter", default=""): vol.Any("", cv.entity_id),
+        vol.Optional("leistung", default=""): vol.Any("", cv.entity_id),
+    }),
     "lichteffekt_testen": vol.Schema({vol.Required("regel"): dict}),
     "aufnahme_eintragen": vol.Schema({
         vol.Optional("spieler"): cv.string,
@@ -207,6 +211,8 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.spieler_aendern(d["id"], d.get("name"), d["loeschen"])
         elif name == "statistik_loeschen":
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
+        elif name == "strom_setzen":
+            await s.strom_setzen(d["schalter"], d["leistung"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
         elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen", "ansager_pack_anhalten"):

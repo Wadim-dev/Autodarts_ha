@@ -4,7 +4,7 @@ blueprint:
     Announces darts events (180, bust, checkout, game shot …) on a speaker with text to speech,
     like a real caller. The sentences can be changed.
   domain: automation
-  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/caller.yaml
+  source_url: https://github.com/Wadim-dev/DartNest_ha/blob/main/blueprints/automation/autodarts/caller.yaml
   input:
     event_entity:
       name: Game event

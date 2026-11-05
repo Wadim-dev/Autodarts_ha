@@ -42,7 +42,7 @@
   },
   "exceptions": {
     "not_set_up": {
-      "message": "Autodarts ist nicht eingerichtet."
+      "message": "DartNest ist nicht eingerichtet."
     },
     "board_error": {
       "message": "Das Board hat {path} mit HTTP-Status {status} beantwortet."

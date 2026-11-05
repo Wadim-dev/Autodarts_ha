@@ -4,7 +4,7 @@ blueprint:
     Shows darts events (180, checkout, bust, leg won …) on an Awtrix 3 clock (Ulanzi TC001)
     through MQTT. Needs the MQTT integration and Awtrix 3 firmware.
   domain: automation
-  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/awtrix.yaml
+  source_url: https://github.com/Wadim-dev/DartNest_ha/blob/main/blueprints/automation/autodarts/awtrix.yaml
   input:
     event_entity:
       name: Game event

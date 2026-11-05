@@ -62,7 +62,7 @@ async def _karten_anmelden(hass: HomeAssistant) -> None:
     # own sidebar entry "Autodarts" with all cards as tabs, ready without any setup
     if "autodarts" not in hass.data.get("frontend_panels", {}):
         await panel_custom.async_register_panel(
-            hass, frontend_url_path="autodarts", webcomponent_name="autodarts-panel", sidebar_title="Autodarts",
+            hass, frontend_url_path="autodarts", webcomponent_name="autodarts-panel", sidebar_title="DartNest",
             sidebar_icon="mdi:bullseye-arrow", module_url=url, require_admin=False,
         )
 

@@ -3,6 +3,21 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.22.0
+
+- **New name: DartNest.** The integration, its logo, the sidebar entry and the cards are now called DartNest, so it is clear that this is an unofficial project and not a product of Autodarts. It still works with Autodarts boards. Nothing changes for you: entity IDs, actions, dashboards and settings stay the same.
+- New logo and icon (house with target and dart).
+- The repository moved to [Wadim-dev/DartNest_ha](https://github.com/Wadim-dev/DartNest_ha); the old address forwards there.
+- Updates come through the Marketplace. The extra update entity for the folder `custom_templates/autodarts_update` is now off by default (existing installations keep it).
+- New README with screenshots and a legal notice.
+
+**Deutsch**
+- **Neuer Name: DartNest.** Integration, Logo, Seitenleiste und Karten heißen jetzt DartNest. So ist klar, dass es ein inoffizielles Projekt ist und kein Produkt von Autodarts. Es funktioniert weiter mit Autodarts-Boards. Für dich ändert sich nichts: Entitäten, Aktionen, Dashboards und Einstellungen bleiben gleich.
+- Neues Logo und Symbol (Haus mit Zielscheibe und Dart).
+- Das Repository heißt jetzt [Wadim-dev/DartNest_ha](https://github.com/Wadim-dev/DartNest_ha); die alte Adresse leitet weiter.
+- Updates kommen über den Marketplace. Die zusätzliche Update-Entität für den Ordner `custom_templates/autodarts_update` ist für neue Installationen standardmäßig aus (bestehende behalten sie).
+- Neue README mit Bildern und Rechtshinweis.
+
 ## 1.21.0
 
 - Caller card rebuilt to explain itself: a big **Listen to a sample** button on top, then three steps – where it plays, which voice or pack (one row each, with sounds and what is missing), what it announces. Walk-on songs and the live voice fold away.

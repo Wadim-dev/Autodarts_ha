@@ -1,9 +1,9 @@
 """Update entities: the board software (reported by the board) and this integration.
 
-The integration is kept private. A new version is put into the folder
-custom_templates/autodarts_update (manifest.json last): whole files, or "<file>.patch" with a
-unified diff for big files. The integration update entity offers it; installing copies the
-files over the integration and restarts Home Assistant.
+Normal updates come through the Marketplace. The integration update entity is an optional
+second way, off by default: a new version put into the folder custom_templates/autodarts_update
+(manifest.json last; whole files, or "<file>.patch" with a unified diff for big files) is offered
+there, and installing copies the files over the integration and restarts Home Assistant.
 """
 
 from __future__ import annotations
@@ -144,13 +144,14 @@ class BoardUpdate(DartsEntitaet, UpdateEntity):
 
 
 class IntegrationUpdate(UpdateEntity):
-    """Update of this integration from the private folder custom_templates/autodarts_update."""
+    """Optional update of this integration from the folder custom_templates/autodarts_update."""
 
     _attr_has_entity_name = True
     _attr_translation_key = "integration"
     _attr_entity_category = EntityCategory.CONFIG
+    _attr_entity_registry_enabled_default = False  # optional; updates normally come through the Marketplace
     _attr_supported_features = UpdateEntityFeature.INSTALL | UpdateEntityFeature.RELEASE_NOTES
-    _attr_title = "Autodarts (unofficial)"
+    _attr_title = "DartNest"
 
     def __init__(self, d: DartsDaten, installiert: str) -> None:
         self._attr_unique_id = f"{DOMAIN}_integration_update"

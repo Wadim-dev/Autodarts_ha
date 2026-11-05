@@ -1,151 +1,205 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/dark_logo.png">
-    <img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/logo.png" alt="Autodarts for Home Assistant" height="96">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/dark_logo.png">
+    <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/logo.png" alt="DartNest" height="88">
   </picture>
 </p>
 
-<h1 align="center">Autodarts for Home Assistant</h1>
+<h3 align="center">Your dartboard, at home in Home Assistant.</h3>
 
 <p align="center">
-  Your Autodarts board in Home Assistant – fully local, with X01, Cricket, training and party games, players, bots, statistics, effects and ready-made dashboard cards.
+  Play, score, celebrate and track every dart – with ready-made screens for tablet and phone.<br>
+  Works with <b>Autodarts</b> boards · 100 % local · no YAML, no code.
 </p>
 
 <p align="center">
-  <a href="https://github.com/Wadim-dev/Autodarts_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/Autodarts_ha?style=flat-square" alt="Release"></a>
-  <a href="https://github.com/Wadim-dev/Autodarts_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/Autodarts_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
-  <img src="https://img.shields.io/badge/quality%20scale-platinum-e5e4e2?style=flat-square" alt="Quality scale: Platinum">
-  <img src="https://img.shields.io/badge/IoT%20class-local%20polling-00a37a?style=flat-square" alt="Local polling">
+  <a href="https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=DartNest_ha&category=integration"><img src="https://my.home-assistant.io/badges/hacs_repository.svg" alt="Install from the Marketplace"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Wadim-dev/DartNest_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/DartNest_ha?style=flat-square&color=ff7a50" alt="Release"></a>
+  <a href="https://github.com/Wadim-dev/DartNest_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/DartNest_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
+  <img src="https://img.shields.io/badge/100%25-local-00a37a?style=flat-square" alt="100 % local">
   <img src="https://img.shields.io/badge/languages-EN%20%7C%20DE-blue?style=flat-square" alt="English and German">
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/Autodarts_ha?style=flat-square" alt="License"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/DartNest_ha?style=flat-square" alt="License"></a>
 </p>
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/game.png" alt="Game card" width="720">
+  <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/hero.png" alt="DartNest on tablet and phone" width="900">
 </p>
 
-> **Unofficial project.** Not affiliated with, endorsed or supported by Autodarts. The name "Autodarts" is only used to describe compatibility.
+> **Unofficial project.** DartNest is a free hobby project and not affiliated with Autodarts. "Autodarts" is only named to say which boards it works with. See [Legal notice](#legal-notice).
 
 ---
 
-## Contents
-
-- [Highlights](#highlights)
-- [Dashboard cards](#dashboard-cards)
-- [Use cases](#use-cases)
-- [Supported devices](#supported-devices)
-- [Requirements](#requirements)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Entities](#entities)
-- [Local games](#local-games)
-- [Light effects](#light-effects)
-- [Blueprints](#blueprints)
-- [Actions](#actions)
-- [Automation examples](#automation-examples)
-- [How it works](#how-it-works)
-- [Known limitations](#known-limitations)
-- [Troubleshooting](#troubleshooting)
-- [FAQ](#faq)
-- [Removal](#removal)
-- [Legal notice](#legal-notice)
-- [Deutsch](#deutsch)
-
-## Highlights
-
-| | |
-|---|---|
-| 🏠 **100 % local** | Talks directly to the Autodarts Board Manager on your board PC. No cloud, no account, no internet needed. |
-| 🎯 **Live darts** | Every dart with field (e.g. `T20`) and exact position on the board, the current visit and the board status – updated every second. |
-| 🏆 **Complete X01 game** | 101 to 901, straight / double / master in and out, legs and sets, bull-off, 1–8 players, bots with adjustable average. |
-| 🎯 **Cricket, training and party games** | Cricket (standard, cut-throat, no score; 15–20, 10–20, random), Around the Clock, Bob's 27, doubles, 121 checkout, highscore, Shanghai, Killer, Halve-It, Golf, Baseball – with rule text, target on the board and bots. |
-| ✏️ **Correct anything** | Undo, add, change or delete any dart of any visit – the whole score is recalculated automatically. |
-| 🏟️ **Tournament** | Knockout for 3–32 players with bracket, byes, next-match button and champion celebration – or a league for 3–10 players with table. |
-| 📣 **Caller** | Scores, "you require …", game shot, 180 and walk-on songs per player on your speakers, on your phone or both – own sound packs by upload, missing sounds are spoken. |
-| 📊 **Statistics** | Per player: average, first 9, checkout rate, highest score/finish, best leg, 180s, rating (Elo), hit map, **aim map** (best aim point for your average), trend, badges, streak, head to head, CSV export. |
-| ✨ **Effects** | Realistic one-shot animations for 180, bust, checkout, nine-darter, Shanghai, champion … switchable per device. |
-| 💡 **Light effects** | 18 effects – blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, WLED effects and presets – on a 180, bust, checkout, leg won … – set up by click in a card, lights return to how they were. |
-| 📘 **Blueprints** | Awtrix display, caller on a speaker and push notifications – import with one click, fill in a form. |
-| 👆 **Without cameras** | A keypad appears by itself while the board is offline: Double/Triple + number, or the whole visit as a total. Tap the drawn board or type `T20` + Enter also works. |
-| 🗣️ **Voice** | Assist sentences in German, English and Russian: score, ranking, start, undo and **scores by voice** ("Alex 140") – also with an AI agent. |
-| 📷 **Cameras** | All three board cameras, detection image and live image, with the calibration grid drawn over the camera images. |
-| 🛠️ **Board Manager in HA** | Start/stop detection, reset, calibrate, restart, camera resolution / frame rate / standby, board software updates. |
-| 🧩 **Ready-made dashboard** | A sidebar entry **Autodarts** with all six cards as tabs appears by itself – no YAML, no resource, no setup. The cards can also be added to your own dashboards. |
-| 🔌 **Works with a smart plug** | Switch the board PC off whenever you like. The integration shows `Offline` and continues on its own when the board is back. |
-| 🌍 **English and German** | Entities, errors and cards follow your Home Assistant language. |
-
-## On a real board
-
-Phone screenshots from a real Winmau board with three cameras: the live image is straightened onto the board with the darts where they landed, effects run on top of the camera image, and the Board Manager shows the calibration grid on every camera.
+## Why DartNest?
 
 <table>
   <tr>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-game.png" alt="Game with live camera image"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-180.png" alt="180 effect"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/real-manager.png" alt="Board Manager"></td>
-  </tr>
-  <tr>
-    <td><b>Live game</b> – straightened camera image, darts 1–3 on the board, last visits</td>
-    <td><b>180!</b> – effect over the live image</td>
-    <td><b>Board Manager</b> – status, cameras with calibration grid, controls</td>
+    <td width="33%" valign="top"><h3>🧩 Ready in two minutes</h3>Install, confirm the board that Home Assistant finds by itself – done. A new <b>DartNest</b> entry in the sidebar holds every screen. Nothing to configure, no YAML, no dashboard to build.</td>
+    <td width="33%" valign="top"><h3>🎯 A real darts night</h3>X01, Cricket, training and party games for 1–8 players and bots, a caller with walk-on songs, stadium effects on a 180 and your lights flashing along.</td>
+    <td width="33%" valign="top"><h3>🏠 Stays at home</h3>Talks only to the board PC in your own network. No cloud, no account, no subscription. Players and statistics never leave your Home Assistant.</td>
   </tr>
 </table>
 
-## Dashboard cards
+## Get started in 3 steps
 
-**Nothing to set up:** after installing, the sidebar has a new entry **Autodarts** with everything as tabs – board, play, players, light effects and Board Manager. It works on phone, tablet and PC.
+1. **Install** – tap the *Marketplace* button above and install **DartNest**, then restart Home Assistant.
+2. **Confirm your board** – *Settings → Devices & services* shows **Autodarts board found**. Tap *Add*. (Not found? *Add integration → DartNest* and type the IP address of the board PC.)
+3. **Play** – open **DartNest** in the sidebar. That's it.
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/panel.png" alt="Autodarts in the sidebar" width="72%">&nbsp;<img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/panel-phone.png" alt="Autodarts on a phone" width="22%"></p>
+---
 
-The same cards can also be put on your own dashboards: **Edit dashboard → Add card → search "Autodarts"**. They are part of the integration and loaded automatically, no resource to add.
+## Play
 
 <table>
   <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/overview.png" alt="Overview card"></td>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lobby.png" alt="New game"></td>
-  </tr>
-  <tr>
-    <td><b>Overview</b> – animated board scene with the darts where they landed, current visit, running game and optional power button.</td>
-    <td><b>Game – lobby</b> – players and bots, single game or tournament, X01, Cricket, training and party games with rule text.</td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/manager.png" alt="Board Manager card"></td>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/players.png" alt="Players card"></td>
-  </tr>
-  <tr>
-    <td><b>Board Manager</b> – camera images with calibration grid, system values, controls, camera settings and updates.</td>
-    <td><b>Players</b> – rating, hit map, trend, badges, head to head, ranking and CSV export.</td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/cricket.png" alt="Cricket"></td>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/tournament.png" alt="Tournament"></td>
-  </tr>
-  <tr>
-    <td><b>Cricket</b> – marks board, MPR, last visits and the target on the board.</td>
-    <td><b>Tournament</b> – bracket with byes and the champion.</td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights.png" alt="Light effects card"></td>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights-edit.png" alt="Edit a light effect"></td>
-  </tr>
-  <tr>
-    <td><b>Light effects</b> – one rule per event, test with ▶, switch on and off.</td>
-    <td><b>Edit a light effect</b> – event, effect, colour, brightness, duration and lights, all by click.</td>
-  </tr>
-  <tr>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/caller.png" alt="Caller"></td>
-    <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/league.png" alt="League"></td>
-  </tr>
-  <tr>
-    <td><b>Caller</b> – three steps: where it plays, which voice or pack, what it announces; sample button on top, packs with a menu and a safe delete.</td>
-    <td><b>League</b> – everyone against everyone, table with points and leg difference.</td>
+    <td width="62%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/game.png" alt="Game screen"></td>
+    <td width="38%" valign="top">
+      <b>The game screen</b> is made for a tablet next to the board: big scores, average, checkout ways and every dart where it landed.<br><br>
+      ✏️ Tap any visit to correct it – the score is recalculated.<br>
+      📷 Show the straightened camera image instead of the drawn board.<br>
+      🖐️ No cameras or board off? A keypad appears by itself.<br>
+      🔒 The screen stays awake during a game.
+    </td>
   </tr>
 </table>
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/aim-map.png" alt="Aim map" width="560"></p>
-<p align="center"><b>Aim map</b> – where a player scores the most with their own spread. Weaker players often do better on T19 than on T20.</p>
+<table>
+  <tr>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lobby.png" alt="New game"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/cricket.png" alt="Cricket"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/keypad.png" alt="Keypad"></td>
+  </tr>
+  <tr>
+    <td><b>New game</b> – pick players and bots, game and rules with a few taps.</td>
+    <td><b>Cricket</b> – marks, MPR and the target on the board.</td>
+    <td><b>Keypad</b> – score by tap when the cameras are off.</td>
+  </tr>
+</table>
 
-### Game card
+**12 games:** X01 (101–901, double/master in and out, legs and sets) · Cricket (standard, cut-throat, no score) · Around the Clock · Bob's 27 · Doubles · 121 Checkout · Highscore · Shanghai · Killer · Halve-It · Golf · Baseball – each with a short rule text on screen.
+
+## Celebrate
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-180.png" alt="180 effect"></td>
+    <td width="50%" valign="top">
+      <b>Stadium moments.</b> Spotlights and confetti on a 180, cracks on a bust, fireworks and a trophy for the match winner, a rainbow for the nine-darter.<br><br>
+      <b>Caller.</b> Scores, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both.<br><br>
+      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects, WLED included, set up by tap. Afterwards everything goes back to how it was.
+    </td>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
+  </tr>
+  <tr>
+    <td><b>Caller</b> – speaker, voice and sound pack in three steps.</td>
+    <td><b>Light effects</b> – one rule per moment, test with ▶.</td>
+  </tr>
+</table>
+
+## Get better
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/players.png" alt="Players"></td>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/aim-map.png" alt="Aim map"></td>
+  </tr>
+  <tr>
+    <td><b>Players</b> – average, first 9, checkout rate, rating, trend, badges, head to head and a ranking.</td>
+    <td><b>Aim map</b> – where <i>you</i> score most with your own spread. Often it is not the T20.</td>
+  </tr>
+</table>
+
+Bots from beginner to pro (average adjustable) make every evening a match – even alone.
+
+## Tournaments
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tournament.png" alt="Knockout"></td>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/league.png" alt="League"></td>
+  </tr>
+  <tr>
+    <td><b>Knockout</b> for 3–32 players with bracket, byes and a champion celebration.</td>
+    <td><b>League</b> for 3–10 players: everyone against everyone, with table.</td>
+  </tr>
+</table>
+
+## Board Manager inside Home Assistant
+
+<table>
+  <tr>
+    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager"></td>
+    <td width="50%" valign="top">
+      All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page.<br><br>
+      <b>Smart plug friendly:</b> switch the board PC off whenever you like. DartNest shows <i>Off</i> and continues by itself when the board is back – with an optional power button and start-up animation.
+    </td>
+  </tr>
+</table>
+
+## Everywhere
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/panel.png" alt="DartNest in the sidebar" width="70%">&nbsp;<img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/panel-phone.png" alt="DartNest on a phone" width="22%"></p>
+
+The same screens work on PC, tablet and phone, in English and German. Want them on your own dashboard? **Edit dashboard → Add card → search "DartNest"** – no resources to add.
+
+**Talk to it:** "Alex 140", "What's the score?", "Undo" – voice commands in English, German and Russian through Assist.
+
+---
+
+## Requirements
+
+- Home Assistant **2026.2** or newer
+- An **Autodarts** board (Board Manager 1.x or 2.x) in your network – Linux PC, mini PC, Raspberry Pi or Windows
+- Optional: speakers for the caller, lights for effects, a smart plug for the board PC
+
+## Installation
+
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=DartNest_ha&category=integration)
+
+### Marketplace (recommended)
+
+1. Click the button above, or in Home Assistant open the **Marketplace**, choose **Add by link** and enter `https://github.com/Wadim-dev/DartNest_ha` (type **Integration**).
+2. Install **DartNest** and restart Home Assistant.
+3. Add the integration (see [Configuration](#configuration)).
+
+New versions show up under **Settings → Updates** like any other Marketplace update.
+
+### Manual
+
+Copy `custom_components/autodarts` from the [latest release](https://github.com/Wadim-dev/DartNest_ha/releases/latest) into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
+
+## Setup
+
+[![Open your Home Assistant instance and start setting up DartNest.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=autodarts)
+
+Boards with Board Manager 2.x announce themselves in the network: Home Assistant shows **Autodarts board found** under **Settings → Devices & services** – just confirm. Otherwise add it by hand: **Settings → Devices & services → Add integration → DartNest.** The board must be switched on during setup.
+
+| Parameter | Description |
+|-----------|-------------|
+| Host | IP address or host name of the board PC, e.g. `192.168.1.50` |
+| Port | Port of the Board Manager, default `3180` |
+
+There are no further options. To change the address later, use **three dots → Reconfigure** on the integration. If the board gets a new IP address and announces itself, the integration follows it automatically (only if the old address no longer answers).
+
+**Data updates:** game state every second (every 30 s while the board is off), system values every 15 s, calibration points only after a new calibration, camera images only while they are shown.
+
+---
+
+## Everything in detail
+
+For the curious and for automation fans. You do not need any of this to play.
+
+<details>
+<summary><b>Game screen in detail</b></summary>
+
 
 The game card is made for a tablet next to the board (full screen button included):
 
@@ -158,7 +212,138 @@ The game card is made for a tablet next to the board (full screen button include
 - keeps the screen awake during a game
 - **effects** for what happens at a real board: dart flight with wobble, sparks on trebles and doubles, bull flash, "MISS" falling off, board jolt; big scenes for 180 (spotlights, shockwave, confetti), ton-forty, ton, three in a bed, bed & breakfast, no score (tumbleweed), bust (cracks and stamp), game shot, high finish, 170 "big fish", set, match (fireworks and trophy) and the nine-darter (rainbow). Sounds play only while the caller is on. The ✨ button switches effects off per device; they respect "reduce motion" and stop while the card is hidden.
 
-### Card options
+
+
+</details>
+
+<details>
+<summary><b>Local games and rules</b></summary>
+
+All games run completely inside Home Assistant: X01, Cricket, five training games and five party games, for 1–8 players, people and bots mixed. The game card shows a short rule text for every game, highlights the current target on the board and has its own effects (nine marks, Shanghai, killer, hole in one …).
+
+| Game | `spiel` | Rules in short | Options |
+|------|---------|----------------|---------|
+| X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets |
+| Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` |
+| Around the Clock | `atc` | 1 to 20, then bull; first through wins | `variante`: `single` (any segment), `double`, `triple` |
+| Bob's 27 | `bobs27` | Start 27; three darts at D1 … D20 and bull; hits add, no hit subtracts; below 0 you are out | – |
+| Doubles | `doppel` | Three darts at every double, one point per hit | – |
+| 121 Checkout | `checkout121` | Nine darts to check out (double out); done +1, missed −1 | `runden` (attempts, default 10) |
+| Highscore | `highscore` | Most points in N visits | `runden` (default 10) |
+| Shanghai | `shanghai` | Round n counts number n; single, double and treble in one visit wins at once | `runden`: 7 or 20 |
+| Killer | `killer` | Hit your double to become a killer, then take the lives of the others with their double | `leben` (default 3) |
+| Halve-It | `halve_it` | 15, 16, any double, 17, 18, any treble, 19, 20, bull; no hit halves your score | – |
+| Golf | `golf` | Hole n = number n; last dart counts (treble 1, double 2, single 3, miss 5); fewest strokes win | `runden`: 9 or 18 holes |
+| Baseball | `baseball` | Nine innings, inning n = number n; single 1, double 2, treble 3 runs | – |
+
+Every game can be played as first to N legs.
+
+#### Without cameras: tap or type
+
+While the board is offline the game card shows a **keypad** instead of the board by itself; when the board is back online the camera image returns. Above the keypad you choose how to enter:
+
+- **Keys**: tap Double or Triple, then the number (1–20), or 25, Bull or Miss.
+- **Total** (X01 only): type the points of the whole visit, e.g. `140`, and press OK.
+- **Board**: tap the spot on the drawn board (outside the double ring = miss).
+- **Camera** (only while the board is online): back to the camera image.
+
+Your choice of Keys/Total/Board is remembered per device. **Tap the board** under the camera image switches to tapping while the board is online. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
+
+![Keypad](docs/images/keypad.png)
+
+#### Voice (Assist)
+
+The integration registers sentences in German, English and Russian, nothing to set up. They also work with an AI conversation agent, because sentence triggers are checked first.
+
+| Command | Examples |
+|---------|----------|
+| Score | "Wie steht es beim Darts", "Who is winning at darts", "Какой счёт в дартс" |
+| Ranking | "Wer ist der beste beim Darts", "Darts ranking", "Кто лучший в дартс" |
+| Start / rematch | "Starte Darts 501", "Starte Darts Cricket", "Start a darts rematch", "Начни дартс шанхай" |
+| Next tournament match | "Nächstes Darts Match", "Next darts match" |
+| Undo / cancel | "Darts rückgängig", "Darts Spiel abbrechen", "Cancel the darts game" |
+| Enter a score (X01) | "Alex hat 140", "Darts 60", "Sam scored 100", "Alex 0" – for the player whose turn it is; a checkout is counted with a double |
+
+#### Tournament
+
+The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3–32 players (bots too): a bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
+
+**League** (3–10 players): everyone plays everyone once. The card shows the table (played, wins, points, legs) and all matches; a win gives 2 points, then the leg difference counts.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/league-lobby.png" alt="Choosing knockout or league" width="420"></p>
+
+#### Caller
+
+Open **DartNest → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
+
+1. **Where should it play?** – **On this device** plays the announcements, walk-on songs and game sounds on the phone or tablet you are holding, while a game card is open (set per device; the speaker button of the game card switches the same). **On speakers** announces in Home Assistant itself, also with no dashboard open – tick one or more speakers.
+2. **Which voice?** – pick one row: the normal voice (any text-to-speech of Home Assistant, e.g. Piper or Google Translate) or a sound pack. Each pack row shows how many sounds it has and what is missing. The ⋮ button of a pack opens its menu: use, make missing sounds, stop, delete. Deleting always asks once more, shows how many sounds go and cannot be done by a single tap.
+3. **What should it announce?** – **scores** of every visit in every game mode, **"you require …"** (X01), **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
+
+- **New championship pack** (with a Google AI voice): opens a window that explains what happens, lists the speakers (Fenrir, Orus, Puck …) with a short description and a **Sample** button each, and marks the ones that already have a pack. **Make pack** speaks every score, "you require", game shot, leg, set, match and your player names once and saves them as the pack "Meisterschaft <speaker>". A visit like "140 · Ben, you require 100" is then joined from these sounds and plays at once. A free Google AI key allows 100 sounds a day, so a full pack (about 180 sounds) takes two days: at the daily limit the pack waits and **continues by itself** a few hours later, also after a restart – nothing to tap. **Stop** in the pack menu ends that. New players: **Make missing sounds** in the pack menu. Sentences that are not in the pack are spoken live by the same speaker.
+- **Own sound packs**: Media → My media → `autodarts` → `caller` → new folder, upload files named `180.mp3`, `140.mp3`, `bust.mp3`, `leg.mp3`, `set.mp3`, `match.mp3`, `game_on.mp3`, `nine.mp3` … The pack appears in step 2; whatever it does not have is spoken. Packs from 1.19 where the voice also read out a style direction are repaired with `autodarts.ansager_pack_pruefen`.
+- **Walk-on songs**: upload music to Media → My media → `autodarts` → `walkon` and pick a song per player in the card. At the start of a game each player is introduced with their song (5–60 seconds), then "Game on".
+
+Alexa/Echo speakers that support announcements get them as an announcement, so music keeps playing.
+
+#### Aim map
+
+On the players card, **Hit map → Aim** shows for every spot of the board how many points the player gets per visit when aiming there, calculated from their own average and spread. The white ring is the best aim point; the text compares it with T20.
+
+#### Statistics and badges
+
+The players card shows for every player: rating (Elo, also against bots), streak of days played, X01 key figures, a **hit map** of all fields (or the darts as dots, where the board detected a position) with the most hit fields, the **trend** of the X01 average over the last games, **badges** in bronze, silver and gold (180s, 100+ visits, high finish, short leg, best average, wins, games, darts, days in a row, nine marks, Shanghai, hole in one, allrounder) and the **head to head** record against every other player. A ranking by rating and a CSV export of all statistics are below the players. The game card shows the last visits of everybody next to the board. Statistics of Cricket, training and party games are kept per game (games, wins, best result; Cricket: best MPR) and shown on the players card.
+
+#### X01
+
+The game runs completely inside Home Assistant and is stored in `.storage/autodarts.spiel`, so it survives restarts.
+
+- **Players**: up to 8 per game, any mix of people and bots. Bots throw with a realistic scatter for the chosen average (20–120).
+- **Modes**: start value 101, 170, 301, 501, 701, 901; check-in and check-out `straight`, `double` or `master`; first to N legs or N sets of M legs.
+- **Bull-off**: closest dart to the bull starts; ties throw again.
+- **Darts from the board** are counted automatically. Pulling the darts finishes the visit. Without the board (or for corrections) darts can be entered by hand.
+- **Checkout suggestions** for up to three darts, respecting the check-out mode.
+- **Statistics** are added to each player when a game ends; undo after the end takes them back again.
+
+</details>
+
+<details>
+<summary><b>Light effects</b></summary>
+
+Let your lights celebrate with you – no YAML needed.
+
+1. Open **DartNest → Light effects** in the sidebar (or add the card **DartNest Light effects** to a dashboard).
+2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, light effect, WLED preset**), colour, brightness and duration, and tick the lights.
+3. Tap **Test** to see it, then **Save**.
+
+Effects run in Home Assistant itself, also when no dashboard is open. Afterwards every light goes back to exactly how it was (on/off, brightness, colour). A new effect on the same light takes over smoothly. Colour lights show the colour, other lights just light up. The rules are stored by the integration and can also be set with the action `autodarts.lichteffekte_setzen`.
+
+#### WLED and lights with their own effects
+
+- **Light effect** uses the effects built into a light – e.g. WLED *Fireworks*, *Chase*, *Twinkle* or the Hue effects. Only lights that have effects are offered, and the list shows the effects of the ticked lights. For WLED, **speed** and **intensity** sliders appear.
+- **WLED preset** plays a preset you saved in WLED (e.g. a "Champion" animation for a match win). Only WLED lights are offered.
+- Add WLED as usual under **Settings → Devices & services → WLED**; the strip shows up in the editor by itself. Afterwards the light, its effect, speed and intensity go back to how they were.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights-wled.png" alt="WLED preset" width="420"></p>
+
+</details>
+
+<details>
+<summary><b>Blueprints (one-click automations)</b></summary>
+
+Ready-made automations. Click the button, confirm in Home Assistant, then fill in the form (Settings → Automations → Blueprints).
+
+| Blueprint | What it does | |
+|---|---|---|
+| **Awtrix display** | Shows 180, checkout, bust, leg won … on an Awtrix 3 clock (Ulanzi TC001) via MQTT, rainbow for a 180. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fawtrix.yaml) |
+| **Caller on a speaker** | Announces the events on any speaker with text to speech ("One hundred and eighty!"). Sentences can be changed in the form. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fcaller.yaml) |
+| **Push on wins** | Push notification to your phone for match wins, tournament wins, nine-darters … | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fnotify.yaml) |
+
+</details>
+
+<details>
+<summary><b>Card options for your own dashboards</b></summary>
+
 
 All options are optional. Entities of the integration are found automatically.
 
@@ -201,62 +386,10 @@ type: custom:autodarts-players-card
 
 `back_button: false` hides the back arrow on the three page cards.
 
-## Use cases
+</details>
 
-- **Play at home without a screen:** start an X01 game from the dashboard on a tablet next to the board; scores, checkout ways and statistics update with every dart.
-- **Switch the board on and off with the room:** power the board PC with a smart plug, switch it on when you enter the room and off when the board has been idle for a while.
-- **Celebrate:** flash the lights on a 180, play a sound on a checkout, announce the remaining score on a speaker.
-- **Keep an eye on the hardware:** get a notification when calibration drifts, a camera drops frames or a board software update is available.
-- **Track progress:** long-term statistics per player, including bots as training partners.
-
-## Supported devices
-
-| Device | Status |
-|--------|--------|
-| Autodarts board with **Board Manager 2.x** (local API on port 3180) | Supported, tested |
-| Autodarts board with **Board Manager 1.x** | Supported (older state format is read as well) |
-| Board Manager on Linux PC, mini PC, Raspberry Pi or Windows | Supported – only the network address matters |
-| Other e-dartboards (Granboard, Scolia …) | Not supported |
-
-One config entry is one board.
-
-## Requirements
-
-- Home Assistant **2026.2** or newer
-- An Autodarts board (Board Manager 1.x or 2.x) reachable in your network, default port **3180**
-
-## Installation
-
-[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=Autodarts_ha&category=integration)
-
-### Marketplace (recommended)
-
-1. Click the button above, or in Home Assistant open the **Marketplace**, choose **Add by link** and enter `https://github.com/Wadim-dev/Autodarts_ha` (type **Integration**).
-2. Install **Autodarts (unofficial)** and restart Home Assistant.
-3. Add the integration (see [Configuration](#configuration)).
-
-New versions show up under **Settings → Updates** like any other Marketplace update.
-
-### Manual
-
-Copy `custom_components/autodarts` from the [latest release](https://github.com/Wadim-dev/Autodarts_ha/releases/latest) into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
-
-## Configuration
-
-[![Open your Home Assistant instance and start setting up Autodarts.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=autodarts)
-
-Boards with Board Manager 2.x announce themselves in the network: Home Assistant shows **Autodarts board found** under **Settings → Devices & services** – just confirm. Otherwise add it by hand: **Settings → Devices & services → Add integration → Autodarts.** The board must be switched on during setup.
-
-| Parameter | Description |
-|-----------|-------------|
-| Host | IP address or host name of the board PC, e.g. `192.168.1.50` |
-| Port | Port of the Board Manager, default `3180` |
-
-There are no further options. To change the address later, use **three dots → Reconfigure** on the integration. If the board gets a new IP address and announces itself, the integration follows it automatically (only if the old address no longer answers).
-
-**Data updates:** game state every second (every 30 s while the board is off), system values every 15 s, calibration points only after a new calibration, camera images only while they are shown.
-
-## Entities
+<details>
+<summary><b>Entities</b></summary>
 
 All entities belong to the device **Autodarts Board**. Entity IDs below are for an English installation.
 
@@ -282,123 +415,10 @@ All entities belong to the device **Autodarts Board**. Entity IDs below are for 
 
 While the board is off, connection and status show `Offline`; all other board entities are *unavailable*. The game and player sensors always stay available.
 
-## Local games
+</details>
 
-All games run completely inside Home Assistant: X01, Cricket, five training games and five party games, for 1–8 players, people and bots mixed. The game card shows a short rule text for every game, highlights the current target on the board and has its own effects (nine marks, Shanghai, killer, hole in one …).
-
-| Game | `spiel` | Rules in short | Options |
-|------|---------|----------------|---------|
-| X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets |
-| Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` |
-| Around the Clock | `atc` | 1 to 20, then bull; first through wins | `variante`: `single` (any segment), `double`, `triple` |
-| Bob's 27 | `bobs27` | Start 27; three darts at D1 … D20 and bull; hits add, no hit subtracts; below 0 you are out | – |
-| Doubles | `doppel` | Three darts at every double, one point per hit | – |
-| 121 Checkout | `checkout121` | Nine darts to check out (double out); done +1, missed −1 | `runden` (attempts, default 10) |
-| Highscore | `highscore` | Most points in N visits | `runden` (default 10) |
-| Shanghai | `shanghai` | Round n counts number n; single, double and treble in one visit wins at once | `runden`: 7 or 20 |
-| Killer | `killer` | Hit your double to become a killer, then take the lives of the others with their double | `leben` (default 3) |
-| Halve-It | `halve_it` | 15, 16, any double, 17, 18, any treble, 19, 20, bull; no hit halves your score | – |
-| Golf | `golf` | Hole n = number n; last dart counts (treble 1, double 2, single 3, miss 5); fewest strokes win | `runden`: 9 or 18 holes |
-| Baseball | `baseball` | Nine innings, inning n = number n; single 1, double 2, treble 3 runs | – |
-
-Every game can be played as first to N legs.
-
-### Without cameras: tap or type
-
-While the board is offline the game card shows a **keypad** instead of the board by itself; when the board is back online the camera image returns. Above the keypad you choose how to enter:
-
-- **Keys**: tap Double or Triple, then the number (1–20), or 25, Bull or Miss.
-- **Total** (X01 only): type the points of the whole visit, e.g. `140`, and press OK.
-- **Board**: tap the spot on the drawn board (outside the double ring = miss).
-- **Camera** (only while the board is online): back to the camera image.
-
-Your choice of Keys/Total/Board is remembered per device. **Tap the board** under the camera image switches to tapping while the board is online. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
-
-![Keypad](docs/images/keypad.png)
-
-### Voice (Assist)
-
-The integration registers sentences in German, English and Russian, nothing to set up. They also work with an AI conversation agent, because sentence triggers are checked first.
-
-| Command | Examples |
-|---------|----------|
-| Score | "Wie steht es beim Darts", "Who is winning at darts", "Какой счёт в дартс" |
-| Ranking | "Wer ist der beste beim Darts", "Darts ranking", "Кто лучший в дартс" |
-| Start / rematch | "Starte Darts 501", "Starte Darts Cricket", "Start a darts rematch", "Начни дартс шанхай" |
-| Next tournament match | "Nächstes Darts Match", "Next darts match" |
-| Undo / cancel | "Darts rückgängig", "Darts Spiel abbrechen", "Cancel the darts game" |
-| Enter a score (X01) | "Alex hat 140", "Darts 60", "Sam scored 100", "Alex 0" – for the player whose turn it is; a checkout is counted with a double |
-
-### Tournament
-
-The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3–32 players (bots too): a bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
-
-**League** (3–10 players): everyone plays everyone once. The card shows the table (played, wins, points, legs) and all matches; a win gives 2 points, then the leg difference counts.
-
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/league-lobby.png" alt="Choosing knockout or league" width="420"></p>
-
-### Caller
-
-Open **Autodarts → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
-
-1. **Where should it play?** – **On this device** plays the announcements, walk-on songs and game sounds on the phone or tablet you are holding, while a game card is open (set per device; the speaker button of the game card switches the same). **On speakers** announces in Home Assistant itself, also with no dashboard open – tick one or more speakers.
-2. **Which voice?** – pick one row: the normal voice (any text-to-speech of Home Assistant, e.g. Piper or Google Translate) or a sound pack. Each pack row shows how many sounds it has and what is missing. The ⋮ button of a pack opens its menu: use, make missing sounds, stop, delete. Deleting always asks once more, shows how many sounds go and cannot be done by a single tap.
-3. **What should it announce?** – **scores** of every visit in every game mode, **"you require …"** (X01), **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
-
-- **New championship pack** (with a Google AI voice): opens a window that explains what happens, lists the speakers (Fenrir, Orus, Puck …) with a short description and a **Sample** button each, and marks the ones that already have a pack. **Make pack** speaks every score, "you require", game shot, leg, set, match and your player names once and saves them as the pack "Meisterschaft <speaker>". A visit like "140 · Ben, you require 100" is then joined from these sounds and plays at once. A free Google AI key allows 100 sounds a day, so a full pack (about 180 sounds) takes two days: at the daily limit the pack waits and **continues by itself** a few hours later, also after a restart – nothing to tap. **Stop** in the pack menu ends that. New players: **Make missing sounds** in the pack menu. Sentences that are not in the pack are spoken live by the same speaker.
-- **Own sound packs**: Media → My media → `autodarts` → `caller` → new folder, upload files named `180.mp3`, `140.mp3`, `bust.mp3`, `leg.mp3`, `set.mp3`, `match.mp3`, `game_on.mp3`, `nine.mp3` … The pack appears in step 2; whatever it does not have is spoken. Packs from 1.19 where the voice also read out a style direction are repaired with `autodarts.ansager_pack_pruefen`.
-- **Walk-on songs**: upload music to Media → My media → `autodarts` → `walkon` and pick a song per player in the card. At the start of a game each player is introduced with their song (5–60 seconds), then "Game on".
-
-Alexa/Echo speakers that support announcements get them as an announcement, so music keeps playing.
-
-### Aim map
-
-On the players card, **Hit map → Aim** shows for every spot of the board how many points the player gets per visit when aiming there, calculated from their own average and spread. The white ring is the best aim point; the text compares it with T20.
-
-### Statistics and badges
-
-The players card shows for every player: rating (Elo, also against bots), streak of days played, X01 key figures, a **hit map** of all fields (or the darts as dots, where the board detected a position) with the most hit fields, the **trend** of the X01 average over the last games, **badges** in bronze, silver and gold (180s, 100+ visits, high finish, short leg, best average, wins, games, darts, days in a row, nine marks, Shanghai, hole in one, allrounder) and the **head to head** record against every other player. A ranking by rating and a CSV export of all statistics are below the players. The game card shows the last visits of everybody next to the board. Statistics of Cricket, training and party games are kept per game (games, wins, best result; Cricket: best MPR) and shown on the players card.
-
-### X01
-
-The game runs completely inside Home Assistant and is stored in `.storage/autodarts.spiel`, so it survives restarts.
-
-- **Players**: up to 8 per game, any mix of people and bots. Bots throw with a realistic scatter for the chosen average (20–120).
-- **Modes**: start value 101, 170, 301, 501, 701, 901; check-in and check-out `straight`, `double` or `master`; first to N legs or N sets of M legs.
-- **Bull-off**: closest dart to the bull starts; ties throw again.
-- **Darts from the board** are counted automatically. Pulling the darts finishes the visit. Without the board (or for corrections) darts can be entered by hand.
-- **Checkout suggestions** for up to three darts, respecting the check-out mode.
-- **Statistics** are added to each player when a game ends; undo after the end takes them back again.
-
-## Light effects
-
-Let your lights celebrate with you – no YAML needed.
-
-1. Open **Autodarts → Light effects** in the sidebar (or add the card **Autodarts Light effects** to a dashboard).
-2. Tap **New light effect**, choose the event (180, 140+, bust, checkout, leg won, match won, tournament won …), the effect (**colour, blink, flash, pulse, heartbeat, strobe, fade out, two colours, rainbow, rainbow wave, confetti, chaser, sparkle, police, fire, thunderstorm, light effect, WLED preset**), colour, brightness and duration, and tick the lights.
-3. Tap **Test** to see it, then **Save**.
-
-Effects run in Home Assistant itself, also when no dashboard is open. Afterwards every light goes back to exactly how it was (on/off, brightness, colour). A new effect on the same light takes over smoothly. Colour lights show the colour, other lights just light up. The rules are stored by the integration and can also be set with the action `autodarts.lichteffekte_setzen`.
-
-### WLED and lights with their own effects
-
-- **Light effect** uses the effects built into a light – e.g. WLED *Fireworks*, *Chase*, *Twinkle* or the Hue effects. Only lights that have effects are offered, and the list shows the effects of the ticked lights. For WLED, **speed** and **intensity** sliders appear.
-- **WLED preset** plays a preset you saved in WLED (e.g. a "Champion" animation for a match win). Only WLED lights are offered.
-- Add WLED as usual under **Settings → Devices & services → WLED**; the strip shows up in the editor by itself. Afterwards the light, its effect, speed and intensity go back to how they were.
-
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/lights-wled.png" alt="WLED preset" width="420"></p>
-
-## Blueprints
-
-Ready-made automations. Click the button, confirm in Home Assistant, then fill in the form (Settings → Automations → Blueprints).
-
-| Blueprint | What it does | |
-|---|---|---|
-| **Awtrix display** | Shows 180, checkout, bust, leg won … on an Awtrix 3 clock (Ulanzi TC001) via MQTT, rainbow for a 180. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fawtrix.yaml) |
-| **Caller on a speaker** | Announces the events on any speaker with text to speech ("One hundred and eighty!"). Sentences can be changed in the form. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fcaller.yaml) |
-| **Push on wins** | Push notification to your phone for match wins, tournament wins, nine-darters … | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FAutodarts_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fnotify.yaml) |
-
-## Actions
+<details>
+<summary><b>Actions</b></summary>
 
 | Action | Description |
 |--------|-------------|
@@ -425,7 +445,10 @@ Ready-made automations. Click the button, confirm in Home Assistant, then fill i
 
 Player IDs are listed in the attributes of `sensor.autodarts_board_players`. Wrong input (unknown field, no game running …) returns a clear, translated error message.
 
-## Automation examples
+</details>
+
+<details>
+<summary><b>Automation examples</b></summary>
 
 **Flash the lights on a 180** (easier: the [light effects card](#light-effects))
 
@@ -533,20 +556,51 @@ actions:
         {{ a[state_attr('sensor.autodarts_board_game', 'gewinner')].name }} wins!
 ```
 
-## How it works
+</details>
+
+<details>
+<summary><b>Use cases</b></summary>
+
+- **Play at home without a screen:** start an X01 game from the dashboard on a tablet next to the board; scores, checkout ways and statistics update with every dart.
+- **Switch the board on and off with the room:** power the board PC with a smart plug, switch it on when you enter the room and off when the board has been idle for a while.
+- **Celebrate:** flash the lights on a 180, play a sound on a checkout, announce the remaining score on a speaker.
+- **Keep an eye on the hardware:** get a notification when calibration drifts, a camera drops frames or a board software update is available.
+- **Track progress:** long-term statistics per player, including bots as training partners.
+
+</details>
+
+<details>
+<summary><b>Supported devices</b></summary>
+
+| Device | Status |
+|--------|--------|
+| Autodarts board with **Board Manager 2.x** (local API on port 3180) | Supported, tested |
+| Autodarts board with **Board Manager 1.x** | Supported (older state format is read as well) |
+| Board Manager on Linux PC, mini PC, Raspberry Pi or Windows | Supported – only the network address matters |
+| Other e-dartboards (Granboard, Scolia …) | Not supported |
+
+One config entry is one board.
+
+</details>
+
+<details>
+<summary><b>How it works</b></summary>
 
 ```
 Board PC (Autodarts Board Manager, port 3180)
    │  GET /api/state every second · /api/system every 15 s · camera images on demand
    ▼
-Home Assistant ── Autodarts integration (board.py) ── entities, actions, local games (.storage)
+Home Assistant ── DartNest integration (board.py) ── entities, actions, local games (.storage)
    ▼
 Dashboard cards (loaded automatically) · automations · voice assistants
 ```
 
 Only the documented local endpoints of the Board Manager are used. The connection itself is the small typed async client `board.py` inside the integration, which uses the web session of Home Assistant. Nothing extra is installed. Camera images are only fetched while a card or the more-info dialog shows them.
 
-## Known limitations
+</details>
+
+<details>
+<summary><b>Known limitations</b></summary>
 
 - Games started in the Autodarts app are not imported (the Autodarts cloud is not used at all).
 - The integration **polls** the Board Manager every second; there is no push connection yet.
@@ -554,7 +608,10 @@ Only the documented local endpoints of the Board Manager are used. The connectio
 - One board per Home Assistant installation.
 - The live camera stream is MJPEG from the board PC and uses its CPU while it is open.
 
-## Troubleshooting
+</details>
+
+<details>
+<summary><b>Troubleshooting</b></summary>
 
 | Problem | Solution |
 |---------|----------|
@@ -565,7 +622,7 @@ Only the documented local endpoints of the Board Manager are used. The connectio
 | Cards are not found | Restart Home Assistant after installing, then reload the browser (clear the app cache on phones). |
 | Darts are not counted in the game | Check that `sensor.autodarts_board_throw_1` changes when you throw. Darts are ignored while a bot is throwing. |
 
-For a bug report, download the diagnostics (**Settings → Devices & services → Autodarts → three dots → Download diagnostics**). The board address and host name are removed automatically.
+For a bug report, download the diagnostics (**Settings → Devices & services → DartNest → three dots → Download diagnostics**). The board address and host name are removed automatically.
 
 To get debug logs:
 
@@ -574,6 +631,8 @@ logger:
   logs:
     custom_components.autodarts: debug
 ```
+
+</details>
 
 ## FAQ
 
@@ -587,7 +646,7 @@ logger:
 
 ## Removal
 
-1. **Settings → Devices & services → Autodarts → three dots → Delete.**
+1. **Settings → Devices & services → DartNest → three dots → Delete.**
 2. Delete the folder `custom_components/autodarts`, then restart Home Assistant.
 3. Players, statistics and history are stored in `.storage/autodarts.spiel`; delete this file if you want to remove them too.
 
@@ -605,28 +664,26 @@ Private project, no outside contributions. The code follows the rules of the Hom
 
 ---
 
+---
+
 ## Deutsch
 
-**Autodarts für Home Assistant** – inoffizielle, komplett lokale Integration für ein Autodarts-Board.
+<p align="center"><b>Dein Dartboard, zuhause in Home Assistant.</b><br>Spielen, zählen, feiern und jeden Dart auswerten – mit fertigen Seiten für Tablet und Handy. Für <b>Autodarts</b>-Boards, 100 % lokal, ohne YAML und ohne Code.</p>
 
-- Live-Würfe mit Feld und Position, Board-Status, Kameras mit Kalibriernetz, Board Manager in Home Assistant
-- Lokale Spiele für 1–8 Spieler, mit Bots: X01 (Double/Master In und Out, Legs und Sets), Cricket (Standard, Cut-Throat, ohne Punkte; 15–20, 10–20, Zufall), Training (Rund um die Uhr, Bob's 27, Doppel, 121 Checkout, Highscore) und Partyspiele (Shanghai, Killer, Halve-It, Golf, Baseball) – mit Regeltext, Ziel auf der Scheibe, Bull-Off, Korrekturen und Statistik
-- Eingabe ohne Kameras: Tastenfeld erscheint von selbst, wenn das Board offline ist (Double/Triple + Zahl oder Summe der Aufnahme), dazu Scheibe antippen oder Tastatur (T20 + Enter)
-- Sprachbefehle für Assist auf Deutsch, Englisch und Russisch (Stand, Rangliste, Spiel starten, Rückgängig …)
-- Turnier: K.-o. für 3–32 Spieler mit Turnierbaum, Freilosen und Siegerfeier, oder Liga für 3–10 Spieler mit Tabelle
-- Ansager über Lautsprecher, aufs Handy oder beides, Meisterschafts-Pack per Klick (Google-KI-Stimme, Sprecher wählbar): Punkte, „du brauchst …“, Game shot, Besonderes und Einlaufmusik je Spieler; eigene Sound-Packs per Hochladen (Medien → autodarts → caller), was fehlt, spricht die Stimme
-- Punkte per Sprache: „Alex hat 140“, „Darts 60“
-- Spielerseite mit Wertung (Elo), Serie, Trefferbild, Zielhilfe (bester Zielpunkt für den eigenen Average), Trend, Abzeichen (Bronze/Silber/Gold), direktem Vergleich, Rangliste und CSV-Export
-- Code nach den Regeln der Home-Assistant-Quality-Scale; die Board-Verbindung steckt direkt in der Integration (`board.py`), nichts muss nachinstalliert werden
-- Lichteffekte per Klick: bei 180, Überworfen, Checkout, Leg/Spiel gewonnen … 18 Effekte: blinken, aufblitzen, pulsieren, Herzschlag, Stroboskop, Ausblenden, zwei Farben, Regenbogen, Regenbogen-Welle, Konfetti, Lauflicht, Funkeln, Polizei, Feuer, Gewitter, Effekte der Lampe (WLED, Hue, mit Tempo und Stärke) oder WLED-Presets – danach zurück wie vorher
-- Blueprints mit Import-Knopf: Awtrix-Anzeige, Caller über Lautsprecher, Push bei Siegen
-- Ereignis-Entität `event.autodarts_board_game_event` (180, Bust, Checkout, Leg/Satz/Spiel gewonnen, Neun-Darter …) für Automationen
-- Effekte in der Spielkarte wie am echten Board: Pfeilflug, Funken, 180 mit Scheinwerfern und Konfetti, Überworfen mit Rissen, Game Shot, Feuerwerk beim Matchgewinn
-- Eigener Menüpunkt **Autodarts** in der Seitenleiste mit allen Karten als Reiter – ohne Einrichtung
-- Sechs fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte, Ansager) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
-- Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
+**In drei Schritten startklar**
 
-**Installation:** Knopf oben unter „Installation“ antippen oder im Home Assistant **Marketplace** „Hinzufügen per Link“ → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → installieren → neu starten. **Updates** erscheinen danach unter Einstellungen → Updates.
-**Einrichtung:** Boards mit Board Manager 2.x werden automatisch gefunden („Autodarts Board gefunden“ unter Geräte & Dienste, nur bestätigen). Sonst: Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein. Adresse später ändern: drei Punkte → Neu konfigurieren.
+1. **Installieren:** oben auf den *Marketplace*-Knopf tippen, **DartNest** installieren, Home Assistant neu starten.
+2. **Board bestätigen:** unter *Einstellungen → Geräte & Dienste* erscheint **Autodarts Board gefunden** – *Hinzufügen* tippen. (Nicht gefunden? *Integration hinzufügen → DartNest* und die IP-Adresse des Board-PCs eintragen, Port 3180.)
+3. **Spielen:** in der Seitenleiste **DartNest** öffnen. Fertig.
 
-**Rechtliches:** Kostenloses, privates, nicht kommerzielles Hobbyprojekt, kein offizielles Produkt von Autodarts. „Autodarts“ und andere Marken gehören ihren Inhabern und werden nur genannt, um zu sagen, mit welchem Board die Integration funktioniert. Die Integration spricht nur mit dem Board Manager im eigenen Netz, nutzt keine Online-Dienste, Konten oder Server von Autodarts und umgeht keine Schutzmaßnahmen. Spieler und Statistiken bleiben im eigenen Home Assistant. Nutzung auf eigene Gefahr, ohne Gewähr ([MIT-Lizenz](LICENSE)); die Haftung ist so weit ausgeschlossen, wie es gesetzlich zulässig ist (bei Vorsatz und grober Fahrlässigkeit nach deutschem Recht nicht).
+**Was drin ist**
+
+- **Spielen:** X01, Cricket, 5 Trainings- und 5 Partyspiele für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
+- **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides; 18 Lichteffekte (auch WLED) per Klick.
+- **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
+- **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
+- **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein.
+- **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*.
+- **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.
+
+**Rechtliches:** Kostenloses, privates, nicht kommerzielles Hobbyprojekt, kein offizielles Produkt von Autodarts. „Autodarts“ und andere Marken gehören ihren Inhabern und werden nur genannt, um zu sagen, mit welchen Boards DartNest funktioniert. DartNest spricht nur mit dem Board Manager im eigenen Netz, nutzt keine Online-Dienste, Konten oder Server von Autodarts und umgeht keine Schutzmaßnahmen. Spieler und Statistiken bleiben im eigenen Home Assistant. Nutzung auf eigene Gefahr, ohne Gewähr ([MIT-Lizenz](LICENSE)); die Haftung ist so weit ausgeschlossen, wie es gesetzlich zulässig ist (bei Vorsatz und grober Fahrlässigkeit nach deutschem Recht nicht).

@@ -1,6 +1,6 @@
 {
   "domain": "autodarts",
-  "name": "Autodarts (unofficial)",
+  "name": "DartNest",
   "after_dependencies": [
     "conversation",
     "ffmpeg",
@@ -18,13 +18,13 @@
   ],
   "config_flow": true,
   "dependencies": [],
-  "documentation": "https://github.com/Wadim-dev/autodarts_ha",
+  "documentation": "https://github.com/Wadim-dev/DartNest_ha",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/Wadim-dev/autodarts_ha/issues",
+  "issue_tracker": "https://github.com/Wadim-dev/DartNest_ha/issues",
   "loggers": [],
   "requirements": [],
-  "version": "1.21.0",
+  "version": "1.22.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

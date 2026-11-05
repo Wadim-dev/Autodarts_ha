@@ -159,7 +159,7 @@ lichteffekte_setzen:
     Alle Regeln der Lichteffekte auf einmal setzen (ersetzt die bisherigen). Jede Regel:
     ereignis (z. B. one_eighty, bust, checkout, leg_won), lichter (Liste light.*),
     effekt (farbe, blinken, blitz, pulsieren, herzschlag, stroboskop, ausblenden, wechsel, regenbogen, welle, konfetti, lauflicht, funkeln, polizei, feuer, gewitter, lampe, preset), farbe [r, g, b], farbe2 (bei wechsel), helligkeit 1–100,
-    dauer 1–60 s, aktiv; bei lampe lampen_effekt, tempo/staerke 0–255 (WLED), bei preset preset. Die Karte „Autodarts Lichteffekte“ macht das per Klick.
+    dauer 1–60 s, aktiv; bei lampe lampen_effekt, tempo/staerke 0–255 (WLED), bei preset preset. Die Karte „DartNest Lichteffekte“ macht das per Klick.
   fields:
     regeln:
       name: Regeln
@@ -182,7 +182,7 @@ ansager_setzen:
   description: >-
     Einstellungen des Ansagers speichern: aktiv, lautsprecher (Liste media_player.*), stimme (tts.*),
     pack (Ordner unter Medien autodarts/caller), punkte, rest, ende, besondere, game_on, walkon,
-    walkon_sekunden 5–60, songs (Spieler-ID → Datei in autodarts/walkon). Die Karte „Autodarts Ansager“ macht das per Klick.
+    walkon_sekunden 5–60, songs (Spieler-ID → Datei in autodarts/walkon). Die Karte „DartNest Ansager“ macht das per Klick.
   fields:
     einstellungen:
       name: Einstellungen

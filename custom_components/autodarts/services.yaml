@@ -199,6 +199,15 @@ ansager_testen:
       example: Einhundertachtzig!
       selector:
         text:
+    sprecher:
+      name: Sprecher
+      description: Nur mit Google AI – Probe mit diesem Sprecher (z. B. fenrir, puck).
+      example: puck
+      selector:
+        text:
+ansager_pack_anhalten:
+  name: Ansager-Pack anhalten
+  description: Hält das Erzeugen eines Packs an. Fertige Töne bleiben, es geht nicht mehr von selbst weiter.
 ansager_pack_erzeugen:
   name: Ansager-Pack erzeugen
   description: >-

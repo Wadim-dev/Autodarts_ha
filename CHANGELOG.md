@@ -3,6 +3,19 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.21.0
+
+- Caller card rebuilt to explain itself: a big **Listen to a sample** button on top, then three steps – where it plays, which voice or pack (one row each, with sounds and what is missing), what it announces. Walk-on songs and the live voice fold away.
+- Packs have a ⋮ menu (use, make missing sounds, stop, delete). Deleting asks in a window that shows how many sounds go – no more one-tap delete.
+- **New championship pack** opens a window with the speakers, a short description and a **Sample** button each; speakers that already have a pack are marked. Only one pack is made at a time.
+- At the daily limit of the voice a pack waits and continues by itself about three hours later, also after a restart. New action `autodarts.ansager_pack_anhalten` stops it; `autodarts.ansager_testen` takes `sprecher` for a sample.
+
+**Deutsch**
+- Ansager-Karte neu und selbsterklärend: oben ein großer Knopf **Probe hören**, darunter drei Schritte – wo es läuft, welche Stimme oder welches Pack (je eine Zeile mit Tönen und was fehlt), was angesagt wird. Einlaufmusik und Live-Stimme sind einklappbar.
+- Packs haben ein ⋮-Menü (benutzen, fehlende Töne erzeugen, anhalten, löschen). Löschen fragt in einem Fenster nach und zeigt, wie viele Töne verschwinden – kein Löschen mehr mit einem Tipp.
+- **Neues Meisterschafts-Pack** öffnet ein Fenster mit den Sprechern, kurzer Beschreibung und je einem Knopf **Probe**; Sprecher mit fertigem Pack sind markiert. Es wird immer nur ein Pack gleichzeitig erzeugt.
+- Beim Tageslimit der Stimme wartet ein Pack und macht etwa drei Stunden später von selbst weiter, auch nach einem Neustart. Neue Aktion `autodarts.ansager_pack_anhalten` hält es an; `autodarts.ansager_testen` nimmt `sprecher` für eine Probe.
+
 ## 1.20.2
 
 - `autodarts.ansager_pack_pruefen` finds the end of the spoken direction per sound: a sound of one word ("140!", "Game on!") is cut at its last pause, sounds of several words (leg, set …) at the pause nearest to where the direction ends in the others. Measured on a real pack the direction ends between 3 and 4.2 seconds.

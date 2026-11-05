@@ -89,7 +89,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     await spiel.laden()
     lichter = Lichtshow(hass)
     await lichter.laden()
-    ansager = Ansager(hass, lambda: spiel.stand)
+    ansager = Ansager(hass, lambda: spiel.stand, lambda: [str(p.get("name") or "") for p in spiel.daten["spieler"]])
     await ansager.laden()
     entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager)
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))

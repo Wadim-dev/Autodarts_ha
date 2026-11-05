@@ -181,6 +181,9 @@
     "ansager_pack_pruefen": {
       "service": "mdi:content-cut"
     },
+    "ansager_pack_anhalten": {
+      "service": "mdi:stop-circle-outline"
+    },
     "ansager_pack_loeschen": {
       "service": "mdi:delete-outline"
     },

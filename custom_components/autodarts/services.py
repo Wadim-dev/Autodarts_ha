@@ -61,7 +61,8 @@ DIENSTE = {
         vol.Required("punkte"): vol.All(vol.Coerce(int), vol.Range(0, 180)),
     }),
     "ansager_setzen": vol.Schema({vol.Required("einstellungen"): dict}),
-    "ansager_testen": vol.Schema({vol.Optional("text"): cv.string}),
+    "ansager_testen": vol.Schema({vol.Optional("text"): cv.string, vol.Optional("sprecher"): cv.string}),
+    "ansager_pack_anhalten": vol.Schema({}),
     "ansager_pack_erzeugen": vol.Schema({
         vol.Optional("name", default="Meisterschaft"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$")),
         vol.Optional("sprecher"): cv.string,
@@ -144,7 +145,10 @@ def ws_ansager_hoeren(hass: HomeAssistant, connection: ActiveConnection, msg: di
 async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> dict[str, Any] | None:
     ansager = _eintrag(hass).runtime_data.ansager
     if name == "ansager_testen":
-        await ansager.testen(d.get("text"))
+        await ansager.testen(d.get("text"), d.get("sprecher"))
+        return None
+    if name == "ansager_pack_anhalten":
+        await ansager.pack_anhalten()
         return None
     if name == "ansager_pack_erzeugen":
         namen = [str(p.get("name") or "") for p in _eintrag(hass).runtime_data.spiel.daten["spieler"]]
@@ -201,7 +205,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
-        elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen"):
+        elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen", "ansager_pack_anhalten"):
             antwort = await _ansager(hass, name, d)
             return antwort if call.return_response else None
         return None

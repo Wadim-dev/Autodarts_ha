@@ -163,9 +163,25 @@
   // caller on this device (1.18)
   Object.assign(TEXTE.en, { caller_run: 'On speakers', phone_run: 'On this device', phone_hint: 'Plays the caller and the game sounds on this phone or tablet while a game card is open. Same as the speaker button in the game card.', d_caller: 'Announces scores, checkouts and walk-on songs on your speakers and phones' });
   Object.assign(TEXTE.de, { caller_run: 'Über Lautsprecher', phone_run: 'Auf diesem Gerät', phone_hint: 'Spielt Ansager und Spieltöne auf diesem Handy oder Tablet, solange eine Spielkarte offen ist. Wie der Lautsprecher-Knopf in der Spielkarte.', d_caller: 'Sagt Punkte, Checkouts und Einlaufmusik über Lautsprecher und Handys an' });
-  // championship pack (1.19)
-  Object.assign(TEXTE.en, { pack_make: 'Make championship pack', pack_make_hint: 'Speaks every score, "you require", game shot and your player names once with the chosen voice and saves them as a pack. With Google AI each speaker gets its own pack ("Meisterschaft Fenrir" …), so you can switch between them above. Takes a few minutes; sounds already made are kept. New players: tap again.', pack_running: 'Making pack … {n} of {m}', pack_error: 'Stopped ({e}). Tap again to continue.', pack_speaker: 'Speaker', live_style: 'Live sentences in championship style', pack_del: 'Delete pack', pack_del_q: 'Delete this pack?', pack_daily: 'The voice allows only 100 sounds a day. Tap again tomorrow to continue.' });
-  Object.assign(TEXTE.de, { pack_make: 'Meisterschafts-Pack erzeugen', pack_make_hint: 'Spricht alle Punkte, „du brauchst“, Game shot und eure Spielernamen einmal mit der gewählten Stimme und speichert sie als Pack. Mit Google AI bekommt jeder Sprecher ein eigenes Pack („Meisterschaft Fenrir“ …), oben umschaltbar. Dauert ein paar Minuten; was schon da ist, bleibt. Neue Spieler: nochmal antippen.', pack_running: 'Erzeuge Pack … {n} von {m}', pack_error: 'Angehalten ({e}). Nochmal antippen zum Fortsetzen.', pack_speaker: 'Sprecher', live_style: 'Freie Sätze im WM-Stil', pack_del: 'Pack löschen', pack_del_q: 'Pack wirklich löschen?', pack_daily: 'Die Stimme erlaubt nur 100 Töne am Tag. Morgen nochmal antippen zum Fortsetzen.' });
+  // caller card step by step (1.21)
+  Object.assign(TEXTE.en, { k_try: 'Listen to a sample', k_try_hint: 'Plays "140 · {n}, you require 92" where you switched it on below.', k_no_out: 'Switch on below where you want to hear the caller.',
+    k_s1: '1 · Where do you hear it?', k_s2: '2 · Which voice?', k_s3: '3 · What is announced?', k_s4: 'Walk-on songs', k_pick_sp: 'Choose speakers', k_n_sel: '{n} chosen',
+    k_live: 'Normal voice', k_live_sub: '{v} · speaks live', k_voice_set: 'Voice for live speech', k_own: 'Upload your own sounds',
+    k_done: 'Ready · {n} sounds', k_run: 'Being made … {n} of {m}', k_wait: '{f} of {m} · continues by itself (Google allows 100 a day)', k_part: 'Incomplete · {n} missing', k_ownp: 'Own pack · {n} sounds', k_empty: 'Empty',
+    k_new: 'New championship pack', k_new_text: 'Google speaks every score, "you require", game shot and your player names once ({m} sounds) and saves them, so later they play at once, also without internet. Google allows 100 sounds a day: a pack takes up to 2 days. It runs in the background and continues by itself.',
+    k_choose: 'Choose a speaker', k_sample: 'Sample', k_have: 'already there', k_make: 'Make pack', k_make_rest: 'Make missing sounds', k_cancel: 'Cancel', k_close: 'Close', k_busy: '"{p}" is being made right now. A new pack can start when it is ready or stopped.',
+    k_use: 'Use this pack', k_in_use: 'In use', k_go_on: 'Make missing sounds', k_stop: 'Stop', k_del: 'Delete …', k_del_q: 'Delete "{p}"?', k_del_text: 'All {n} sounds of this pack are deleted. This cannot be undone. Making it again takes up to 2 days because of the Google limit.', k_del_ok: 'Delete for good',
+    k_err: 'Stopped: {e}', k_stopped: 'Stopped. Tap "Make missing sounds" to continue.', k_need_google: 'Championship packs need the voice "Google AI" (Settings → Voice assistants). Without it the normal voice speaks.',
+    sp_fenrir: 'excited', sp_algenib: 'gravelly', sp_alnilam: 'firm', sp_orus: 'firm, deep', sp_puck: 'upbeat', sp_charon: 'calm' });
+  Object.assign(TEXTE.de, { k_try: 'Probe hören', k_try_hint: 'Spielt „140 · {n}, du brauchst 92“ dort, wo du es unten eingeschaltet hast.', k_no_out: 'Schalte unten ein, wo du den Ansager hören willst.',
+    k_s1: '1 · Wo hörst du den Ansager?', k_s2: '2 · Welche Stimme?', k_s3: '3 · Was wird angesagt?', k_s4: 'Einlaufmusik', k_pick_sp: 'Lautsprecher wählen', k_n_sel: '{n} gewählt',
+    k_live: 'Normale Stimme', k_live_sub: '{v} · spricht live', k_voice_set: 'Stimme für Live-Sätze', k_own: 'Eigene Töne hochladen',
+    k_done: 'Fertig · {n} Töne', k_run: 'Wird erzeugt … {n} von {m}', k_wait: '{f} von {m} · macht von selbst weiter (Google erlaubt 100 am Tag)', k_part: 'Unvollständig · {n} fehlen', k_ownp: 'Eigenes Pack · {n} Töne', k_empty: 'Leer',
+    k_new: 'Neues Meisterschafts-Pack', k_new_text: 'Google spricht einmal alle Punkte, „du brauchst“, Game shot und eure Spielernamen ({m} Töne) und speichert sie. Danach kommen die Ansagen sofort, auch ohne Internet. Google erlaubt 100 Töne am Tag, ein Pack dauert also bis zu 2 Tage. Es läuft im Hintergrund und macht von selbst weiter.',
+    k_choose: 'Sprecher wählen', k_sample: 'Probe', k_have: 'schon da', k_make: 'Pack erzeugen', k_make_rest: 'Fehlende Töne erzeugen', k_cancel: 'Abbrechen', k_close: 'Schließen', k_busy: '„{p}“ wird gerade erzeugt. Ein neues Pack geht, wenn es fertig oder angehalten ist.',
+    k_use: 'Dieses Pack benutzen', k_in_use: 'Wird benutzt', k_go_on: 'Fehlende Töne erzeugen', k_stop: 'Anhalten', k_del: 'Löschen …', k_del_q: '„{p}“ löschen?', k_del_text: 'Alle {n} Töne dieses Packs werden gelöscht. Das lässt sich nicht rückgängig machen. Neu erzeugen dauert wegen des Google-Limits bis zu 2 Tage.', k_del_ok: 'Endgültig löschen',
+    k_err: 'Angehalten: {e}', k_stopped: 'Angehalten. „Fehlende Töne erzeugen“ macht weiter.', k_need_google: 'Meisterschafts-Packs brauchen die Stimme „Google AI“ (Einstellungen → Sprachassistenten). Ohne sie spricht die normale Stimme.',
+    sp_fenrir: 'aufgeregt', sp_algenib: 'rau', sp_alnilam: 'bestimmt', sp_orus: 'fest, tief', sp_puck: 'fröhlich', sp_charon: 'ruhig' });
   const SPRECHER = [['fenrir', 'Fenrir'], ['algenib', 'Algenib'], ['alnilam', 'Alnilam'], ['orus', 'Orus'], ['puck', 'Puck'], ['charon', 'Charon']];
   // aim map (1.16)
   Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
@@ -2287,73 +2303,153 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   /* ---------- Caller card: announcements and walk-on songs on the speakers of Home Assistant ---------- */
   const ANSAGE_ARTEN = ['punkte', 'rest', 'ende', 'besondere', 'game_on', 'walkon'];
   class AutodartsCallerCard extends DartsSeite {
-    static get CSS() { return LICHT_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer}.schalter ha-icon{--mdc-icon-size:28px}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter small{margin-left:auto;font-weight:600;color:var(--secondary-text-color)}.chips{display:flex;flex-wrap:wrap;gap:6px}.wl{display:flex;align-items:center;gap:10px;margin:6px 0}.wl b{flex:1;min-width:0;font-size:14px}.wl select{width:auto;flex:1.4;min-width:0}.lb{display:block;font-size:12.5px;font-weight:700;color:var(--secondary-text-color);margin:16px 2px 6px}.inhalt select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:14px;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 7%,transparent);border:1px solid color-mix(in srgb,var(--primary-text-color) 18%,transparent)}.inhalt select option{color:#000}'; }
+    static get CSS() { return LICHT_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;font:inherit;font-size:16px;font-weight:700;color:inherit;cursor:pointer;margin-top:8px}.schalter ha-icon{--mdc-icon-size:28px}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter small{margin-left:auto;font-weight:600;color:var(--secondary-text-color)}' +
+      '.chips{display:flex;flex-wrap:wrap;gap:6px}.wl{display:flex;align-items:center;gap:10px;margin:6px 0}.wl b{flex:1;min-width:0;font-size:14px}.wl select{width:auto;flex:1.4;min-width:0}' +
+      '.schritt{font-size:15px;font-weight:800;margin:22px 2px 4px}.lb{display:block;font-size:12.5px;font-weight:700;color:var(--secondary-text-color);margin:16px 2px 6px}' +
+      '.inhalt select{width:100%;font:inherit;font-size:15px;padding:11px 12px;border-radius:14px;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 7%,transparent);border:1px solid color-mix(in srgb,var(--primary-text-color) 18%,transparent)}.inhalt select option{color:#000}' +
+      '.wahl{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;border-radius:16px;padding:12px 12px 12px 14px;margin-top:8px;text-align:left;font:inherit;color:inherit}.wahl.an{border-color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 16%,transparent)}' +
+      '.wahl .rad{--mdc-icon-size:24px;color:var(--secondary-text-color)}.wahl.an .rad{color:var(--primary-color)}.wahl span{flex:1;min-width:0}.wahl b{display:block;font-size:15px}.wahl small{display:block;font-size:12.5px;color:var(--secondary-text-color);margin-top:2px}' +
+      '.wahl .mehr{border:0;background:none;color:inherit;padding:8px;border-radius:12px;cursor:pointer}.wahl .mehr ha-icon{--mdc-icon-size:22px}.balken{height:6px;border-radius:3px;background:color-mix(in srgb,var(--primary-text-color) 12%,transparent);margin-top:6px;overflow:hidden}.balken i{display:block;height:100%;background:var(--primary-color)}' +
+      '.neu{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:16px;padding:13px;margin-top:10px;font-weight:700;border-style:dashed}' +
+      '.sp{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;border-radius:14px;padding:10px 12px;margin-top:6px;text-align:left;font:inherit;color:inherit}.sp.an{border-color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 16%,transparent)}.sp span{flex:1}.sp small{color:var(--secondary-text-color);margin-left:6px}.sp .probe{border-radius:999px;padding:6px 12px;font-weight:700}' +
+      '.mbox .rot,.rot{color:var(--red-color,#e53935)}.mknoepfe .weg{background:var(--red-color,#e53935);color:#fff}.mknoepfe .links{margin-right:auto}.mbox .text{font-size:14px;line-height:1.45;color:var(--secondary-text-color);margin:0 0 6px}'; }
     getCardSize() { return 8; }
     _ansage() { try { return localStorage.getItem('autodarts_caller') === '1'; } catch (e) { return false; } }
     _abo() { if (this._ansage() && this.isConnected) hoerKarten.add(this); else hoerKarten.delete(this); hoerPruefen(this._h); }
     connectedCallback() { if (this._h) this._abo(); }
-    disconnectedCallback() { this._abo(); }
+    disconnectedCallback() { this._abo(); clearTimeout(this._ezT); }
     async _laden() {
       this._abo();
-      try { this._daten = await this._h.callWS({ type: 'autodarts/ansager' }); } catch (e) { this._daten = { einstellungen: {}, stimmen: [], packs: {}, songs: [] }; }
+      try { this._daten = await this._h.callWS({ type: 'autodarts/ansager' }); } catch (e) { this._daten = { einstellungen: {}, stimmen: [], packs: {}, songs: [], info: {} }; }
       this._alt = null; this._zeichnen();
+      if (this._dlg) this._dialog(this._dlg);  // keep an open dialog up to date (progress)
     }
     _e() { return Object.assign({ aktiv: false, lautsprecher: [], stimme: '', pack: '', punkte: true, rest: true, ende: true, besondere: true, game_on: true, walkon: true, walkon_sekunden: 15, songs: {} }, (this._daten || {}).einstellungen || {}); }
     _name(id) { const s = st(this._h, id); return (s && s.attributes.friendly_name) || id; }
+    _stimme() { const d = this._daten || {}; return this._e().stimme || (d.stimmen || [])[0] || ''; }
+    _google() { const ent = this._h.entities && this._h.entities[this._stimme()]; return !!ent && ent.platform === 'google_generative_ai_conversation'; }
+    _soll() { const i = (this._daten.info || {}); const m = Object.values(i).find(x => x.fehlen != null); return m ? m.toene + m.fehlen : 182; }
+    // status line of a pack: ready, being made, waiting for the daily limit, incomplete, own pack
+    _status(k) {
+      const d = this._daten, ez = d.erzeugung || {}, inf = (d.info || {})[k] || { toene: (d.packs[k] || []).length, fehlen: null }, auf = (d.auftrag || {}).pack === k;
+      if (ez.pack === k && ez.laeuft) return { text: t('k_run', { n: ez.fertig, m: ez.gesamt }), anteil: ez.gesamt ? ez.fertig / ez.gesamt : 0 };
+      if (inf.fehlen == null) return { text: inf.toene ? t('k_ownp', { n: inf.toene }) : t('k_empty') };
+      const m = inf.toene + inf.fehlen;
+      if (!inf.fehlen) return { text: t('k_done', { n: inf.toene }) };
+      if (auf) return { text: t('k_wait', { f: inf.toene, m }), anteil: inf.toene / m };
+      if (ez.pack === k && ez.fehler) return { text: ez.fehler === 'stopped' ? t('k_stopped') : ez.fehler === 'daily limit' ? t('k_wait', { f: inf.toene, m }) : t('k_err', { e: ez.fehler }), anteil: inf.toene / m, rot: ez.fehler !== 'daily limit' && ez.fehler !== 'stopped' };
+      return { text: t('k_part', { n: inf.fehlen }), anteil: inf.toene / m };
+    }
     _zeichnen() {
       if (this._fehlt()) return;
       if (!this._daten) { if (!this._lade) { this._lade = true; this._laden(); } return; }
-      const e = this._e(), d = this._daten, an = e.aktiv;
-      this._kopf(t('caller_title'), an ? t('caller_on_hint') + ' · ' + e.lautsprecher.length + ' ' + t('speakers') : t('caller_off_hint'));
-      const lp = Object.keys(this._h.states).filter(id => id.startsWith('media_player.') && this._h.states[id].state !== 'unavailable')
-        .sort((a, b) => (e.lautsprecher.includes(b) - e.lautsprecher.includes(a)) || this._name(a).localeCompare(this._name(b)));
+      const e = this._e(), d = this._daten, hier = this._ansage(), boxen = e.aktiv;
       const stimmen = d.stimmen || [], packs = d.packs || {}, songs = d.songs || [];
       const spieler = (att(this._h, E(this._h, 'sensor.players')).spieler || []);
-      let s = '<button class="schalter feld' + (an ? ' an' : '') + '" data-act="aktiv"><ha-icon icon="' + (an ? 'mdi:account-voice' : 'mdi:account-voice-off') + '"></ha-icon>' + t('caller_run') + '<small>' + (an ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button>';
-      s += '<label class="lb">' + t('speakers') + '</label><div class="ll feld">' + lp.map(id => '<label><input type="checkbox" data-lp="' + id + '"' + (e.lautsprecher.includes(id) ? ' checked' : '') + '>' + esc(this._name(id)) + '<small>' + id.slice(13) + '</small></label>').join('') + '</div>';
-      if (an && !e.lautsprecher.length) s += '<div class="klein" style="color:var(--red-color,#e53935)">' + t('no_speakers') + '</div>';
-      const hier = this._ansage();
-      s += '<button class="schalter feld' + (hier ? ' an' : '') + '" data-act="hier" style="margin-top:12px"><ha-icon icon="' + (hier ? 'mdi:cellphone-sound' : 'mdi:cellphone-off') + '"></ha-icon>' + t('phone_run') + '<small>' + (hier ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button><div class="klein">' + t('phone_hint') + '</div>';
-      s += '<label class="lb">' + t('voice') + '</label>' + (stimmen.length ? '<select data-f="stimme"><option value="">' + esc(this._name(stimmen[0])) + ' (auto)</option>' + stimmen.map(x => '<option value="' + x + '"' + (x === e.stimme ? ' selected' : '') + '>' + esc(this._name(x)) + '</option>').join('') + '</select>' : '<div class="klein">' + t('no_voice') + '</div>');
-      s += '<label class="lb">' + t('pack') + '</label><div class="seg">' + [['', t('only_voice')]].concat(Object.keys(packs).map(k => [k, k + ' · ' + t('n_files', { n: packs[k].length })])).map(([k, n]) => '<button class="feld' + (k === e.pack ? ' an' : '') + '" data-act="pack" data-v="' + esc(k) + '">' + esc(n) + '</button>').join('') + '</div><div class="klein">' + t('pack_hint') + '</div>';
-      const stimme = e.stimme || stimmen[0] || '', ent = this._h.entities && this._h.entities[stimme], gki = !!ent && ent.platform === 'google_generative_ai_conversation';
+      const aus = !hier && !(boxen && e.lautsprecher.length);
+      this._kopf(t('caller_title'), aus ? t('caller_off_hint') : [hier ? t('phone_run') : '', boxen && e.lautsprecher.length ? e.lautsprecher.length + ' ' + t('speakers') : ''].filter(Boolean).join(' · '));
+      // sample on top
+      let s = '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:4px 0 0"' + (aus ? ' disabled' : '') + ' data-act="test"><ha-icon icon="mdi:play-circle-outline"></ha-icon>' + t('k_try') + '</button>' +
+        '<div class="klein' + (aus ? ' rot' : '') + '">' + (aus ? t('k_no_out') : t('k_try_hint', { n: esc((spieler[0] || {}).name || 'Alex') })) + '</div>';
+      // 1 · where
+      s += '<div class="schritt">' + t('k_s1') + '</div>';
+      s += '<button class="schalter feld' + (hier ? ' an' : '') + '" data-act="hier"><ha-icon icon="' + (hier ? 'mdi:cellphone-sound' : 'mdi:cellphone-off') + '"></ha-icon>' + t('phone_run') + '<small>' + (hier ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button><div class="klein">' + t('phone_hint') + '</div>';
+      s += '<button class="schalter feld' + (boxen ? ' an' : '') + '" data-act="aktiv"><ha-icon icon="' + (boxen ? 'mdi:speaker-wireless' : 'mdi:speaker-off') + '"></ha-icon>' + t('caller_run') + '<small>' + (boxen ? t('caller_on_hint') : t('caller_off_hint')) + '</small></button>';
+      if (boxen) {
+        const lp = Object.keys(this._h.states).filter(id => id.startsWith('media_player.') && this._h.states[id].state !== 'unavailable')
+          .sort((a, b) => (e.lautsprecher.includes(b) - e.lautsprecher.includes(a)) || this._name(a).localeCompare(this._name(b)));
+        const offen = this._auf.lp != null ? this._auf.lp : !e.lautsprecher.length;
+        s += auf('lp', offen, 'mdi:speaker-multiple', t('k_pick_sp'), t('k_n_sel', { n: e.lautsprecher.length }));
+        if (offen) s += '<div class="aufinhalt"><div class="ll feld">' + lp.map(id => '<label><input type="checkbox" data-lp="' + id + '"' + (e.lautsprecher.includes(id) ? ' checked' : '') + '>' + esc(this._name(id)) + '<small>' + id.slice(13) + '</small></label>').join('') + '</div></div>';
+        if (!e.lautsprecher.length) s += '<div class="klein rot">' + t('no_speakers') + '</div>';
+      }
+      // 2 · which voice
+      s += '<div class="schritt">' + t('k_s2') + '</div>';
+      const zeile = (k, titel, unter, an, anteil, rot) => '<div class="wahl feld' + (an ? ' an' : '') + '" data-act="pack" data-v="' + esc(k) + '" role="button"><ha-icon class="rad" icon="' + (an ? 'mdi:radiobox-marked' : 'mdi:radiobox-blank') + '"></ha-icon><span><b>' + esc(titel) + '</b><small' + (rot ? ' class="rot"' : '') + '>' + esc(unter) + '</small>' +
+        (anteil != null ? '<div class="balken"><i style="width:' + Math.round(anteil * 100) + '%"></i></div>' : '') + '</span>' + (k ? '<button class="mehr" data-act="packmenue" data-v="' + esc(k) + '" title="' + esc(titel) + '"><ha-icon icon="mdi:dots-vertical"></ha-icon></button>' : '') + '</div>';
+      s += zeile('', t('k_live'), stimmen.length ? t('k_live_sub', { v: this._name(this._stimme()) }) : t('no_voice'), !e.pack);
+      Object.keys(packs).forEach(k => { const x = this._status(k); s += zeile(k, k, x.text, e.pack === k, x.anteil, x.rot); });
+      if (this._google()) s += '<button class="neu feld" data-act="neu"><ha-icon icon="mdi:trophy-variant-outline"></ha-icon>' + t('k_new') + '</button>';
+      else if (stimmen.length) s += '<div class="klein">' + t('k_need_google') + '</div>';
+      s += auf('stimme', this._auf.stimme, 'mdi:account-voice', t('k_voice_set'), esc(this._name(this._stimme())));
+      if (this._auf.stimme) s += '<div class="aufinhalt">' + (stimmen.length ? '<select data-f="stimme"><option value="">' + esc(this._name(stimmen[0])) + ' (auto)</option>' + stimmen.map(x => '<option value="' + x + '"' + (x === e.stimme ? ' selected' : '') + '>' + esc(this._name(x)) + '</option>').join('') + '</select>' : '<div class="klein">' + t('no_voice') + '</div>') + '</div>';
+      s += auf('eigen', this._auf.eigen, 'mdi:folder-music-outline', t('k_own'));
+      if (this._auf.eigen) s += '<div class="aufinhalt"><div class="klein" style="margin-top:0">' + t('pack_hint') + '</div></div>';
       const ez = d.erzeugung || {};
-      const spJetzt = this._sprecher || (/^Meisterschaft (\w+)$/.exec(e.pack) || [])[1] || 'fenrir';
-      if (gki) s += '<label class="lb">' + t('pack_speaker') + '</label><div class="seg">' + SPRECHER.map(([k, n]) => '<button class="feld' + (k === spJetzt.toLowerCase() ? ' an' : '') + '" data-act="sprecher" data-v="' + k + '">' + n + ((packs['Meisterschaft ' + n] || []).length ? ' ✓' : '') + '</button>').join('') + '</div>';
-      s += '<button class="schalter feld" data-act="erzeugen" style="margin-top:10px"' + (ez.laeuft || !stimme ? ' disabled' : '') + '><ha-icon icon="mdi:trophy-variant-outline"></ha-icon>' + (ez.laeuft ? t('pack_running', { n: ez.fertig, m: ez.gesamt }) : t('pack_make')) + '</button>' +
-        '<div class="klein"' + (ez.fehler && !ez.laeuft ? ' style="color:var(--red-color,#e53935)">' + esc(ez.fehler === 'daily limit' ? t('pack_daily') : t('pack_error', { e: ez.fehler })) : '>' + t('pack_make_hint')) + '</div>';
-      if (e.pack && packs[e.pack]) s += '<button class="chip feld" data-act="packweg" style="margin-top:8px;color:var(--red-color,#e53935)"><ha-icon icon="mdi:delete-outline" style="--mdc-icon-size:16px"></ha-icon>' + t('pack_del') + ' · ' + esc(e.pack) + '</button>';
       clearTimeout(this._ezT);
       if (ez.laeuft) this._ezT = setTimeout(() => { if (this.isConnected) this._laden(); }, 4000);
-      s += '<label class="lb">' + t('say_what') + '</label><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
+      // 3 · what
+      s += '<div class="schritt">' + t('k_s3') + '</div><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
+      // walk-on songs
       if (e.walkon) {
-        s += '<label class="lb">' + t('walkons') + '</label>';
-        if (!spieler.length) s += '<div class="klein">' + t('no_players_yet') + '</div>';
-        else if (!songs.length) s += '<div class="klein">' + t('no_songs') + '</div>';
-        else s += spieler.map(p => '<div class="wl"><b>' + esc(p.name) + '</b><select data-song="' + esc(p.id) + '"><option value="">' + t('no_song') + '</option>' + songs.map(x => '<option' + (e.songs[p.id] === x ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select></div>').join('');
-        s += '<label class="lb">' + t('walk_secs') + '</label><div class="stepper"><button class="feld" data-act="sek" data-v="-5">−</button><b>' + t('seconds', { n: e.walkon_sekunden }) + '</b><button class="feld" data-act="sek" data-v="5">+</button></div><div class="klein">' + t('songs_hint') + '</div>';
+        s += auf('walk', this._auf.walk, 'mdi:music-note', t('k_s4'), Object.keys(e.songs).length + ' / ' + spieler.length);
+        if (this._auf.walk) {
+          s += '<div class="aufinhalt">';
+          if (!spieler.length) s += '<div class="klein" style="margin-top:0">' + t('no_players_yet') + '</div>';
+          else if (!songs.length) s += '<div class="klein" style="margin-top:0">' + t('no_songs') + '</div>';
+          else s += spieler.map(p => '<div class="wl"><b>' + esc(p.name) + '</b><select data-song="' + esc(p.id) + '"><option value="">' + t('no_song') + '</option>' + songs.map(x => '<option' + (e.songs[p.id] === x ? ' selected' : '') + '>' + esc(x) + '</option>').join('') + '</select></div>').join('');
+          s += '<label class="lb">' + t('walk_secs') + '</label><div class="stepper"><button class="feld" data-act="sek" data-v="-5">−</button><b>' + t('seconds', { n: e.walkon_sekunden }) + '</b><button class="feld" data-act="sek" data-v="5">+</button></div><div class="klein">' + t('songs_hint') + '</div></div>';
+        }
       }
-      s += '<button class="start" style="background:linear-gradient(135deg,var(--primary-color),color-mix(in srgb,var(--primary-color) 70%,#000));min-height:52px;font-size:16px;margin:16px 0 0"' + (e.lautsprecher.length || hier ? '' : ' disabled') + ' data-act="test"><ha-icon icon="mdi:bullhorn-outline"></ha-icon>' + t('test_caller') + '</button>';
       this._setze(s);
       this._in.querySelectorAll('[data-lp]').forEach(c => c.onchange = () => { const x = this._e(); x.lautsprecher = c.checked ? x.lautsprecher.concat(c.dataset.lp) : x.lautsprecher.filter(y => y !== c.dataset.lp); this._speichern(x); });
       this._in.querySelectorAll('[data-f=stimme]').forEach(c => c.onchange = () => { const x = this._e(); x.stimme = c.value; this._speichern(x); });
       this._in.querySelectorAll('[data-song]').forEach(c => c.onchange = () => { const x = this._e(); x.songs = Object.assign({}, x.songs); if (c.value) x.songs[c.dataset.song] = c.value; else delete x.songs[c.dataset.song]; this._speichern(x); });
     }
+    _packName(sp) { return 'Meisterschaft ' + sp.charAt(0).toUpperCase() + sp.slice(1); }
+    // dialogs: new pack (choose a speaker), pack menu, delete (asks once more with what is lost)
+    _dialog(art) {
+      this._dlg = art;
+      const d = this._daten, packs = d.packs || {}, e = this._e(), ez = d.erzeugung || {}, laeuft = !!ez.laeuft;
+      let h;
+      if (art.typ === 'neu') {
+        const sp = art.sp, da = sp && (packs[this._packName(sp)] || []).length;
+        h = '<h3>' + t('k_new') + '</h3><p class="text">' + t('k_new_text', { m: this._soll() }) + '</p><label>' + t('k_choose') + '</label>' +
+          SPRECHER.map(([k, n]) => '<div class="sp feld' + (k === sp ? ' an' : '') + '" data-act="sp" data-v="' + k + '" role="button"><ha-icon icon="' + (k === sp ? 'mdi:radiobox-marked' : 'mdi:radiobox-blank') + '"></ha-icon><span><b>' + n + '</b><small>' + t('sp_' + k) + ((packs[this._packName(k)] || []).length ? ' · ' + t('k_have') : '') + '</small></span>' +
+            '<button class="probe feld" data-act="probe" data-v="' + k + '"><ha-icon icon="mdi:play" style="--mdc-icon-size:16px"></ha-icon> ' + t('k_sample') + '</button></div>').join('') +
+          (laeuft ? '<p class="text" style="margin-top:10px">' + esc(t('k_busy', { p: ez.pack })) + '</p>' : '') +
+          '<div class="mknoepfe"><button class="feld" data-act="dzu">' + t('k_cancel') + '</button><button class="ja" data-act="los"' + (!sp || laeuft ? ' disabled' : '') + '>' + (da ? t('k_make_rest') : t('k_make')) + '</button></div>';
+      } else if (art.typ === 'menue') {
+        const k = art.pack, x = this._status(k), inf = (d.info || {})[k] || {}, auftrag = (d.auftrag || {}).pack === k, sp = (/^Meisterschaft (\w+)$/.exec(k) || [])[1];
+        const weiter = sp && this._google() && inf.fehlen > 0 && !laeuft && !auftrag;
+        h = '<h3>' + esc(k) + '</h3><p class="text' + (x.rot ? ' rot' : '') + '">' + esc(x.text) + '</p>' + (x.anteil != null ? '<div class="balken"><i style="width:' + Math.round(x.anteil * 100) + '%"></i></div>' : '') +
+          '<div class="mknoepfe" style="flex-wrap:wrap"><button class="feld rot links" data-act="wegfrage" data-v="' + esc(k) + '"><ha-icon icon="mdi:delete-outline" style="--mdc-icon-size:18px"></ha-icon> ' + t('k_del') + '</button>' +
+          ((ez.pack === k && laeuft) || auftrag ? '<button class="feld" data-act="halt">' + t('k_stop') + '</button>' : '') +
+          (weiter ? '<button class="feld" data-act="weiter" data-v="' + esc(k) + '">' + t('k_go_on') + '</button>' : '') +
+          (e.pack === k ? '<button class="feld" disabled>' + t('k_in_use') + '</button>' : '<button class="ja" data-act="nutzen" data-v="' + esc(k) + '">' + t('k_use') + '</button>') +
+          '<button class="feld" data-act="dzu">' + t('k_close') + '</button></div>';
+      } else {
+        const k = art.pack, n = (packs[k] || []).length;
+        h = '<h3>' + esc(t('k_del_q', { p: k })) + '</h3><p class="text">' + t('k_del_text', { n }) + '</p><div class="mknoepfe"><button class="feld" data-act="dzu">' + t('k_cancel') + '</button><button class="weg" data-act="wegja" data-v="' + esc(k) + '">' + t('k_del_ok') + '</button></div>';
+      }
+      if (this._dlgAlt !== h) { this._dlgAlt = h; this._modal(h); }
+    }
+    _modal(html) { if (!html) { this._dlg = null; this._dlgAlt = null; } super._modal(html); }
     async _speichern(x) {
       this._daten.einstellungen = x; this._alt = null; this._zeichnen();
       try { await this._h.callService('autodarts', 'ansager_setzen', { einstellungen: x }); } catch (err) { await this._laden(); }
     }
     _klick(act, b) {
-      const x = this._e();
-      if (act === 'aktiv') { x.aktiv = !x.aktiv; this._speichern(x); }
-      else if (act === 'pack') { x.pack = b.dataset.v; this._speichern(x); }
-      else if (act === 'art') { x[b.dataset.v] = !x[b.dataset.v]; this._speichern(x); }
-      else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +b.dataset.v)); this._speichern(x); }
-      else if (act === 'sprecher') { this._sprecher = b.dataset.v; const n = 'Meisterschaft ' + b.dataset.v.charAt(0).toUpperCase() + b.dataset.v.slice(1); if (((this._daten.packs || {})[n] || []).length) { x.pack = n; this._speichern(x); } else { this._alt = null; this._zeichnen(); } }
-      else if (act === 'packweg') zweimal(this, b, t('pack_del_q'), () => this._h.callService('autodarts', 'ansager_pack_loeschen', { name: x.pack }).then(() => this._laden()));
-      else if (act === 'erzeugen') { const sp = (this._sprecher || (/^Meisterschaft (\w+)$/.exec(x.pack) || [])[1] || 'fenrir').toLowerCase(); const ent = this._h.entities && this._h.entities[x.stimme || (this._daten.stimmen || [])[0]];
-        this._h.callService('autodarts', 'ansager_pack_erzeugen', ent && ent.platform === 'google_generative_ai_conversation' ? { sprecher: sp, name: 'Meisterschaft ' + sp.charAt(0).toUpperCase() + sp.slice(1) } : {}).then(() => setTimeout(() => this._laden(), 800)); }
+      const x = this._e(), v = b.dataset.v;
+      if (act === 'aktiv') { x.aktiv = !x.aktiv; this._auf.lp = x.aktiv && !x.lautsprecher.length ? true : this._auf.lp; this._speichern(x); }
       else if (act === 'hier') { try { localStorage.setItem('autodarts_caller', this._ansage() ? '0' : '1'); } catch (e) {} fxKlang(''); this._abo(); this._alt = null; this._zeichnen(); }
+      else if (act === 'pack') { if (x.pack !== v) { x.pack = v; this._speichern(x); } }
+      else if (act === 'packmenue') this._dialog({ typ: 'menue', pack: v });
+      else if (act === 'neu') this._dialog({ typ: 'neu', sp: null });
+      else if (act === 'sp') this._dialog({ typ: 'neu', sp: v });
+      else if (act === 'probe') { fxKlang(''); this._h.callService('autodarts', 'ansager_testen', { sprecher: v }); }
+      else if (act === 'los' || act === 'weiter') {
+        const sp = act === 'los' ? this._dlg.sp : ((/^Meisterschaft (\w+)$/.exec(v) || [])[1] || '').toLowerCase();
+        this._modal(null);
+        this._h.callService('autodarts', 'ansager_pack_erzeugen', { sprecher: sp, name: this._packName(sp) }).then(() => setTimeout(() => this._laden(), 800));
+      }
+      else if (act === 'halt') this._h.callService('autodarts', 'ansager_pack_anhalten', {}).then(() => this._laden());
+      else if (act === 'nutzen') { this._modal(null); x.pack = v; this._speichern(x); }
+      else if (act === 'wegfrage') this._dialog({ typ: 'weg', pack: v });
+      else if (act === 'wegja') { this._modal(null); this._h.callService('autodarts', 'ansager_pack_loeschen', { name: v }).then(() => this._laden()); }
+      else if (act === 'dzu') this._modal(null);
+      else if (act === 'art') { x[v] = !x[v]; this._speichern(x); }
+      else if (act === 'sek') { x.walkon_sekunden = Math.max(5, Math.min(60, x.walkon_sekunden + +v)); this._speichern(x); }
       else if (act === 'test') { fxKlang(''); this._h.callService('autodarts', 'ansager_testen', {}); }
     }
   }

@@ -48,6 +48,7 @@
 - [Troubleshooting](#troubleshooting)
 - [FAQ](#faq)
 - [Removal](#removal)
+- [Legal notice](#legal-notice)
 - [Deutsch](#deutsch)
 
 ## Highlights
@@ -226,16 +227,19 @@ One config entry is one board.
 
 ## Installation
 
-> **Private project.** This repository is private and only meant for its owner's own Home Assistant. It is not published in HACS or any other store.
+[![Open your Home Assistant instance and open this repository in the Marketplace.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Wadim-dev&repository=Autodarts_ha&category=integration)
 
-### Updates (since 1.13.0)
+### Marketplace (recommended)
 
-1. Put the new version of `custom_components/autodarts` into the folder `custom_templates/autodarts_update` of the Home Assistant configuration, `manifest.json` last. Big files can come as `<file>.patch` (unified diff, as `git diff` writes it); if a patch does not fit, nothing is changed. A file `_entfernen.txt` (one path per line) removes files of the old version; `CHANGELOG.md` there gives the release notes.
-2. **Settings → Updates** shows **Autodarts Board Integration**. Install restarts Home Assistant with the new version.
+1. Click the button above, or in Home Assistant open the **Marketplace**, choose **Add by link** and enter `https://github.com/Wadim-dev/Autodarts_ha` (type **Integration**).
+2. Install **Autodarts (unofficial)** and restart Home Assistant.
+3. Add the integration (see [Configuration](#configuration)).
 
-### First install
+New versions show up under **Settings → Updates** like any other Marketplace update.
 
-Copy `custom_components/autodarts` into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
+### Manual
+
+Copy `custom_components/autodarts` from the [latest release](https://github.com/Wadim-dev/Autodarts_ha/releases/latest) into the `custom_components` folder of the Home Assistant configuration and restart Home Assistant.
 
 ## Configuration
 
@@ -591,9 +595,13 @@ logger:
 
 Private project, no outside contributions. The code follows the rules of the Home Assistant quality scale (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
 
-## License
+## Legal notice
 
-[MIT](LICENSE)
+- **Unofficial.** This is a free, private, non-commercial hobby project. It is not made, endorsed, supported or reviewed by Autodarts or any manufacturer. "Autodarts" and all other product names and trademarks belong to their owners and are used here only to say which hardware this integration works with.
+- **Local only.** The integration talks only to the Board Manager on your own board PC in your own network, through the same local interface its web page uses. It does not use, access, copy or change the Autodarts online services, apps, accounts or servers, does not log in anywhere and does not bypass any protection. Use of the Autodarts online services is governed by their own terms; this project does not change them.
+- **Your data stays with you.** Player names, games and statistics are stored only in your Home Assistant. Nothing is sent to the author or anyone else. A voice for the caller (e.g. Google AI TTS) is chosen and connected by you, under that provider's terms.
+- **No warranty, no liability.** The software is provided "as is" under the [MIT License](LICENSE), without any warranty. Use it at your own risk. Where the law does not allow liability to be excluded completely (e.g. for intent or gross negligence), liability is limited to the extent permitted by law.
+- **Images.** Screenshots show demo players (Alex, Sam, Mia). Brand logos visible on boards in photos belong to their owners.
 
 ---
 
@@ -618,7 +626,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 - Sechs fertige Dashboard-Karten werden automatisch mitgeladen (Übersicht, Spiel, Board Manager, Spieler, Lichteffekte, Ansager) – Karten, Entitäten und Fehlermeldungen auf Deutsch, wenn Home Assistant auf Deutsch eingestellt ist
 - Board-PC darf jederzeit aus sein (z. B. per Steckdose): Anzeige „Offline“, danach geht es von selbst weiter
 
-**Privates Projekt:** nur für das eigene Home Assistant, nicht veröffentlicht. **Updates:** neue Version in den Ordner `custom_templates/autodarts_update` legen (manifest.json zuletzt) → Einstellungen → Updates → „Autodarts Board Integration“ installieren (startet Home Assistant neu).
+**Installation:** Knopf oben unter „Installation“ antippen oder im Home Assistant **Marketplace** „Hinzufügen per Link“ → `https://github.com/Wadim-dev/Autodarts_ha` (Typ Integration) → installieren → neu starten. **Updates** erscheinen danach unter Einstellungen → Updates.
 **Einrichtung:** Boards mit Board Manager 2.x werden automatisch gefunden („Autodarts Board gefunden“ unter Geräte & Dienste, nur bestätigen). Sonst: Einstellungen → Geräte & Dienste → Integration hinzufügen → Autodarts → IP-Adresse des Board-PCs (Port 3180). Das Board muss dabei eingeschaltet sein. Adresse später ändern: drei Punkte → Neu konfigurieren.
 
-> Kein offizielles Projekt von Autodarts. Der Name dient nur zur Beschreibung der Kompatibilität.
+**Rechtliches:** Kostenloses, privates, nicht kommerzielles Hobbyprojekt, kein offizielles Produkt von Autodarts. „Autodarts“ und andere Marken gehören ihren Inhabern und werden nur genannt, um zu sagen, mit welchem Board die Integration funktioniert. Die Integration spricht nur mit dem Board Manager im eigenen Netz, nutzt keine Online-Dienste, Konten oder Server von Autodarts und umgeht keine Schutzmaßnahmen. Spieler und Statistiken bleiben im eigenen Home Assistant. Nutzung auf eigene Gefahr, ohne Gewähr ([MIT-Lizenz](LICENSE)); die Haftung ist so weit ausgeschlossen, wie es gesetzlich zulässig ist (bei Vorsatz und grober Fahrlässigkeit nach deutschem Recht nicht).

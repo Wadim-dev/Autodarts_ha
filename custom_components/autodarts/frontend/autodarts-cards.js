@@ -293,7 +293,10 @@ button:disabled{opacity:.38;cursor:default;transform:none}
   const gehe = pfad => { history.pushState(null, '', pfad); window.dispatchEvent(new CustomEvent('location-changed', { detail: { replace: false } })); };
   const att = (h, id) => (st(h, id) || {}).attributes || {};
   // power plug of the board PC, chosen once in the Board Manager card; a card's own power_* options win
-  const stromCfg = h => { const s = att(h, E(h, 'sensor.players')).strom || {}; return s.schalter ? { power_on: s.schalter, power_off: s.schalter, power_switch: s.schalter, power_sensor: s.leistung || undefined } : {}; };
+  const stromCfg = h => {
+    const s = att(h, E(h, 'sensor.players')).strom || {};
+    return s.schalter || s.einschalten ? { power_on: s.einschalten || s.schalter, power_off: s.ausschalten || s.schalter, power_switch: s.schalter || undefined, power_sensor: s.leistung || undefined, pc_online: s.pc_online || undefined } : {};
+  };
   const ft = f => ({ S25: '25', D25: 'Bull', M: 'Miss' }[f] || f || '–');
   const pkt = f => { if (!f || f === 'M') return 0; return ({ S: 1, D: 2, T: 3 }[f[0]] || 0) * parseInt(f.slice(1), 10); };
   const esc = x => String(x == null ? '' : x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -607,10 +610,10 @@ button:disabled{opacity:.38;cursor:default;transform:none}
 
   /* ---------- Tile: one compact row with the board scene behind it, tap opens a window (1.24) ---------- */
   // power plug of the board PC for every card (1.25.1)
-  Object.assign(TEXTE.en, { plug_title: 'Board PC power plug', plug_none: 'None', plug_switch: 'Power plug', plug_power: 'Power meter (optional)', plug_pick: 'Choose …',
-    plug_hint: 'The plug the board PC is connected to. Every DartNest card – also in the sidebar – then shows the power button. With a power meter DartNest knows when the PC is really off.' });
-  Object.assign(TEXTE.de, { plug_title: 'Steckdose des Board-PCs', plug_none: 'Keine', plug_switch: 'Steckdose', plug_power: 'Leistungsmesser (optional)', plug_pick: 'Auswählen …',
-    plug_hint: 'Die Steckdose, an der der Board-PC hängt. Alle DartNest-Karten – auch in der Seitenleiste – zeigen dann den Ein/Aus-Knopf. Mit Leistungsmesser erkennt DartNest, wann der PC wirklich aus ist.' });
+  Object.assign(TEXTE.en, { plug_title: 'Board PC power plug', plug_none: 'None', plug_switch: 'Power plug', plug_leistung: 'Power meter (optional)', plug_einschalten: 'Switch on with (optional)', plug_ausschalten: 'Shut down with (optional)', plug_pc_online: 'PC running (optional)', plug_pick: 'Choose …',
+    plug_hint: 'The plug the board PC is connected to. Every DartNest card – also in the sidebar – then shows the power button. With a power meter DartNest knows when the PC is really off. Have a script that shuts the PC down first? Choose it under “Shut down with”, otherwise the plug is simply switched off.' });
+  Object.assign(TEXTE.de, { plug_title: 'Steckdose des Board-PCs', plug_none: 'Keine', plug_switch: 'Steckdose', plug_leistung: 'Leistungsmesser (optional)', plug_einschalten: 'Einschalten mit (optional)', plug_ausschalten: 'Herunterfahren mit (optional)', plug_pc_online: 'PC läuft (optional)', plug_pick: 'Auswählen …',
+    plug_hint: 'Die Steckdose, an der der Board-PC hängt. Alle DartNest-Karten – auch in der Seitenleiste – zeigen dann den Ein/Aus-Knopf. Mit Leistungsmesser erkennt DartNest, wann der PC wirklich aus ist. Du hast ein Skript, das den PC erst herunterfährt? Dann wähle es bei „Herunterfahren mit“, sonst wird einfach die Steckdose ausgeschaltet.' });
   Object.assign(TEXTE.en, { d_tile: 'One compact row with the board scene behind it; tap opens a window with live darts, power, shortcuts and today', tile_tap: 'Tap for play, power and settings', today: 'Today', t_close: 'Close' });
   Object.assign(TEXTE.de, { d_tile: 'Eine kompakte Zeile mit der Board-Szene dahinter; Tippen öffnet ein Fenster mit Live-Würfen, Ein/Aus, Abkürzungen und Heute', tile_tap: 'Antippen für Spielen, Ein/Aus und Einstellungen', today: 'Heute', t_close: 'Schließen' });
   const SZ_F = { aus: GR, startet: A, runter: A, bereit: G, ziehen: A, kalib: '#26a69a', gestoppt: B, weg: A };
@@ -2322,7 +2325,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       s += auf('strom', this._auf.strom, 'mdi:power-plug', t('plug_title'), strom.schalter ? nm(strom.schalter) : t('plug_none'));
       if (this._auf.strom) {
         s += '<div class="aufinhalt"><div class="reihe"><span>' + t('plug_switch') + '</span><div class="seg"><button class="feld" data-act="plugwahl" data-f="schalter">' + (strom.schalter ? nm(strom.schalter) : t('plug_pick')) + '</button></div></div>' +
-          (strom.schalter ? '<div class="reihe"><span>' + t('plug_power') + '</span><div class="seg"><button class="feld" data-act="plugwahl" data-f="leistung">' + (strom.leistung ? nm(strom.leistung) : t('plug_pick')) + '</button></div></div>' : '') +
+          (strom.schalter ? ['leistung', 'einschalten', 'ausschalten', 'pc_online'].map(f => '<div class="reihe"><span>' + t('plug_' + f) + '</span><div class="seg"><button class="feld" data-act="plugwahl" data-f="' + f + '">' + (strom[f] ? nm(strom[f]) : t('plug_pick')) + '</button></div></div>').join('') : '') +
           '<div class="klein">' + t('plug_hint') + '</div></div>';
       }
       s += auf('soft', this._auf.soft, 'mdi:information-outline', t('software'));
@@ -2354,19 +2357,24 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       else if (act === 'orig') { const url = boardUrl(h); if (url) window.open(url, '_blank'); }
       else if (act === 'plugwahl') this._plugWahl(b.dataset.f);
       else if (act === 'plugsetz') {
-        const strom = Object.assign({ schalter: '', leistung: '' }, att(h, E(h, 'sensor.players')).strom || {});
+        const strom = Object.assign({ schalter: '', leistung: '', einschalten: '', ausschalten: '', pc_online: '' }, att(h, E(h, 'sensor.players')).strom || {});
         strom[b.dataset.f] = b.dataset.v || '';
-        if (!strom.schalter) strom.leistung = '';
+        if (!strom.schalter) Object.keys(strom).forEach(k => { strom[k] = ''; });
         this._dienst('strom_setzen', strom); this._modal(null);
       }
     }
     _plugWahl(feld) {
       // pick the plug (switch.*) or its power meter (sensor in W) from a searchable list
       const h = this._h, name = id => (h.states[id].attributes.friendly_name || id);
-      const passt = id => feld === 'schalter' ? id.startsWith('switch.') : id.startsWith('sensor.') && (h.states[id].attributes.device_class === 'power' || h.states[id].attributes.unit_of_measurement === 'W');
-      const alle = Object.keys(h.states).filter(id => passt(id) && h.states[id].state !== 'unavailable').sort((a, b) => name(a).localeCompare(name(b)));
-      const zeile = id => '<label data-act="plugsetz" data-f="' + feld + '" data-v="' + id + '"><ha-icon icon="' + (feld === 'schalter' ? 'mdi:power-socket-eu' : 'mdi:flash-outline') + '"></ha-icon>' + esc(name(id)) + '<small>' + esc(id) + '</small></label>';
-      this._modal('<h3>' + t(feld === 'schalter' ? 'plug_switch' : 'plug_power') + '</h3><input type="search" placeholder="' + t('search') + '"><div class="ll feld" style="margin-top:8px">' + alle.map(zeile).join('') +
+      const dom = id => id.split('.')[0], a = id => h.states[id].attributes;
+      const passt = id => feld === 'schalter' ? dom(id) === 'switch'
+        : feld === 'leistung' ? dom(id) === 'sensor' && (a(id).device_class === 'power' || a(id).unit_of_measurement === 'W')
+        : feld === 'pc_online' ? dom(id) === 'binary_sensor'
+        : ['script', 'button', 'input_button', 'automation'].includes(dom(id));
+      const eigen = id => ((h.entities || {})[id] || {}).platform === 'autodarts';
+      const alle = Object.keys(h.states).filter(id => passt(id) && !eigen(id) && h.states[id].state !== 'unavailable').sort((a, b) => name(a).localeCompare(name(b)));
+      const zeile = id => '<label data-act="plugsetz" data-f="' + feld + '" data-v="' + id + '"><ha-icon icon="' + ({ schalter: 'mdi:power-socket-eu', leistung: 'mdi:flash-outline', pc_online: 'mdi:desktop-classic' }[feld] || 'mdi:script-text-outline') + '"></ha-icon>' + esc(name(id)) + '<small>' + esc(id) + '</small></label>';
+      this._modal('<h3>' + t(feld === 'schalter' ? 'plug_switch' : 'plug_' + feld) + '</h3><input type="search" placeholder="' + t('search') + '"><div class="ll feld" style="margin-top:8px">' + alle.map(zeile).join('') +
         '</div><div class="mknoepfe"><button class="feld" data-act="plugsetz" data-f="' + feld + '" data-v="">' + t('plug_none') + '</button><button class="feld" data-act="mzu">' + t('cancel') + '</button></div>');
       const inp = this._r.querySelector('.modal input'), liste = this._r.querySelector('.modal .ll');
       inp.addEventListener('input', () => { const q = inp.value.toLowerCase(); liste.querySelectorAll('label').forEach(l => { l.style.display = l.textContent.toLowerCase().includes(q) ? '' : 'none'; }); });

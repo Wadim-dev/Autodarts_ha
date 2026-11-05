@@ -177,6 +177,24 @@ strom_setzen:
         entity:
           domain: sensor
           device_class: power
+    einschalten:
+      name: Einschalten mit (optional)
+      description: Statt nur die Steckdose einzuschalten, z. B. ein Skript.
+      selector:
+        entity:
+          domain: [script, button, input_button, automation, switch, scene]
+    ausschalten:
+      name: Ausschalten mit (optional)
+      description: z. B. ein Skript, das den PC erst herunterfährt und dann die Steckdose ausschaltet. Ohne wird die Steckdose direkt ausgeschaltet.
+      selector:
+        entity:
+          domain: [script, button, input_button, automation, switch]
+    pc_online:
+      name: PC läuft (optional)
+      description: Sensor, der an ist, solange der Board-PC läuft.
+      selector:
+        entity:
+          domain: binary_sensor
 lichteffekte_setzen:
   name: Lichteffekte speichern
   description: >-

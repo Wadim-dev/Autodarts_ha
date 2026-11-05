@@ -5,11 +5,11 @@ and in the Home Assistant update dialog are taken from this file automatically.
 
 ## 1.25.1
 
-- The power button now also appears in the DartNest sidebar. Pick the plug of the board PC once under **Board Manager → Board PC power plug** (optionally with its power meter); every DartNest card uses it. Cards with their own `power_on` keep it. New action `autodarts.strom_setzen`.
+- The power button now also appears in the DartNest sidebar. Pick the plug of the board PC once under **Board Manager → Board PC power plug** (optionally with its power meter, a shut-down script and a "PC running" sensor); every DartNest card uses it. Cards with their own `power_on` keep it. New action `autodarts.strom_setzen`.
 
 **Deutsch**
 
-- Der Ein/Aus-Knopf erscheint jetzt auch in der DartNest-Seitenleiste. Die Steckdose des Board-PCs einmal unter **Board Manager → Steckdose des Board-PCs** wählen (optional mit Leistungsmesser); alle DartNest-Karten nutzen sie. Karten mit eigenem `power_on` behalten ihre Einstellung. Neue Aktion `autodarts.strom_setzen`.
+- Der Ein/Aus-Knopf erscheint jetzt auch in der DartNest-Seitenleiste. Die Steckdose des Board-PCs einmal unter **Board Manager → Steckdose des Board-PCs** wählen (optional mit Leistungsmesser, Herunterfahr-Skript und „PC läuft“-Sensor); alle DartNest-Karten nutzen sie. Karten mit eigenem `power_on` behalten ihre Einstellung. Neue Aktion `autodarts.strom_setzen`.
 
 ## 1.25.0
 

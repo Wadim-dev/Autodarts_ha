@@ -849,9 +849,10 @@ class Spielleiter:
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte"),
                 "strom": self.daten.get("strom") or {}}
 
-    async def strom_setzen(self, schalter: str, leistung: str) -> None:
-        """Steckdose des Board-PCs (und optional ihr Leistungsmesser) für alle DartNest-Karten."""
-        self.daten["strom"] = {k: v for k, v in (("schalter", schalter), ("leistung", leistung)) if v}
+    async def strom_setzen(self, werte: dict[str, str]) -> None:
+        """Steckdose des Board-PCs für alle DartNest-Karten, optional mit Leistungsmesser,
+        eigenem Ein-/Ausschalten (z. B. Skript, das den PC erst herunterfährt) und PC-online-Sensor."""
+        self.daten["strom"] = {k: v for k, v in werte.items() if v}
         self._speichern()
         self._melden()
 

@@ -23,6 +23,7 @@ from .api import board_erstellen
 from .assist import async_setup_assist
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
+from .fernseher import Fernseher, async_setup_tv
 from .lichter import Lichtshow
 from .services import async_setup_services
 from .spiel import Spielleiter
@@ -47,6 +48,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up the actions and the dashboard cards once for the whole integration."""
     async_setup_services(hass)
     await _karten_anmelden(hass)
+    await async_setup_tv(hass)
     return True
 
 
@@ -91,7 +93,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     await lichter.laden()
     ansager = Ansager(hass, lambda: spiel.stand, lambda: [str(p.get("name") or "") for p in spiel.daten["spieler"]])
     await ansager.laden()
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager)
+    fernseher = Fernseher(hass, spiel)
+    spiel.tv_url = fernseher.url
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher)
+    entry.async_on_unload(spiel.ereignis_hoerer(fernseher.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(ansager.ereignis))
     entry.async_on_unload(zustand.async_add_listener(spiel.board_aenderung))

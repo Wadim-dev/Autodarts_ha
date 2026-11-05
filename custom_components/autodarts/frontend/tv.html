@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>DartNest</title>
+<style>
+:root{--bg1:#0d0f14;--bg2:#1a1216;--card:rgba(255,255,255,.055);--line:rgba(255,255,255,.09);--txt:#f4f4f6;--sub:rgba(244,244,246,.62);
+  --or:#ff8a3d;--rot:#ff4d5e;--gr:#3ddc84;--gelb:#ffc83d}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:Outfit,Roboto,"Segoe UI",system-ui,sans-serif;color:var(--txt);background:radial-gradient(120% 90% at 0% 100%,#3a1d14 0%,transparent 55%),radial-gradient(90% 80% at 100% 0%,#2b1420 0%,transparent 60%),linear-gradient(160deg,var(--bg1),var(--bg2));
+  font-size:1.6vh;-webkit-font-smoothing:antialiased;cursor:none}
+.app{position:absolute;inset:0;display:flex;flex-direction:column;padding:2.6vh 3vw 3vh}
+.top{display:flex;align-items:center;gap:2vw;height:6vh;flex:none}
+.logo{display:flex;align-items:center;gap:.8vw;font-weight:800;font-size:2.6vh;letter-spacing:.02em}
+.logo i{width:3.4vh;height:3.4vh;border-radius:50%;background:radial-gradient(circle,var(--rot) 0 18%,#fff 19% 30%,var(--or) 31% 52%,#fff 53% 63%,var(--rot) 64% 100%)}
+.mitte{flex:1;text-align:center;font-size:2.3vh;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mitte b{color:var(--txt);font-weight:700}
+.uhr{font-size:3vh;font-weight:700;font-variant-numeric:tabular-nums}
+.punkt{width:1.2vh;height:1.2vh;border-radius:50%;background:var(--rot);display:none}
+.weg .punkt{display:block}
+.still .uhr{visibility:hidden}
+main{flex:1;min-height:0;display:flex;flex-direction:column;gap:2.2vh;margin-top:2.2vh}
+.grau{color:var(--sub)}
+/* players */
+.sp{flex:1;min-height:0;display:grid;gap:1.6vw}
+.p{position:relative;border-radius:3vh;background:var(--card);border:.25vh solid var(--line);padding:2.4vh 2vw;display:flex;flex-direction:column;min-width:0;overflow:hidden;transition:border-color .3s,background .3s,transform .3s}
+.p.an{border-color:var(--or);background:linear-gradient(160deg,rgba(255,138,61,.18),rgba(255,77,94,.08));box-shadow:0 0 0 .5vh rgba(255,138,61,.16),0 2vh 6vh rgba(0,0,0,.35)}
+.p.raus{opacity:.4}
+.n{display:flex;align-items:baseline;gap:1vw;font-size:3.6vh;font-weight:700;white-space:nowrap}
+.n span{overflow:hidden;text-overflow:ellipsis}
+.n small{margin-left:auto;font-size:2.4vh;color:var(--sub);font-weight:600;flex:none}.n small b{color:var(--txt);font-size:3vh}
+.wf{font-size:2.2vh;color:var(--or);font-weight:600;margin-top:.4vh}
+.gr{flex:1;display:flex;align-items:center;font-weight:800;line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.02em;min-height:0}
+.info{display:flex;gap:2vw;font-size:2.3vh;color:var(--sub);white-space:nowrap;overflow:hidden}
+.info b{color:var(--txt);font-weight:700}
+.wegp{display:flex;gap:.8vw;margin-top:1.2vh}
+.wegp span,.chip{border-radius:1.2vh;padding:.5vh 1vw;font-weight:700;font-size:2.3vh;background:rgba(255,255,255,.08)}
+.p.an .wegp span{background:var(--or);color:#1b0f08}
+.marks{display:grid;grid-template-columns:repeat(7,1fr);gap:.5vw;margin:1.4vh 0}
+.marks span{text-align:center;border-radius:1.2vh;padding:.6vh 0 .4vh;font-size:2.6vh;font-weight:800;background:rgba(255,255,255,.06);color:var(--sub);line-height:1.1}
+.marks span i{display:block;font-style:normal;font-size:2.4vh;height:2.8vh;color:var(--or)}
+.marks span.m3{background:var(--gr);color:#08180f}.marks span.m3 i{color:#08180f}
+/* current visit */
+.wurf{flex:none;display:flex;align-items:center;gap:2vw;border-radius:3vh;background:var(--card);border:.25vh solid var(--line);padding:2vh 2vw}
+.wurf .wer{font-size:3vh;font-weight:700;min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wurf .wer small{display:block;font-size:2.2vh;color:var(--sub);font-weight:600}
+.d{width:12vh;height:8.4vh;border-radius:2vh;display:flex;align-items:center;justify-content:center;font-size:4vh;font-weight:800;background:rgba(255,255,255,.07);border:.25vh solid var(--line)}
+.d.leer{color:rgba(255,255,255,.25)}
+.d.neu{animation:rein .45s cubic-bezier(.2,1.6,.4,1)}
+.summe{font-size:6vh;font-weight:800;min-width:13vh;text-align:right;font-variant-numeric:tabular-nums}
+.hinw{font-size:2.6vh;font-weight:700;color:var(--or)}
+.hinw.bust{color:var(--rot)}.hinw.ok{color:var(--gr)}
+/* rest mode */
+.ruhe{flex:1;display:grid;grid-template-columns:1.05fr 1fr;gap:2.4vw;min-height:0}
+.gross{display:flex;flex-direction:column;justify-content:center;gap:1vh;padding-left:1vw}
+.gross .z{font-size:22vh;font-weight:800;line-height:.9;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.gross .dt{font-size:4vh;color:var(--sub);font-weight:600}
+.gross .los{margin-top:4vh;font-size:3vh;font-weight:600}
+.gross .los b{background:linear-gradient(90deg,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.box{border-radius:3vh;background:var(--card);border:.25vh solid var(--line);padding:2.4vh 2vw;min-height:0;overflow:hidden}
+.box h3{font-size:2.2vh;text-transform:uppercase;letter-spacing:.12em;color:var(--sub);font-weight:700;margin-bottom:1.4vh}
+.rechts{display:flex;flex-direction:column;gap:2vh;min-height:0}
+.zeile{display:flex;align-items:center;gap:1.4vw;padding:1.1vh 0;border-top:.15vh solid var(--line);font-size:2.6vh;white-space:nowrap}
+.zeile:first-of-type{border-top:none}
+.zeile .nr{width:4vh;height:4vh;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.1vh;background:rgba(255,255,255,.08);flex:none}
+.zeile:nth-of-type(1) .nr{background:var(--gelb);color:#231a00}.zeile:nth-of-type(2) .nr{background:#cfd6e0;color:#111}.zeile:nth-of-type(3) .nr{background:#d08a4a;color:#1f1206}
+.zeile .nm{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.zeile .w{color:var(--sub);font-variant-numeric:tabular-nums}.zeile .w b{color:var(--txt)}
+/* result */
+.ende{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vh;text-align:center}
+.ende .pokal{font-size:14vh;line-height:1;animation:rein .8s cubic-bezier(.2,1.6,.4,1)}
+.ende h1{font-size:9vh;font-weight:800;line-height:1}
+.ende h1 span{background:linear-gradient(90deg,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tab{border-collapse:collapse;font-size:2.6vh;margin-top:2vh}
+.tab th{font-size:2vh;color:var(--sub);font-weight:700;padding:.6vh 2vw;text-align:right}.tab th:first-child{text-align:left}
+.tab td{padding:1vh 2vw;text-align:right;border-top:.15vh solid var(--line);font-variant-numeric:tabular-nums}.tab td:first-child{text-align:left;font-weight:700}
+.tab tr.sieger td{color:var(--gr)}
+/* bull-off */
+.bo{flex:1;display:grid;gap:1.6vw;align-content:center}
+/* effect overlay */
+.fx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5}
+.fx .t{font-weight:900;font-size:24vh;line-height:1;letter-spacing:-.02em;text-shadow:0 1vh 6vh rgba(0,0,0,.6);animation:fx 2.4s cubic-bezier(.2,1,.3,1) both;text-align:center}
+.fx .t small{display:block;font-size:6vh;font-weight:800;letter-spacing:.06em;margin-top:1vh}
+.fx .g180{background:linear-gradient(90deg,#ffd23d,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.fx .bust{color:var(--rot)}.fx .leg{color:var(--gr);font-size:13vh}
+.blitz{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle,rgba(255,170,70,.28),rgba(8,8,12,.78) 65%);animation:blitz 2.4s ease-out both}
+@keyframes fx{0%{opacity:0;transform:scale(.4)}15%{opacity:1;transform:scale(1.08)}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
+@keyframes blitz{0%{opacity:0}12%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes rein{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top"><div class="logo"><i></i>DartNest</div><div class="mitte" id="mitte"></div><div class="punkt" id="punkt"></div><div class="uhr" id="uhr"></div></div>
+  <main id="main"></main>
+</div>
+<div class="fx" id="fx"></div>
+<script>
+(function () {
+  'use strict';
+  const T = {
+    de: { rest: 'Rest', legs: 'Legs', sets: 'Sets', avg: 'Ø', darts: 'Darts', to_throw: 'ist dran', throws: 'wirft', ranking: 'Rangliste', last: 'Letzte Spiele',
+      none: 'Noch keine Spiele', start: 'Neues Spiel in der <b>DartNest</b>-App starten', bulloff: 'Bull-Off – wer ist näher am Bull?', wins: 'gewinnt!', checkout: 'Checkout', bust: 'BUST', remove: 'Darts ziehen',
+      leg: 'Leg', set: 'Satz', game: 'Spiel', next: 'Nächstes Match', champion: 'Turniersieger', round: 'Runde {n} von {m}', games: 'Spiele', w: 'Siege', elo: 'Wertung', highest: 'Höchste', finish: 'Finish',
+      days: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'], first_leg: 'Erster bis {n} Leg', first_legs: 'Erster bis {n} Legs', sets_legs: 'Erster bis {s} Sets à {l} Legs', lost: 'Verbindung …', out: 'raus', aims: 'wirft auf Bull …', tour: 'Turnier läuft' },
+    en: { rest: 'Rest', legs: 'Legs', sets: 'Sets', avg: 'Avg', darts: 'Darts', to_throw: 'to throw', throws: 'throws', ranking: 'Ranking', last: 'Last games',
+      none: 'No games yet', start: 'Start a new game in the <b>DartNest</b> app', bulloff: 'Bull-off – who is closest to the bull?', wins: 'wins!', checkout: 'Checkout', bust: 'BUST', remove: 'Pull the darts',
+      leg: 'Leg', set: 'Set', game: 'Game', next: 'Next match', champion: 'Champion', round: 'Round {n} of {m}', games: 'Games', w: 'Wins', elo: 'Rating', highest: 'Highest', finish: 'Finish',
+      days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], first_leg: 'First to {n} leg', first_legs: 'First to {n} legs', sets_legs: 'First to {s} sets of {l} legs', lost: 'Connecting …', out: 'out', aims: 'throws at bull …', tour: 'Tournament running' }
+  };
+  let S = T.de;
+  const t = (k, v) => String(S[k] == null ? k : S[k]).replace(/\{(\w+)\}/g, (_, x) => v && v[x] != null ? v[x] : '');
+  const esc = x => String(x == null ? '' : x).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const ft = f => !f ? '' : f === 'D25' ? 'Bull' : f === 'S25' ? '25' : f === 'M' ? 'Miss' : f[0] === 'S' ? f.slice(1) : f;
+  const $ = id => document.getElementById(id);
+  let D = null, altHtml = '', altAnsage = null, altDarts = 0, erst = true;
+
+  function uhr() {
+    const d = new Date(), z = d.toLocaleTimeString(S === T.de ? 'de-DE' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+    $('uhr').textContent = z;
+    const g = document.querySelector('.gross .z'); if (g && g.textContent !== z) g.textContent = z;
+  }
+  setInterval(uhr, 5000);
+
+  function modusTxt(a) {
+    const e = a.einstellungen || {};
+    if ((a.art && a.art !== 'x01') || !e.startwert) return a.modus || '';
+    const p = [String(e.startwert)];
+    if (e.einwurf === 'double') p.push('Double In'); else if (e.einwurf === 'master') p.push('Master In');
+    p.push({ straight: 'Straight Out', double: 'Double Out', master: 'Master Out' }[e.auswurf] || 'Double Out');
+    p.push(e.sets ? t('sets_legs', { s: e.sets, l: e.legs }) : t(+e.legs > 1 ? 'first_legs' : 'first_leg', { n: e.legs || 1 }));
+    return p.join(' · ');
+  }
+
+  function spalten(n) { return n <= 2 ? [n, 1] : n <= 4 ? [n, 1] : [Math.ceil(n / 2), 2]; }
+
+  function gross(a, p) {
+    const art = a.art || 'x01';
+    if (art === 'atc' || art === 'nine_lives') return ft(p.fertig ? 'D25' : (p.ziel || '')) || '–';
+    if (art === 'killer') return p.nummer != null ? p.nummer : '–';
+    return p.rest != null ? p.rest : '';
+  }
+
+  function spieler(a) {
+    const sp = a.spieler || [], e = a.einstellungen || {}, am = a.am_zug, [c, r] = spalten(sp.length);
+    const groesse = sp.length <= 2 ? 30 : sp.length <= 4 ? 19 : 13;
+    const zahlen = a.zahlen || [];
+    return '<div class="sp" style="grid-template-columns:repeat(' + c + ',1fr);grid-template-rows:repeat(' + r + ',1fr)">' + sp.map((p, i) =>
+      '<div class="p' + (i === am && a.gewinner == null ? ' an' : '') + (p.raus ? ' raus' : '') + '">' +
+      '<div class="n"><span>' + esc(p.name) + '</span><small>' + (e.sets ? t('sets') + ' <b>' + p.sets + '</b> · ' : '') + t('legs') + ' <b>' + p.legs + '</b></small></div>' +
+      (p.werfer ? '<div class="wf">▸ ' + esc(p.werfer) + '</div>' : '') +
+      '<div class="gr" style="font-size:' + groesse + 'vh">' + esc(gross(a, p)) + '</div>' +
+      (p.marks && zahlen.length ? '<div class="marks">' + p.marks.map((m, k) => '<span class="m' + Math.min(3, m) + '">' + (zahlen[k] == null ? '?' : zahlen[k] === 25 ? 'B' : zahlen[k]) + '<i>' + ['', '/', '✕', '✓'][Math.min(3, m)] + '</i></span>').join('') + '</div>' : '') +
+      '<div class="info"><span>' + t('avg') + ' <b>' + (p.avg || 0) + '</b></span>' + (p.letzte != null ? '<span>▸ <b>' + esc(p.letzte) + '</b></span>' : '') +
+      (sp.length <= 4 ? '<span>' + t('darts') + ' <b>' + (p.leg_darts || 0) + '</b></span>' : '') + '</div>' +
+      (p.weg && sp.length <= 4 ? '<div class="wegp">' + p.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '') +
+      '</div>').join('') + '</div>';
+  }
+
+  function wurf(a) {
+    const sp = a.spieler || [], wer = sp[a.am_zug] || {}, au = a.aufnahme || { darts: [] }, n = au.darts.length;
+    let hinw = '';
+    if (a.leg_gewinner != null) hinw = '<span class="hinw ok">' + t('leg') + ' ' + esc(sp[a.leg_gewinner].name) + '</span>';
+    else if (au.bust) hinw = '<span class="hinw bust">' + t('bust') + '</span>';
+    else if (au.fertig) hinw = '<span class="hinw">' + t('remove') + '</span>';
+    const dz = [0, 1, 2].map(i => '<div class="d' + (au.darts[i] ? '' : ' leer') + (au.darts[i] && i >= altDarts ? ' neu' : '') + '">' + (au.darts[i] ? ft(au.darts[i].f) : '–') + '</div>').join('');
+    altDarts = n;
+    const runde = a.runden && wer.runde != null ? t('round', { n: Math.min(a.runden, (wer.runde || 0) + 1), m: a.runden }) : '';
+    return '<div class="wurf"><div class="wer">' + esc(wer.werfer || wer.name) + ' ' + t('to_throw') + (runde ? '<small>' + runde + '</small>' : '') + '</div>' + hinw + dz + '<div class="summe">' + (au.summe || 0) + '</div></div>';
+  }
+
+  function ende(a) {
+    const sp = a.spieler || [], g = sp[a.gewinner] || {}, x01 = !a.art || a.art === 'x01';
+    const zeilen = sp.map((p, i) => '<tr' + (i === a.gewinner ? ' class="sieger"' : '') + '><td>' + esc(p.name) + '</td><td>' + p.legs + '</td><td>' + (p.avg || 0) + '</td>' +
+      (x01 ? '<td>' + (p.hoechste || 0) + '</td><td>' + (p.finish || '–') + '</td>' : '<td>' + esc(gross(a, p)) + '</td>') + '</tr>').join('');
+    const tu = a.turnier, champ = tu && tu.sieger;
+    return '<div class="ende"><div class="pokal">🏆</div><h1><span>' + esc(champ || g.name) + '</span></h1><div class="grau" style="font-size:3.4vh">' + (champ ? t('champion') : t('wins')) + ' · ' + esc(modusTxt(a)) + '</div>' +
+      '<table class="tab"><tr><th></th><th>' + t('legs') + '</th><th>' + t('avg') + '</th>' + (x01 ? '<th>' + t('highest') + '</th><th>' + t('finish') + '</th>' : '<th></th>') + '</tr>' + zeilen + '</table>' +
+      (tu && tu.naechstes && !champ ? '<div style="font-size:3vh;margin-top:2vh">' + t('next') + ': <b>' + esc(tu.naechstes.a) + '</b> – <b>' + esc(tu.naechstes.b) + '</b></div>' : '') + '</div>';
+  }
+
+  function bulloff(a) {
+    const bo = a.bulloff || [];
+    return '<div class="hinw" style="font-size:3.4vh;text-align:center">' + t('bulloff') + '</div><div class="bo" style="grid-template-columns:repeat(' + Math.min(4, bo.length) + ',1fr)">' +
+      bo.map((p, i) => '<div class="p' + (i === a.am_zug && !p.dart ? ' an' : '') + (p.raus ? ' raus' : '') + '" style="min-height:24vh"><div class="n"><span>' + esc(p.name) + '</span></div>' +
+        '<div class="gr" style="font-size:9vh">' + (p.dart ? ft(p.dart.f) : '–') + '</div><div class="info">' + (p.raus ? t('out') : p.dart ? p.abstand + ' mm' : i === a.am_zug ? t('aims') : '') + '</div></div>').join('') + '</div>';
+  }
+
+  function ruhe() {
+    const v = D.verlauf || [], r = (D.rang || []).slice(0, v.length ? 6 : 8), tu = D.spiel && D.spiel.turnier, d = new Date();
+    const datum = S.days[d.getDay()] + ', ' + d.toLocaleDateString(S === T.de ? 'de-DE' : 'en-GB', { day: 'numeric', month: 'long' });
+    const rang = r.length ? r.map((p, i) => '<div class="zeile"><span class="nr">' + (i + 1) + '</span><span class="nm">' + esc(p.name) + '</span><span class="w">' + t('elo') + ' <b>' + p.elo + '</b></span><span class="w">' + t('avg') + ' <b>' + p.avg + '</b></span><span class="w">' + t('w') + ' <b>' + p.siege + '</b></span></div>').join('')
+      : '<div class="grau" style="font-size:2.6vh">' + t('none') + '</div>';
+    const letzte = v.map(x => '<div class="zeile"><span class="nm">' + (x.spieler || []).map(p => p.sieger ? '<b style="color:var(--gr)">' + esc(p.name) + '</b>' : esc(p.name)).join(' · ') + '</span><span class="w">' + esc(x.modus || '') + '</span></div>').join('');
+    return '<div class="ruhe"><div class="gross"><div class="z"></div><div class="dt">' + esc(datum) + '</div>' +
+      (tu && tu.naechstes ? '<div class="los">' + t('next') + ': <b>' + esc(tu.naechstes.a) + ' – ' + esc(tu.naechstes.b) + '</b></div>' : '<div class="los">' + t('start') + '</div>') + '</div>' +
+      '<div class="rechts"><div class="box" style="flex:1.3"><h3>' + t('ranking') + '</h3>' + rang + '</div>' + (letzte ? '<div class="box" style="flex:1"><h3>' + t('last') + '</h3>' + letzte + '</div>' : '') + '</div></div>';
+  }
+
+  function banner(a) {
+    const tu = a.turnier;
+    let s = '<b>' + esc(modusTxt(a)) + '</b>';
+    if (tu && tu.phase) s += ' · ' + t('tour');
+    if (a.leg && a.phase !== 'beendet') s += ' · ' + t('leg') + ' ' + a.leg + ((a.einstellungen || {}).sets ? ' · ' + t('set') + ' ' + a.set : '');
+    return s;
+  }
+
+  function effekt(a) {
+    if (!a || a.ansage_id == null || a.ansage_id === '') return;
+    const id = a.id + ':' + a.ansage_id + ':' + a.ansage;
+    if (altAnsage === null || erst) { altAnsage = id; return; }
+    if (id === altAnsage) return;
+    altAnsage = id;
+    const x = String(a.ansage || ''), fx = $('fx');
+    let html = '';
+    if (x === '180') html = '<div class="t g180">180</div>';
+    else if (x === 'Bust') html = '<div class="t bust">' + t('bust') + '</div>';
+    else if (/^(Leg|Satz) /.test(x) && a.phase !== 'beendet') {
+      const art = x.split(' ')[0], name = x.slice(art.length + 1), wort = art === 'Leg' ? t('leg') : art === 'Satz' ? t('set') : t('game');
+      html = '<div class="t leg">' + esc(wort) + '<small>' + esc(name) + '</small></div>';
+    } else if (+x >= 100 && (!a.art || a.art === 'x01')) html = '<div class="t g180" style="font-size:18vh">' + esc(x) + '</div>';
+    if (!html) return;
+    fx.innerHTML = '<div class="blitz"></div>' + html;
+    clearTimeout(effekt.z); effekt.z = setTimeout(() => { fx.innerHTML = ''; }, 2500);
+  }
+
+  function zeichnen() {
+    if (!D) return;
+    S = T[(D.sprache || 'de').slice(0, 2)] || T.en;
+    document.documentElement.lang = S === T.de ? 'de' : 'en';
+    const a = D.spiel || {}, ph = a.phase;
+    let html, mitte = '';
+    if (ph === 'laeuft') { html = spieler(a) + wurf(a); mitte = banner(a); }
+    else if (ph === 'bulloff') { html = bulloff(a); mitte = banner(a); }
+    else if (ph === 'beendet') { html = ende(a); mitte = banner(a); }
+    else { html = ruhe(); }
+    document.body.classList.toggle('still', !['laeuft', 'bulloff', 'beendet'].includes(ph));
+    if (html !== altHtml) { altHtml = html; $('main').innerHTML = html; }
+    if ($('mitte').innerHTML !== mitte) $('mitte').innerHTML = mitte;
+    if (ph === 'laeuft' || ph === 'beendet') effekt(a);
+    erst = false;
+    uhr();
+  }
+
+  function verbinden() {
+    const q = new EventSource(location.pathname.replace(/\/$/, '') + '/live');
+    q.onmessage = e => { try { D = JSON.parse(e.data); } catch (x) { return; } document.body.classList.remove('weg'); zeichnen(); };
+    q.onerror = () => { document.body.classList.add('weg'); };
+  }
+  uhr();
+  verbinden();
+})();
+</script>
+</body>
+</html>

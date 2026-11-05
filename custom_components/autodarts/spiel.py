@@ -55,6 +55,7 @@ class Spielleiter:
         self.stand: dict[str, Any] | None = None
         self._hoerer: list[Callable[[], None]] = []
         self._ereignis_hoerer: list[Callable[[str, dict[str, Any]], None]] = []
+        self.tv_url: Callable[[], str] | None = None  # set by the TV page (fernseher.py)
         self._ev_spiel: str | None = None
         self._ev_offen: tuple[int, int] = (-1, 0)
         self._ev_visit = -1
@@ -907,8 +908,15 @@ class Spielleiter:
                 "gegen": pr.get("gegen", {}),
                 "abzeichen": auswertung.abzeichen(g, pr, beste),
             })
+        tv = self.daten.get("tv") or {}
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte"),
-                "strom": self.daten.get("strom") or {}}
+                "strom": self.daten.get("strom") or {},
+                "tv": {"geraete": tv.get("geraete") or [], "auto": bool(tv.get("auto")), "url": self.tv_url() if self.tv_url else ""}}
+
+    def einstellung_gespeichert(self) -> None:
+        """A setting of another part (e.g. the TV page) changed: store it and update the sensors."""
+        self._speichern()
+        self._melden()
 
     async def strom_setzen(self, werte: dict[str, str]) -> None:
         """Steckdose des Board-PCs für alle DartNest-Karten, optional mit Leistungsmesser,

@@ -242,7 +242,7 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
         await hass.services.async_call(DOMAIN, "ansager_pack_erzeugen", {"sprecher": "fenrir", "nur": ["180", "140", "require", "100", "leg"]}, blocking=True)
         await a._erzeuger
     assert a.erzeugung == {"pack": "Meisterschaft", "fertig": 5, "gesamt": 5, "laeuft": False, "fehler": None}
-    assert len(texte) == 4 and all(t[2] == {"voice": "fenrir"} for t in texte)
+    assert len(texte) == 4 and all(t[2] == {"preferred_format": "wav", "voice": "fenrir"} for t in texte)
     assert texte[-1][0] == "Game shot, and the leg!"  # the text as it is: a direction in front was read out loud
     assert {"140.wav", "require.wav", "100.wav", "leg.wav"} <= {f.name for f in ordner.iterdir()}
     assert "name_anna" in a.pack_texte(["Anna"]) and "163" not in a.pack_texte([])
@@ -311,11 +311,12 @@ async def test_pack_tageslimit_und_loeschen(hass: HomeAssistant, geladen, lautsp
 def _ton(pfad, teile, rate=8000) -> None:
     """A WAV of (seconds of sound, seconds of silence) parts."""
     import array
+    import math
     import wave
 
     werte = array.array("h")
     for laut, still in teile:
-        werte.extend([9000 if i % 2 else -9000 for i in range(int(laut * rate))])
+        werte.extend([int(9000 * math.sin(2 * math.pi * 300 * i / rate)) for i in range(int(laut * rate))])
         werte.extend([0] * int(still * rate))
     with wave.open(str(pfad), "wb") as w:
         w.setnchannels(1)
@@ -358,3 +359,47 @@ async def test_pack_pruefen_schneidet_vorspann(hass: HomeAssistant, geladen, lau
     # a clean pack: nothing found, nothing changed
     assert (await a.pack_pruefen("Meisterschaft Fenrir", False))["vorspann"] is None
     assert (await a.pack_pruefen("../x"))["dateien"] == 0
+
+
+async def test_pack_pruefen_mp3(hass: HomeAssistant, geladen, lautsprecher, tmp_path) -> None:
+    """MP3 sounds (how Home Assistant saves a voice) are converted to WAV, cut and can then be joined."""
+    import subprocess
+    import wave
+
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Meisterschaft Orus"
+    ordner.mkdir(parents=True)
+    for k in ("140", "100", "60", "26", "92", "require", "name_alex"):
+        _ton(tmp_path / "q.wav", [(1.0, 0.15), (1.2, 0.35), (0.8, 0)], rate=24000)
+        subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(tmp_path / "q.wav"), str(ordner / f"{k}.mp3")], check=True)
+    a = geladen.runtime_data.ansager
+    await _setzen(hass, pack="Meisterschaft Orus")
+    bericht = await a.pack_pruefen("Meisterschaft Orus")
+    assert bericht["geschnitten"] == 7 and bericht["vorspann"] == pytest.approx(2.7, abs=0.1)
+    assert sorted(f.name for f in ordner.glob("*.mp3")) == [] and len(list((ordner / "_original").glob("*.mp3"))) == 7
+    with wave.open(str(ordner / "140.wav"), "rb") as w:
+        assert w.getnframes() / w.getframerate() == pytest.approx(0.86, abs=0.08)
+    await hass.services.async_call(DOMAIN, "ansager_testen", {}, blocking=True)
+    assert "/Meisterschaft Orus/_mix/" in lautsprecher["play"][-1].data["media_content_id"]  # joined, not spoken
+
+
+async def test_pack_als_wav_gespeichert(hass: HomeAssistant, geladen, lautsprecher, tmp_path, monkeypatch) -> None:
+    """A sound the voice gives as MP3 is saved as WAV."""
+    import subprocess
+
+    monkeypatch.setattr(ansager_modul, "PAUSE", 0)
+    _ton(tmp_path / "q.wav", [(0.5, 0)], rate=24000)
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", str(tmp_path / "q.wav"), str(tmp_path / "q.mp3")], check=True)
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "P"
+    ordner.mkdir(parents=True)
+    (ordner / "180.mp3").write_bytes(b"alt")
+    a = geladen.runtime_data.ansager
+    await _setzen(hass)
+
+    async def audio(_hass, _mid):
+        return "mp3", (tmp_path / "q.mp3").read_bytes()
+
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
+        a.pack_erzeugen("P", [], None, ["180"], neu=True)
+        await a._erzeuger
+    assert sorted(f.name for f in ordner.iterdir()) == ["180.wav"]

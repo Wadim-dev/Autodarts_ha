@@ -188,54 +188,89 @@ def _pausen(pfad: Path) -> tuple[float, list[float]] | None:
     return n / rate, enden
 
 
-def _schneiden(pfad: Path, ab: float) -> None:
-    """Cut a WAV to start at the given second (a little before, inside the pause)."""
-    with wave.open(str(pfad), "rb") as w:
+def _zu_wav(ffmpeg: str, quelle: Path, ziel: Path) -> bool:
+    """Convert a sound file to a 16-bit mono WAV, same rate (packs are joined from WAVs)."""
+    import subprocess
+
+    try:
+        r = subprocess.run([ffmpeg, "-y", "-v", "error", "-i", str(quelle), "-ac", "1",
+                            "-sample_fmt", "s16", str(ziel)], capture_output=True, timeout=60, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return r.returncode == 0 and ziel.is_file()
+
+
+def _schneiden(quelle: Path, ziel: Path, ab: float) -> None:
+    """Write the WAV quelle from the given second on (a little before, inside the pause) to ziel."""
+    with wave.open(str(quelle), "rb") as w:
         par = w.getparams()
         w.setpos(min(par.nframes, max(0, int((ab - 0.06) * par.framerate))))
         rest = w.readframes(par.nframes)
-    with wave.open(str(pfad), "wb") as w:
+    with wave.open(str(ziel), "wb") as w:
         w.setparams(par)
         w.writeframes(rest)
 
 
-def _pruefen(ordner: Path, reparieren: bool) -> dict[str, Any]:
+def _pruefen(ordner: Path, reparieren: bool, ffmpeg: str = "ffmpeg") -> dict[str, Any]:
     """Find a spoken direction at the start of the pack sounds and cut it off (see the module text).
 
-    The direction is the same words in every file, so the pause after it is at about the same time
-    everywhere: the latest time that at least half of the files have a pause at is taken. Each file is
-    cut at its pause nearest to that; a file that is longer but has no such pause is deleted (made
-    again), a file shorter than that never had the direction.
+    Sounds that are not WAV (Home Assistant saves voices as MP3 by default) are converted first;
+    with reparieren they stay WAV, so a pack can be joined. The direction is the same words in every
+    file, so the pause after it is at about the same time everywhere: the latest time that at least
+    half of the files have a pause at is taken. Each file is cut at its pause nearest to that; a file
+    that is longer but has no such pause is removed (made again), a file shorter than that never had
+    the direction. Originals are kept in _original.
     """
-    dateien = {d.stem.lower(): d for d in sorted(ordner.glob("*.wav")) if d.is_file()}
-    daten = {k: x for k, d in dateien.items() if (x := _pausen(d))}
-    bericht: dict[str, Any] = {"dateien": len(daten), "vorspann": None, "geschnitten": 0, "neu": [], "ohne": 0}
-    if len(daten) < 5:
+    import tempfile
+
+    quellen = {k: ordner / d for k, d in _dateien(ordner).items()} if ordner.is_dir() else {}
+    bericht: dict[str, Any] = {"dateien": len(quellen), "vorspann": None, "geschnitten": 0, "neu": [], "ohne": 0, "umgewandelt": 0}
+    if not quellen:
         return bericht
-    kandidaten = sorted({round(e, 2) for _, enden in daten.values() for e in enden if e >= 1.0})
-    treffer = [(t, sum(1 for _, enden in daten.values() if any(abs(e - t) <= 0.35 for e in enden))) for t in kandidaten]
-    gut = [t for t, z in treffer if z >= len(daten) / 2]
-    if not gut:
-        return bericht
-    vorspann = max(gut)
-    bericht["vorspann"] = round(vorspann, 2)
     sicher = ordner / ORIGINAL
-    for k, (laenge, enden) in daten.items():
-        nah = min(enden, key=lambda e: abs(e - vorspann), default=None)
-        if nah is not None and abs(nah - vorspann) <= 0.5:
-            bericht["geschnitten"] += 1
-            if reparieren:
-                sicher.mkdir(exist_ok=True)
-                if not (sicher / dateien[k].name).exists():
-                    shutil.copy2(dateien[k], sicher / dateien[k].name)
-                _schneiden(dateien[k], nah)
-        elif laenge < vorspann:
-            bericht["ohne"] += 1
-        else:
-            bericht["neu"].append(k)
-            if reparieren:
-                sicher.mkdir(exist_ok=True)
-                shutil.move(str(dateien[k]), str(sicher / dateien[k].name))
+
+    def sichern(q: Path, verschieben: bool) -> None:
+        sicher.mkdir(exist_ok=True)
+        if (sicher / q.name).exists():
+            if verschieben:
+                q.unlink(missing_ok=True)
+            return
+        (shutil.move if verschieben else shutil.copy2)(str(q), str(sicher / q.name))
+
+    with tempfile.TemporaryDirectory() as tmp:
+        wavs: dict[str, Path] = {}
+        for k, q in quellen.items():
+            if q.suffix.lower() == ".wav":
+                wavs[k] = q
+            elif _zu_wav(ffmpeg, q, Path(tmp) / f"{k}.wav"):
+                wavs[k] = Path(tmp) / f"{k}.wav"
+        daten = {k: x for k, w in wavs.items() if (x := _pausen(w))}
+        kandidaten = sorted({round(e, 2) for _, enden in daten.values() for e in enden if e >= 1.0})
+        treffer = [(t, sum(1 for _, enden in daten.values() if any(abs(e - t) <= 0.35 for e in enden))) for t in kandidaten]
+        gut = [t for t, z in treffer if len(daten) >= 5 and z >= len(daten) / 2]
+        vorspann = max(gut) if gut else None
+        bericht["vorspann"] = round(vorspann, 2) if vorspann else None
+        bericht["beispiele"] = {k: [round(daten[k][0], 2), [round(e, 2) for e in daten[k][1]]]
+                                for k in ("180", "140", "26", "game_on", "require", "leg") if k in daten}
+        for k, (laenge, enden) in daten.items():
+            q, w = quellen[k], wavs[k]
+            ziel = ordner / f"{k}.wav"
+            nah = min(enden, key=lambda e: abs(e - vorspann), default=None) if vorspann else None
+            if vorspann and nah is not None and abs(nah - vorspann) <= 0.5:
+                bericht["geschnitten"] += 1
+                if reparieren:
+                    sichern(q, verschieben=q != ziel)
+                    _schneiden(w if w != ziel else sicher / q.name, ziel, nah)
+            elif vorspann and laenge >= vorspann:
+                bericht["neu"].append(k)
+                if reparieren:
+                    sichern(q, verschieben=True)
+            else:
+                bericht["ohne"] += 1
+                if reparieren and q != ziel:
+                    shutil.copyfile(w, ziel)
+                    sichern(q, verschieben=True)
+                    bericht["umgewandelt"] += 1
     if reparieren:
         shutil.rmtree(ordner / MIX, ignore_errors=True)
     return bericht
@@ -266,6 +301,7 @@ class Ansager:
         self._hoerer: set[Callable[[dict[str, Any]], None]] = set()
         self.erzeugung: dict[str, Any] = {}
         self.pruefung: dict[str, Any] = {}
+        self._ffmpeg_bin = "ffmpeg"
         self._erzeuger: asyncio.Task[None] | None = None
 
     @callback
@@ -431,6 +467,28 @@ class Ansager:
         e = er.async_get(self.hass).async_get(stimme)
         return bool(e and e.platform == GOOGLE_AI)
 
+    def _ffmpeg(self) -> str:
+        try:
+            from homeassistant.components.ffmpeg import get_ffmpeg_manager
+
+            return get_ffmpeg_manager(self.hass).binary
+        except (ImportError, ValueError, KeyError):
+            return "ffmpeg"
+
+    def _speichern_wav(self, ordner: Path, key: str, endung: str, daten: bytes) -> None:
+        """Save a sound of the voice as WAV (the voice gives MP3 by default; joining needs WAV)."""
+        roh = ordner / f"{key}.roh.{endung}"
+        roh.write_bytes(daten)
+        try:
+            if _zu_wav(self._ffmpeg_bin, roh, ordner / f"{key}.wav"):
+                for alt in ordner.glob(f"{key}.*"):
+                    if alt.suffix.lower() in ENDUNGEN and alt.suffix.lower() != ".wav" and alt != roh:
+                        alt.unlink()  # an older sound of the same key
+            else:
+                roh.rename(ordner / f"{key}.{endung}")  # no ffmpeg: keep it as it came, still playable
+        finally:
+            roh.unlink(missing_ok=True)
+
     def _optionen(self, stimme: str) -> dict[str, Any] | None:
         """Live sentences with the speaker of the chosen championship pack, so the voice does not change."""
         if m := re.fullmatch(r"Meisterschaft (\w+)", self.einst["pack"]):
@@ -524,6 +582,7 @@ class Ansager:
         stimme = self._stimme()
         ordner = self._basis.joinpath(*ORDNER, name)
         st = self.erzeugung
+        self._ffmpeg_bin = self._ffmpeg()
         try:
             if not stimme:
                 st["fehler"] = "no voice"
@@ -541,7 +600,7 @@ class Ansager:
                 while True:
                     try:
                         mid = generate_media_source_id(
-                            self.hass, text, engine=stimme, options={"voice": sprecher} if sprecher else None, cache=False)
+                            self.hass, text, engine=stimme, options={"preferred_format": "wav", **({"voice": sprecher} if sprecher else {})}, cache=False)
                         endung, daten = await async_get_media_source_audio(self.hass, mid)
                         break
                     except asyncio.CancelledError:
@@ -556,7 +615,7 @@ class Ansager:
                             return
                         await asyncio.sleep(20 * fehler)
                 fehler = 0
-                await self.hass.async_add_executor_job((ordner / f"{key}.{endung}").write_bytes, daten)
+                await self.hass.async_add_executor_job(self._speichern_wav, ordner, key, endung, daten)
                 st["fertig"] += 1
                 if google:
                     await asyncio.sleep(PAUSE)
@@ -578,7 +637,7 @@ class Ansager:
         ordner = self._basis.joinpath(*ORDNER, name)
         if ordner.parent != self._basis.joinpath(*ORDNER):
             return {"dateien": 0}
-        bericht = await self.hass.async_add_executor_job(_pruefen, ordner, reparieren)
+        bericht = await self.hass.async_add_executor_job(_pruefen, ordner, reparieren, self._ffmpeg())
         _LOGGER.info("Caller pack %s checked: %s", name, bericht)
         self.pruefung = {"pack": name, "repariert": reparieren, **bericht}
         if reparieren and name == self.einst["pack"]:

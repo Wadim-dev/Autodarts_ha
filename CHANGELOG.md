@@ -3,6 +3,15 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.20.1
+
+- Championship pack: sounds are saved as WAV. Home Assistant gives voices as MP3 by default, so visits like "140 · Ben, you require 100" could not be joined and were spoken live instead.
+- `autodarts.ansager_pack_pruefen` converts MP3 sounds of a pack to WAV (also when nothing has to be cut) and shows a few lengths and pauses in its answer.
+
+**Deutsch**
+- Meisterschafts-Pack: Töne werden als WAV gespeichert. Home Assistant liefert Stimmen standardmäßig als MP3, deshalb konnten Aufnahmen wie „140 · Ben, du brauchst 100“ nicht zusammengesetzt werden und wurden live gesprochen.
+- `autodarts.ansager_pack_pruefen` wandelt MP3-Töne eines Packs in WAV um (auch wenn nichts abzuschneiden ist) und zeigt in der Antwort einige Längen und Pausen.
+
 ## 1.20.0
 
 - Caller: scores are announced in every game mode (Cricket, Baseball, Shanghai …), not only X01.

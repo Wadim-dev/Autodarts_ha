@@ -108,9 +108,29 @@ async def test_fire_tv(hass: HomeAssistant, geladen) -> None:
     await _dienst(hass, "fernseher_zeigen")
     assert an[0].data["entity_id"] == tv
     befehl = adb[0].data["command"]
-    assert _url(hass) in befehl and "com.amazon.cloud9" in befehl and "android.intent.action.VIEW" in befehl
+    assert _url(hass) in befehl and "pm list packages -e com.amazon.cloud9" in befehl and "android.intent.action.VIEW" in befehl
     await _dienst(hass, "fernseher_beenden")
     assert adb[1].data == {"entity_id": tv, "command": "HOME"}
+
+
+async def test_fire_tv_ohne_silk(hass: HomeAssistant, geladen) -> None:
+    async_mock_service(hass, "media_player", "turn_on")
+    tv = _geraet(hass, "androidtv", "fire", geladen)
+    antwort = {"text": "DARTNEST_SILK_OFF"}
+
+    async def adb(call) -> None:
+        hass.states.async_set(tv, "idle", {"adb_response": antwort["text"]})
+
+    hass.services.async_register("androidtv", "adb_command", adb)
+    with pytest.raises(ServiceValidationError) as fehler:
+        await _dienst(hass, "fernseher_zeigen", geraete=[tv])
+    assert fehler.value.translation_key == "tv_silk_off"
+    antwort["text"] = "Starting: Intent\nError: Activity not started, unable to resolve Intent"
+    with pytest.raises(ServiceValidationError) as fehler:
+        await _dienst(hass, "fernseher_zeigen", geraete=[tv])
+    assert fehler.value.translation_key == "tv_failed" and "unable to resolve" in fehler.value.translation_placeholders["error"]
+    antwort["text"] = "Starting: Intent { act=android.intent.action.VIEW }"
+    await _dienst(hass, "fernseher_zeigen", geraete=[tv])
 
 
 async def test_google_tv(hass: HomeAssistant, geladen) -> None:

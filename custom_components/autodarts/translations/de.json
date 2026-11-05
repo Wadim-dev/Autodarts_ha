@@ -130,6 +130,9 @@
     },
     "tv_no_url": {
       "message": "Home Assistant hat noch keine Netzwerkadresse. Unter Einstellungen → System → Netzwerk eintragen."
+    },
+    "tv_silk_off": {
+      "message": "Der Silk-Browser ist auf {entity} ausgeschaltet. Unter Einstellungen → Anwendungen → Installierte Anwendungen verwalten → Silk-Browser → Aktivieren einschalten und nochmal versuchen."
     }
   },
   "entity": {

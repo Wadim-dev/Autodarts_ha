@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/dark_logo.png">
-    <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/logo.png" alt="DartNest" height="88">
+    <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/logo.png" alt="DartNest for Autodarts" height="88">
   </picture>
 </p>
 

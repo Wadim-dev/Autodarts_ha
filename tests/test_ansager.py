@@ -403,3 +403,18 @@ async def test_pack_als_wav_gespeichert(hass: HomeAssistant, geladen, lautsprech
         a.pack_erzeugen("P", [], None, ["180"], neu=True)
         await a._erzeuger
     assert sorted(f.name for f in ordner.iterdir()) == ["180.wav"]
+
+
+def test_pruefen_wie_gemessen(tmp_path) -> None:
+    """As measured on a real pack: the direction ends between 3.0 and 4.2 s, some have a pause inside it."""
+    for k, teile in {
+        "26": [(2.0, 0.3), (0.5, 0.25), (1.6, 0)], "140": [(3.0, 0.3), (1.6, 0)], "game_on": [(2.8, 0.3), (1.4, 0)],
+        "require": [(3.9, 0.3), (0.9, 0)], "180": [(3.3, 0.3), (2.0, 0)], "leg": [(3.5, 0.3), (0.8, 0.3), (1.0, 0)],
+    }.items():
+        _ton(tmp_path / f"{k}.wav", teile)
+    bericht = ansager_modul._pruefen(tmp_path, True)
+    assert bericht["geschnitten"] == 6 and not bericht["neu"]
+    import wave
+    for k, rest in {"26": 1.6, "140": 1.6, "game_on": 1.4, "require": 0.9, "leg": 2.1}.items():
+        with wave.open(str(tmp_path / f"{k}.wav"), "rb") as w:
+            assert w.getnframes() / w.getframerate() == pytest.approx(rest + 0.06, abs=0.04), k

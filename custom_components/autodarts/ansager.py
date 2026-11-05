@@ -27,6 +27,7 @@ import logging
 from pathlib import Path
 import re
 import shutil
+import statistics
 from typing import Any
 import wave
 
@@ -49,6 +50,7 @@ GOOGLE_AI = "google_generative_ai_conversation"  # voices with selectable speake
 ORIGINAL = "_original"  # copies of pack files before a repair (1.20)
 FENSTER = 0.02  # seconds per window when looking for pauses in a sound
 STILLE = 0.2  # a pause of at least this long separates two parts of a sound
+MEHRTEILIG = {"leg", "set", "match", "nine", "tournament", "walk"}  # pack sounds that may have a pause of their own
 
 
 def _player(wert: Any) -> str:
@@ -157,8 +159,8 @@ def _uebersicht(basis: Path) -> dict[str, Any]:
     return {"packs": packs, "songs": sorted(_dateien(basis.joinpath(*SONG_ORDNER)).values())}
 
 
-def _pausen(pfad: Path) -> tuple[float, list[float]] | None:
-    """Length of a 16-bit WAV and the end times of its pauses (between speech); None if not readable."""
+def _pausen(pfad: Path) -> tuple[float, list[float], float] | None:
+    """Length of a 16-bit WAV, the end times of its pauses (between speech) and when speech ends."""
     try:
         with wave.open(str(pfad), "rb") as w:
             kanaele, breite, rate, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes()
@@ -172,7 +174,7 @@ def _pausen(pfad: Path) -> tuple[float, list[float]] | None:
     huelle = [max(abs(max(werte[i:i + schritt])), abs(min(werte[i:i + schritt]))) for i in range(0, len(werte), schritt)]
     spitze = max(huelle) if huelle else 0
     if not spitze:
-        return n / rate, []
+        return n / rate, [], 0.0
     laut = [h > spitze * 0.06 for h in huelle]
     erste = laut.index(True)
     letzte = len(laut) - 1 - laut[::-1].index(True)
@@ -185,7 +187,7 @@ def _pausen(pfad: Path) -> tuple[float, list[float]] | None:
         if lauf * FENSTER >= STILLE:
             enden.append(i * FENSTER)
         lauf = 0
-    return n / rate, enden
+    return n / rate, enden, (letzte + 1) * FENSTER
 
 
 def _zu_wav(ffmpeg: str, quelle: Path, ziel: Path) -> bool:
@@ -216,10 +218,11 @@ def _pruefen(ordner: Path, reparieren: bool, ffmpeg: str = "ffmpeg") -> dict[str
 
     Sounds that are not WAV (Home Assistant saves voices as MP3 by default) are converted first;
     with reparieren they stay WAV, so a pack can be joined. The direction is the same words in every
-    file, so the pause after it is at about the same time everywhere: the latest time that at least
-    half of the files have a pause at is taken. Each file is cut at its pause nearest to that; a file
-    that is longer but has no such pause is removed (made again), a file shorter than that never had
-    the direction. Originals are kept in _original.
+    file. A sound of one word ("140!", "Game on!") has no pause of its own, so its last pause ends the
+    direction; when at least half of them have one, the direction is there and their median tells
+    where it ends. Sounds of several words (leg, set …) are cut at their pause nearest to that. A
+    sound that is longer but cannot be cut is removed (made again), a shorter one never had the
+    direction. Originals are kept in _original.
     """
     import tempfile
 
@@ -245,22 +248,27 @@ def _pruefen(ordner: Path, reparieren: bool, ffmpeg: str = "ffmpeg") -> dict[str
             elif _zu_wav(ffmpeg, q, Path(tmp) / f"{k}.wav"):
                 wavs[k] = Path(tmp) / f"{k}.wav"
         daten = {k: x for k, w in wavs.items() if (x := _pausen(w))}
-        kandidaten = sorted({round(e, 2) for _, enden in daten.values() for e in enden if e >= 1.0})
-        treffer = [(t, sum(1 for _, enden in daten.values() if any(abs(e - t) <= 0.35 for e in enden))) for t in kandidaten]
-        gut = [t for t, z in treffer if len(daten) >= 5 and z >= len(daten) / 2]
-        vorspann = max(gut) if gut else None
+        # sounds of one word ("140!", "Game on!") have no pause of their own: their last pause ends the direction
+        letzte = {k: x[1][-1] for k, x in daten.items() if k not in MEHRTEILIG and x[1] and x[1][-1] >= 1.5}
+        einzeln = [k for k in daten if k not in MEHRTEILIG]
+        vorspann = statistics.median(letzte.values()) if einzeln and len(letzte) >= len(einzeln) / 2 else None
         bericht["vorspann"] = round(vorspann, 2) if vorspann else None
-        bericht["beispiele"] = {k: [round(daten[k][0], 2), [round(e, 2) for e in daten[k][1]]]
+        bericht["beispiele"] = {k: [round(daten[k][0], 2), [round(e, 2) for e in daten[k][1]], round(daten[k][2], 2)]
                                 for k in ("180", "140", "26", "game_on", "require", "leg") if k in daten}
-        for k, (laenge, enden) in daten.items():
+        for k, (laenge, enden, sprache) in daten.items():
             q, w = quellen[k], wavs[k]
             ziel = ordner / f"{k}.wav"
-            nah = min(enden, key=lambda e: abs(e - vorspann), default=None) if vorspann else None
-            if vorspann and nah is not None and abs(nah - vorspann) <= 0.5:
+            schnitt = None
+            if vorspann and k in MEHRTEILIG:
+                nah = min(enden, key=lambda e: abs(e - vorspann), default=None)
+                schnitt = nah if nah is not None and abs(nah - vorspann) <= 0.7 else None
+            elif vorspann and k in letzte and abs(letzte[k] - vorspann) <= 1.2:
+                schnitt = letzte[k]
+            if schnitt is not None and sprache - schnitt >= 0.25:
                 bericht["geschnitten"] += 1
                 if reparieren:
                     sichern(q, verschieben=q != ziel)
-                    _schneiden(w if w != ziel else sicher / q.name, ziel, nah)
+                    _schneiden(w if w != ziel else sicher / q.name, ziel, schnitt)
             elif vorspann and laenge >= vorspann:
                 bericht["neu"].append(k)
                 if reparieren:

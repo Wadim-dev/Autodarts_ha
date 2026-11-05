@@ -3,6 +3,13 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.20.2
+
+- `autodarts.ansager_pack_pruefen` finds the end of the spoken direction per sound: a sound of one word ("140!", "Game on!") is cut at its last pause, sounds of several words (leg, set …) at the pause nearest to where the direction ends in the others. Measured on a real pack the direction ends between 3 and 4.2 seconds.
+
+**Deutsch**
+- `autodarts.ansager_pack_pruefen` findet das Ende der mitgesprochenen Anweisung je Ton: Ein Ton aus einem Wort („140!“, „Game on!“) wird an seiner letzten Pause geschnitten, Töne aus mehreren Wörtern (Leg, Satz …) an der Pause, die dem Ende der Anweisung in den anderen am nächsten liegt. Gemessen an einem echten Pack endet die Anweisung zwischen 3 und 4,2 Sekunden.
+
 ## 1.20.1
 
 - Championship pack: sounds are saved as WAV. Home Assistant gives voices as MP3 by default, so visits like "140 · Ben, you require 100" could not be joined and were spoken live instead.

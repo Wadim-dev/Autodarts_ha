@@ -182,6 +182,11 @@
     k_use: 'Dieses Pack benutzen', k_in_use: 'Wird benutzt', k_go_on: 'Fehlende Töne erzeugen', k_stop: 'Anhalten', k_del: 'Löschen …', k_del_q: '„{p}“ löschen?', k_del_text: 'Alle {n} Töne dieses Packs werden gelöscht. Das lässt sich nicht rückgängig machen. Neu erzeugen dauert wegen des Google-Limits bis zu 2 Tage.', k_del_ok: 'Endgültig löschen',
     k_err: 'Angehalten: {e}', k_stopped: 'Angehalten. „Fehlende Töne erzeugen“ macht weiter.', k_need_google: 'Meisterschafts-Packs brauchen die Stimme „Google AI“ (Einstellungen → Sprachassistenten). Ohne sie spricht die normale Stimme.',
     sp_fenrir: 'aufgeregt', sp_algenib: 'rau', sp_alnilam: 'bestimmt', sp_orus: 'fest, tief', sp_puck: 'fröhlich', sp_charon: 'ruhig' });
+  // listening to the score sounds (1.23)
+  Object.assign(TEXTE.en, { k_listen: 'Check the sounds', k_listening: 'Listening to the sounds … {n} of {m}', k_redo: '{n} sounds said the wrong number · being spoken again',
+    k_listen_ok: 'All scores checked', k_listen_hint: 'Home Assistant listens to every score sound once (speech recognition). A sound that says the wrong number is spoken again in the background; until then the old one plays.' });
+  Object.assign(TEXTE.de, { k_listen: 'Töne prüfen', k_listening: 'Hört die Töne an … {n} von {m}', k_redo: '{n} Töne sagten die falsche Zahl · werden neu gesprochen',
+    k_listen_ok: 'Alle Punkte geprüft', k_listen_hint: 'Home Assistant hört jeden Punkte-Ton einmal an (Spracherkennung). Sagt ein Ton die falsche Zahl, wird er im Hintergrund neu gesprochen, bis dahin spielt der alte.' });
   const SPRECHER = [['fenrir', 'Fenrir'], ['algenib', 'Algenib'], ['alnilam', 'Alnilam'], ['orus', 'Orus'], ['puck', 'Puck'], ['charon', 'Charon']];
   // aim map (1.16)
   Object.assign(TEXTE.en, { t_aim: 'Aim', aim_best: 'Best aim point', aim_avg: 'about Ø {n} per visit', aim_vs: 'T20 gives Ø {n} – {d} more here.', aim_t20: 'T20 is the right target for you.', aim_hint: 'Calculated from your average (Ø {a}, spread about {s} mm). Red = most points.', aim_no_avg: 'Play an X01 game first.' });
@@ -2332,10 +2337,13 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     // status line of a pack: ready, being made, waiting for the daily limit, incomplete, own pack
     _status(k) {
       const d = this._daten, ez = d.erzeugung || {}, inf = (d.info || {})[k] || { toene: (d.packs[k] || []).length, fehlen: null }, auf = (d.auftrag || {}).pack === k;
+      const pr = d.pruefung || {}, nur = auf && (d.auftrag || {}).nur;
+      if (pr.hoeren && pr.laeuft && pr.pack === k) return { text: t('k_listening', { n: pr.fertig, m: pr.gesamt }), anteil: pr.gesamt ? pr.fertig / pr.gesamt : 0 };
       if (ez.pack === k && ez.laeuft) return { text: t('k_run', { n: ez.fertig, m: ez.gesamt }), anteil: ez.gesamt ? ez.fertig / ez.gesamt : 0 };
+      if (nur && nur.length) return { text: t('k_redo', { n: nur.length }) };
       if (inf.fehlen == null) return { text: inf.toene ? t('k_ownp', { n: inf.toene }) : t('k_empty') };
       const m = inf.toene + inf.fehlen;
-      if (!inf.fehlen) return { text: t('k_done', { n: inf.toene }) };
+      if (!inf.fehlen) return { text: t('k_done', { n: inf.toene }) + ((d.gehoert || {})[k] ? ' · ' + t('k_listen_ok') : '') };
       if (auf) return { text: t('k_wait', { f: inf.toene, m }), anteil: inf.toene / m };
       if (ez.pack === k && ez.fehler) return { text: ez.fehler === 'stopped' ? t('k_stopped') : ez.fehler === 'daily limit' ? t('k_wait', { f: inf.toene, m }) : t('k_err', { e: ez.fehler }), anteil: inf.toene / m, rot: ez.fehler !== 'daily limit' && ez.fehler !== 'stopped' };
       return { text: t('k_part', { n: inf.fehlen }), anteil: inf.toene / m };
@@ -2377,7 +2385,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (this._auf.eigen) s += '<div class="aufinhalt"><div class="klein" style="margin-top:0">' + t('pack_hint') + '</div></div>';
       const ez = d.erzeugung || {};
       clearTimeout(this._ezT);
-      if (ez.laeuft) this._ezT = setTimeout(() => { if (this.isConnected) this._laden(); }, 4000);
+      if (ez.laeuft || (d.pruefung || {}).laeuft) this._ezT = setTimeout(() => { if (this.isConnected) this._laden(); }, 4000);
       // 3 · what
       s += '<div class="schritt">' + t('k_s3') + '</div><div class="chips">' + ANSAGE_ARTEN.map(k => '<button class="chip feld' + (e[k] ? ' an' : '') + '" data-act="art" data-v="' + k + '"><ha-icon icon="' + (e[k] ? 'mdi:check' : 'mdi:close') + '" style="--mdc-icon-size:16px"></ha-icon>' + t('c_' + k) + '</button>').join('') + '</div>';
       // walk-on songs
@@ -2412,10 +2420,12 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       } else if (art.typ === 'menue') {
         const k = art.pack, x = this._status(k), inf = (d.info || {})[k] || {}, auftrag = (d.auftrag || {}).pack === k, sp = (/^Meisterschaft (\w+)$/.exec(k) || [])[1];
         const weiter = sp && this._google() && inf.fehlen > 0 && !laeuft && !auftrag;
+        const pr = d.pruefung || {}, hoeren = sp && d.hoeren && this._google() && !laeuft && !auftrag && !(pr.hoeren && pr.laeuft);
         h = '<h3>' + esc(k) + '</h3><p class="text' + (x.rot ? ' rot' : '') + '">' + esc(x.text) + '</p>' + (x.anteil != null ? '<div class="balken"><i style="width:' + Math.round(x.anteil * 100) + '%"></i></div>' : '') +
           '<div class="mknoepfe" style="flex-wrap:wrap"><button class="feld rot links" data-act="wegfrage" data-v="' + esc(k) + '"><ha-icon icon="mdi:delete-outline" style="--mdc-icon-size:18px"></ha-icon> ' + t('k_del') + '</button>' +
           ((ez.pack === k && laeuft) || auftrag ? '<button class="feld" data-act="halt">' + t('k_stop') + '</button>' : '') +
           (weiter ? '<button class="feld" data-act="weiter" data-v="' + esc(k) + '">' + t('k_go_on') + '</button>' : '') +
+          (hoeren ? '<button class="feld" data-act="anhoeren" data-v="' + esc(k) + '" title="' + esc(t('k_listen_hint')) + '"><ha-icon icon="mdi:ear-hearing" style="--mdc-icon-size:18px"></ha-icon> ' + t('k_listen') + '</button>' : '') +
           (e.pack === k ? '<button class="feld" disabled>' + t('k_in_use') + '</button>' : '<button class="ja" data-act="nutzen" data-v="' + esc(k) + '">' + t('k_use') + '</button>') +
           '<button class="feld" data-act="dzu">' + t('k_close') + '</button></div>';
       } else {
@@ -2443,6 +2453,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         this._modal(null);
         this._h.callService('autodarts', 'ansager_pack_erzeugen', { sprecher: sp, name: this._packName(sp) }).then(() => setTimeout(() => this._laden(), 800));
       }
+      else if (act === 'anhoeren') { this._modal(null); this._h.callService('autodarts', 'ansager_pack_pruefen', { name: v, anhoeren: true }).then(() => setTimeout(() => this._laden(), 800)); }
       else if (act === 'halt') this._h.callService('autodarts', 'ansager_pack_anhalten', {}).then(() => this._laden());
       else if (act === 'nutzen') { this._modal(null); x.pack = v; this._speichern(x); }
       else if (act === 'wegfrage') this._dialog({ typ: 'weg', pack: v });

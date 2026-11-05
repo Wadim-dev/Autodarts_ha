@@ -70,7 +70,8 @@ DIENSTE = {
         vol.Optional("neu", default=False): cv.boolean,
     }),
     "ansager_pack_pruefen": vol.Schema({vol.Required("name"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$")),
-                                        vol.Optional("reparieren", default=True): cv.boolean}),
+                                        vol.Optional("reparieren", default=True): cv.boolean,
+                                        vol.Optional("anhoeren", default=False): cv.boolean}),
     "ansager_pack_loeschen": vol.Schema({vol.Required("name"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$"))}),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
@@ -155,6 +156,8 @@ async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> dict[st
         ansager.pack_erzeugen(d["name"], namen, d.get("sprecher"), d.get("nur"), d["neu"])
         return None
     if name == "ansager_pack_pruefen":
+        if d["anhoeren"]:  # listen to every score sound (speech-to-text), wrong ones are spoken again
+            return {"gestartet": ansager.pack_anhoeren(d["name"])}
         return await ansager.pack_pruefen(d["name"], d["reparieren"])
     if name == "ansager_pack_loeschen":
         await ansager.pack_loeschen(d["name"])

@@ -3,6 +3,20 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.23.0
+
+- Caller: the championship pack says the right number in the right language. Scores went to the voice as digits ("100!"), so it had to guess the language – some sounds came out in English in a German pack, some said another number (a 100 announced as 180). Scores are now spoken as words in the language of Home Assistant ("Einhundert!").
+- Every score sound is listened to with the speech recognition of Home Assistant (e.g. Home Assistant Cloud) right after it is made; a sound that says the wrong number is spoken again (up to three times).
+- Packs made before 1.23 are listened to once by themselves after the update. Wrong sounds are spoken again in the background, the old sound plays until the new one is there, and it continues by itself after the Google daily limit. New button **Check the sounds** in the pack menu, new option `anhoeren` for `autodarts.ansager_pack_pruefen`.
+- Live sentences say the score as a word too.
+
+**Deutsch**
+
+- Ansager: Das Meisterschafts-Pack sagt die richtige Zahl in der richtigen Sprache. Die Punkte gingen als Ziffern („100!“) an die Stimme, die die Sprache raten musste – manche Töne kamen auf Englisch in einem deutschen Pack, manche sagten eine andere Zahl (eine 100 als 180 angesagt). Jetzt werden die Punkte als Wort in der Sprache von Home Assistant gesprochen („Einhundert!“).
+- Jeder Punkte-Ton wird direkt nach dem Erzeugen mit der Spracherkennung von Home Assistant (z. B. Home Assistant Cloud) angehört; sagt er die falsche Zahl, wird er neu gesprochen (bis zu drei Mal).
+- Packs von vor 1.23 werden nach dem Update einmal von selbst angehört. Falsche Töne werden im Hintergrund neu gesprochen, bis dahin spielt der alte Ton, und nach dem Google-Tageslimit geht es von selbst weiter. Neuer Knopf **Töne prüfen** im Pack-Menü, neue Option `anhoeren` für `autodarts.ansager_pack_pruefen`.
+- Live-Sätze sagen die Punkte ebenfalls als Wort.
+
 ## 1.22.2
 
 - The Marketplace lists the integration as "DartNest for Autodarts", so it is easy to find. In Home Assistant it is still called DartNest.

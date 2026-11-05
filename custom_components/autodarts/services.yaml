@@ -228,6 +228,22 @@ ansager_pack_erzeugen:
       description: Vorhandene Dateien neu sprechen (z. B. nach Wechsel des Sprechers).
       selector:
         boolean:
+ansager_pack_pruefen:
+  name: Ansager-Pack prüfen
+  description: Sucht in den Tönen eines Packs eine mitgesprochene Anweisung (z. B. „Say loudly …“) und schneidet sie ab. Töne, bei denen das nicht geht, werden entfernt und beim nächsten Erzeugen neu gesprochen. Originale bleiben im Unterordner _original.
+  fields:
+    name:
+      name: Name
+      required: true
+      example: Meisterschaft Fenrir
+      selector:
+        text:
+    reparieren:
+      name: Reparieren
+      description: Aus = nur prüfen und berichten.
+      default: true
+      selector:
+        boolean:
 ansager_pack_loeschen:
   name: Ansager-Pack löschen
   description: Löscht ein Pack (Ordner unter Medien autodarts/caller). Die Ansager-Karte macht das per Klick.

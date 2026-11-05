@@ -23,7 +23,7 @@
   "issue_tracker": "https://github.com/Wadim-dev/autodarts_ha/issues",
   "loggers": [],
   "requirements": [],
-  "version": "1.19.3",
+  "version": "1.20.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

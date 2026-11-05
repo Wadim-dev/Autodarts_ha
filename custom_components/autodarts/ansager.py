@@ -10,12 +10,16 @@ Phones and tablets get the same announcements: the game card subscribes with its
 button (websocket autodarts/ansager/hoeren) and plays the URLs it is sent.
 
 A pack can also be made here (ansager_pack_erzeugen): every score, "you require", player names and
-game shot spoken once by the chosen voice – with Google AI in the style of a championship stage
-announcer – and saved as files. A visit like "140 · Ben, you require 100" is joined from these files.
+game shot spoken once by the chosen voice (with Google AI a speaker like Fenrir) and saved as files.
+A visit like "140 · Ben, you require 100" is joined from these files. The text is sent as it is:
+a style direction in front of it ("Say loudly …:") was read out loud by Google AI (1.19), so packs
+made then are repaired once (ansager_pack_pruefen): the spoken direction is cut off at the pause
+after it, files where that does not work are made again.
 """
 
 from __future__ import annotations
 
+import array
 import asyncio
 from collections.abc import Callable
 import hashlib
@@ -41,12 +45,10 @@ MIX = "_mix"  # joined announcements of a pack (cache)
 MIX_MAX = 300
 PAUSE = 6.5  # seconds between two sounds: Google AI allows 10 a minute
 UNMOEGLICH = {163, 166, 169, 172, 173, 175, 176, 178, 179}  # scores three darts cannot make
-GOOGLE_AI = "google_generative_ai_conversation"  # voices that follow a spoken style instruction
-# short "Say …:" direction as in the Gemini speech docs; a longer one is read out loud
-STIL = {
-    "en": "Say loudly like an excited darts stage announcer: ",
-    "de": "Sag laut und begeistert wie ein Darts-Ansager: ",
-}
+GOOGLE_AI = "google_generative_ai_conversation"  # voices with selectable speakers (Fenrir …)
+ORIGINAL = "_original"  # copies of pack files before a repair (1.20)
+FENSTER = 0.02  # seconds per window when looking for pauses in a sound
+STILLE = 0.2  # a pause of at least this long separates two parts of a sound
 
 
 def _player(wert: Any) -> str:
@@ -69,7 +71,6 @@ EINSTELLUNGEN = vol.Schema({
     vol.Optional("walkon", default=True): bool,
     vol.Optional("walkon_sekunden", default=15): vol.All(vol.Coerce(int), vol.Range(5, 60)),
     vol.Optional("songs", default={}): {str: str},
-    vol.Optional("stil", default=True): bool,
 }, extra=vol.REMOVE_EXTRA)
 
 TEXTE = {
@@ -156,6 +157,90 @@ def _uebersicht(basis: Path) -> dict[str, Any]:
     return {"packs": packs, "songs": sorted(_dateien(basis.joinpath(*SONG_ORDNER)).values())}
 
 
+def _pausen(pfad: Path) -> tuple[float, list[float]] | None:
+    """Length of a 16-bit WAV and the end times of its pauses (between speech); None if not readable."""
+    try:
+        with wave.open(str(pfad), "rb") as w:
+            kanaele, breite, rate, n = w.getnchannels(), w.getsampwidth(), w.getframerate(), w.getnframes()
+            roh = w.readframes(n)
+    except (OSError, wave.Error, EOFError):
+        return None
+    if breite != 2 or not rate or not n:
+        return None
+    werte = array.array("h", roh)
+    schritt = max(1, int(rate * FENSTER)) * kanaele
+    huelle = [max(abs(max(werte[i:i + schritt])), abs(min(werte[i:i + schritt]))) for i in range(0, len(werte), schritt)]
+    spitze = max(huelle) if huelle else 0
+    if not spitze:
+        return n / rate, []
+    laut = [h > spitze * 0.06 for h in huelle]
+    erste = laut.index(True)
+    letzte = len(laut) - 1 - laut[::-1].index(True)
+    enden: list[float] = []
+    lauf = 0
+    for i in range(erste, letzte + 1):
+        if not laut[i]:
+            lauf += 1
+            continue
+        if lauf * FENSTER >= STILLE:
+            enden.append(i * FENSTER)
+        lauf = 0
+    return n / rate, enden
+
+
+def _schneiden(pfad: Path, ab: float) -> None:
+    """Cut a WAV to start at the given second (a little before, inside the pause)."""
+    with wave.open(str(pfad), "rb") as w:
+        par = w.getparams()
+        w.setpos(min(par.nframes, max(0, int((ab - 0.06) * par.framerate))))
+        rest = w.readframes(par.nframes)
+    with wave.open(str(pfad), "wb") as w:
+        w.setparams(par)
+        w.writeframes(rest)
+
+
+def _pruefen(ordner: Path, reparieren: bool) -> dict[str, Any]:
+    """Find a spoken direction at the start of the pack sounds and cut it off (see the module text).
+
+    The direction is the same words in every file, so the pause after it is at about the same time
+    everywhere: the latest time that at least half of the files have a pause at is taken. Each file is
+    cut at its pause nearest to that; a file that is longer but has no such pause is deleted (made
+    again), a file shorter than that never had the direction.
+    """
+    dateien = {d.stem.lower(): d for d in sorted(ordner.glob("*.wav")) if d.is_file()}
+    daten = {k: x for k, d in dateien.items() if (x := _pausen(d))}
+    bericht: dict[str, Any] = {"dateien": len(daten), "vorspann": None, "geschnitten": 0, "neu": [], "ohne": 0}
+    if len(daten) < 5:
+        return bericht
+    kandidaten = sorted({round(e, 2) for _, enden in daten.values() for e in enden if e >= 1.0})
+    treffer = [(t, sum(1 for _, enden in daten.values() if any(abs(e - t) <= 0.35 for e in enden))) for t in kandidaten]
+    gut = [t for t, z in treffer if z >= len(daten) / 2]
+    if not gut:
+        return bericht
+    vorspann = max(gut)
+    bericht["vorspann"] = round(vorspann, 2)
+    sicher = ordner / ORIGINAL
+    for k, (laenge, enden) in daten.items():
+        nah = min(enden, key=lambda e: abs(e - vorspann), default=None)
+        if nah is not None and abs(nah - vorspann) <= 0.5:
+            bericht["geschnitten"] += 1
+            if reparieren:
+                sicher.mkdir(exist_ok=True)
+                if not (sicher / dateien[k].name).exists():
+                    shutil.copy2(dateien[k], sicher / dateien[k].name)
+                _schneiden(dateien[k], nah)
+        elif laenge < vorspann:
+            bericht["ohne"] += 1
+        else:
+            bericht["neu"].append(k)
+            if reparieren:
+                sicher.mkdir(exist_ok=True)
+                shutil.move(str(dateien[k]), str(sicher / dateien[k].name))
+    if reparieren:
+        shutil.rmtree(ordner / MIX, ignore_errors=True)
+    return bericht
+
+
 def _leer_weg(ordner: Path) -> None:
     """Remove a pack folder that got no sound (e.g. daily limit right away), so no empty pack shows up."""
     try:
@@ -180,6 +265,7 @@ class Ansager:
         self._einlauf: asyncio.Task[None] | None = None
         self._hoerer: set[Callable[[dict[str, Any]], None]] = set()
         self.erzeugung: dict[str, Any] = {}
+        self.pruefung: dict[str, Any] = {}
         self._erzeuger: asyncio.Task[None] | None = None
 
     @callback
@@ -211,7 +297,7 @@ class Ansager:
     async def uebersicht(self) -> dict[str, Any]:
         daten = await self.hass.async_add_executor_job(_uebersicht, self._basis)
         stimmen = sorted(self.hass.states.async_entity_ids("tts"))
-        return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, **daten}
+        return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, "pruefung": self.pruefung, **daten}
 
     async def _pack_lesen(self) -> None:
         pack = self.einst["pack"]
@@ -267,7 +353,7 @@ class Ansager:
             for k in ("shanghai", "killer", "eliminated"):
                 if k in e:
                     return k, tx[k].format(n=e[k].get("player", name)), []
-        if "visit" not in e or st.get("art", "x01") not in ("x01", "highscore"):
+        if "visit" not in e:
             return None
         teile: list[str] = []
         keys: list[str] = []
@@ -277,7 +363,7 @@ class Ansager:
                 schluessel, text = "bust", tx["bust"]
             else:
                 p = int(e["visit"].get("score") or 0)
-                schluessel, text = str(p), (tx["180"] if p == 180 else str(p))
+                schluessel, text = str(p), tx.get(str(p), str(p))
             teile.append(text)
             keys.append(schluessel)
         if self.einst["rest"] and st.get("art", "x01") == "x01" and st.get("gewinner") is None:
@@ -327,7 +413,14 @@ class Ansager:
         t.add_done_callback(self._aufgaben.discard)
 
     async def testen(self, text: str | None = None) -> None:
-        await self._sagen("180", text or self._t()["180"])
+        """A text, or an example visit: "140 · Wadim, you require 92" (joined from the pack if it has the sounds)."""
+        if text:
+            await self._sagen("", text)
+            return
+        tx = self._t()
+        name = next((k for k in self._pack if k.startswith("name_")), "")
+        wer = name[5:].replace("_", " ").title() if name else "Alex"
+        await self._sagen("", "140. " + tx["rest"].format(n=wer, r=92), ["140", name or _slug(wer), "require", "92"])
 
     def _stimme(self) -> str:
         if self.hass.states.get(self.einst["stimme"]):
@@ -338,11 +431,12 @@ class Ansager:
         e = er.async_get(self.hass).async_get(stimme)
         return bool(e and e.platform == GOOGLE_AI)
 
-    def _stil(self, stimme: str, text: str) -> str:
-        """Text with the style instruction for voices that follow one (Google AI)."""
-        if not self._google(stimme):
-            return text
-        return STIL["de" if str(self.hass.config.language).startswith("de") else "en"] + text
+    def _optionen(self, stimme: str) -> dict[str, Any] | None:
+        """Live sentences with the speaker of the chosen championship pack, so the voice does not change."""
+        if m := re.fullmatch(r"Meisterschaft (\w+)", self.einst["pack"]):
+            if self._google(stimme):
+                return {"voice": m.group(1).lower()}
+        return None
 
     async def _sagen(self, schluessel: str, text: str, keys: list[str] | None = None) -> None:
         """Play the pack files (joined), the pack file of the key, or speak the text."""
@@ -362,15 +456,14 @@ class Ansager:
             if not stimme:
                 _LOGGER.warning("Caller: no voice (TTS) available")
                 return
-            if self.einst["stil"]:
-                text = self._stil(stimme, text)
+            optionen = self._optionen(stimme)
             if self._boxen:
                 await self._dienst("tts", "speak", {"entity_id": stimme, "media_player_entity_id": self.einst["lautsprecher"],
-                                                    "message": text, "cache": True})
+                                                    "message": text, "cache": True, **({"options": optionen} if optionen else {})})
             if self._hoerer:
                 from homeassistant.components.tts import generate_media_source_id
 
-                await self._handy(generate_media_source_id(self.hass, text, engine=stimme, cache=True))
+                await self._handy(generate_media_source_id(self.hass, text, engine=stimme, options=optionen, cache=True))
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -448,8 +541,7 @@ class Ansager:
                 while True:
                     try:
                         mid = generate_media_source_id(
-                            self.hass, STIL["de" if str(self.hass.config.language).startswith("de") else "en"] + text if google else text,
-                            engine=stimme, options={"voice": sprecher} if sprecher else None, cache=False)
+                            self.hass, text, engine=stimme, options={"voice": sprecher} if sprecher else None, cache=False)
                         endung, daten = await async_get_media_source_audio(self.hass, mid)
                         break
                     except asyncio.CancelledError:
@@ -480,6 +572,18 @@ class Ansager:
         finally:
             st["laeuft"] = False
             await self.hass.async_add_executor_job(_leer_weg, ordner)
+
+    async def pack_pruefen(self, name: str, reparieren: bool = True) -> dict[str, Any]:
+        """Look for a spoken direction in the sounds of a pack and cut it off (1.19 packs)."""
+        ordner = self._basis.joinpath(*ORDNER, name)
+        if ordner.parent != self._basis.joinpath(*ORDNER) or not ordner.is_dir():
+            return {"dateien": 0}
+        bericht = await self.hass.async_add_executor_job(_pruefen, ordner, reparieren)
+        _LOGGER.info("Caller pack %s checked: %s", name, bericht)
+        self.pruefung = {"pack": name, "repariert": reparieren, **bericht}
+        if reparieren and name == self.einst["pack"]:
+            await self._pack_lesen()
+        return bericht
 
     async def pack_loeschen(self, name: str) -> None:
         """Delete a pack folder (only below autodarts/caller)."""

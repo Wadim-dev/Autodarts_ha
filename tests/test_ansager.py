@@ -114,8 +114,8 @@ async def test_ansagen(hass: HomeAssistant, geladen, ereignisse, text) -> None:
 
 async def test_nicht_x01_und_abgeschaltet(hass: HomeAssistant, geladen) -> None:
     a = geladen.runtime_data.ansager
-    with patch.object(geladen.runtime_data.spiel, "stand", {"art": "cricket"}):
-        assert a.ansage([("visit", {"score": 40})]) is None
+    with patch.object(geladen.runtime_data.spiel, "stand", {"art": "baseball"}):
+        assert a.ansage([("visit", {"score": 40})]) == ("40", "40", ["40"])  # points of every game mode, no rest
     a.einst = {**a.einst, "ende": False, "punkte": False, "rest": False}
     with patch.object(geladen.runtime_data.spiel, "stand", {"art": "x01"}):
         assert a.ansage([("visit", {"score": 40}), ("leg_won", {"player": "A"})]) is None
@@ -138,6 +138,8 @@ async def test_testen_und_fehler(hass: HomeAssistant, geladen, lautsprecher, cap
     await _setzen(hass)
     await hass.services.async_call(DOMAIN, "ansager_testen", {"text": "Hallo"}, blocking=True)
     assert lautsprecher["tts"][-1].data["message"] == "Hallo"
+    await hass.services.async_call(DOMAIN, "ansager_testen", {}, blocking=True)
+    assert lautsprecher["tts"][-1].data["message"] == "140. Alex, you require 92"  # an example visit
     hass.states.async_remove("tts.piper")
     await hass.services.async_call(DOMAIN, "ansager_testen", {}, blocking=True)
     assert "no voice" in caplog.text
@@ -240,8 +242,8 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
         await hass.services.async_call(DOMAIN, "ansager_pack_erzeugen", {"sprecher": "fenrir", "nur": ["180", "140", "require", "100", "leg"]}, blocking=True)
         await a._erzeuger
     assert a.erzeugung == {"pack": "Meisterschaft", "fertig": 5, "gesamt": 5, "laeuft": False, "fehler": None}
-    assert len(texte) == 4 and all(t[0].startswith(ansager_modul.STIL["en"]) and t[2] == {"voice": "fenrir"} for t in texte)
-    assert texte[-1][0].endswith("Game shot, and the leg!")
+    assert len(texte) == 4 and all(t[2] == {"voice": "fenrir"} for t in texte)
+    assert texte[-1][0] == "Game shot, and the leg!"  # the text as it is: a direction in front was read out loud
     assert {"140.wav", "require.wav", "100.wav", "leg.wav"} <= {f.name for f in ordner.iterdir()}
     assert "name_anna" in a.pack_texte(["Anna"]) and "163" not in a.pack_texte([])
 
@@ -257,12 +259,12 @@ async def test_pack_erzeugen_und_zusammensetzen(hass: HomeAssistant, geladen, la
         import wave
         with wave.open(str(ordner / "_mix" / url.rsplit("/", 1)[1]), "rb") as w:
             assert w.getnframes() == 4 * 800 + 3 * 960
-        # a missing file (no name for Anna) → spoken, with the style instruction
+        # a missing file (no name for Anna) → spoken as it is
         stand["am_zug"] = 0
         stand["spieler"][0]["rest"] = 100
         a.ereignis("visit", {"player": "Ben", "score": 60})
         await _fertig(hass, a)
-        assert lautsprecher["tts"][-1].data["message"] == ansager_modul.STIL["en"] + "60. Anna, you require 100"
+        assert lautsprecher["tts"][-1].data["message"] == "60. Anna, you require 100"
     # speak again with another speaker: files are replaced and the joined sounds removed
     with (patch("homeassistant.components.tts.generate_media_source_id", side_effect=mid),
           patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=audio)):
@@ -304,3 +306,55 @@ async def test_pack_tageslimit_und_loeschen(hass: HomeAssistant, geladen, lautsp
     await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Alt"}, blocking=True)
     assert not ordner.exists() and a.einst["pack"] == ""
     await hass.services.async_call(DOMAIN, "ansager_pack_loeschen", {"name": "Neu"}, blocking=True)
+
+
+def _ton(pfad, teile, rate=8000) -> None:
+    """A WAV of (seconds of sound, seconds of silence) parts."""
+    import array
+    import wave
+
+    werte = array.array("h")
+    for laut, still in teile:
+        werte.extend([9000 if i % 2 else -9000 for i in range(int(laut * rate))])
+        werte.extend([0] * int(still * rate))
+    with wave.open(str(pfad), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(werte.tobytes())
+
+
+async def test_pack_pruefen_schneidet_vorspann(hass: HomeAssistant, geladen, lautsprecher) -> None:
+    """A spoken direction ("Say loudly …:") at the start of the pack sounds is cut off at the pause after it."""
+    import wave
+
+    a = geladen.runtime_data.ansager
+    ordner = lautsprecher["pfad"] / "autodarts" / "caller" / "Meisterschaft Fenrir"
+    ordner.mkdir(parents=True)
+    # direction 1.0 s, pause 0.15 (too short), 1.2 s, pause 0.35 → the cut is at 2.7 s
+    for k in ("140", "100", "60", "26"):
+        _ton(ordner / f"{k}.wav", [(1.0, 0.15), (1.2, 0.35), (0.8, 0)])
+    _ton(ordner / "leg.wav", [(1.0, 0.15), (1.25, 0.3), (0.5, 0.3), (0.6, 0)])  # own pause later: kept
+    _ton(ordner / "require.wav", [(4.0, 0)])  # long but no pause: made again
+    _ton(ordner / "bust.wav", [(0.9, 0)])  # never had the direction
+    (ordner / "_mix").mkdir()
+    _ton(ordner / "_mix" / "alt.wav", [(1, 0)])
+    await _setzen(hass, pack="Meisterschaft Fenrir")
+
+    bericht = await hass.services.async_call(DOMAIN, "ansager_pack_pruefen", {"name": "Meisterschaft Fenrir", "reparieren": False},
+                                             blocking=True, return_response=True)
+    assert bericht["vorspann"] == pytest.approx(2.7, abs=0.05)
+    assert bericht["geschnitten"] == 5 and bericht["neu"] == ["require"] and bericht["ohne"] == 1
+    assert not (ordner / "_original").exists()
+
+    await hass.services.async_call(DOMAIN, "ansager_pack_pruefen", {"name": "Meisterschaft Fenrir"}, blocking=True)
+    with wave.open(str(ordner / "140.wav"), "rb") as w:
+        assert w.getnframes() / w.getframerate() == pytest.approx(0.86, abs=0.03)
+    with wave.open(str(ordner / "leg.wav"), "rb") as w:
+        assert w.getnframes() / w.getframerate() == pytest.approx(1.46, abs=0.03)
+    assert not (ordner / "require.wav").exists() and (ordner / "_original" / "require.wav").exists()
+    assert (ordner / "_original" / "140.wav").exists() and not (ordner / "_mix").exists()
+    assert "require" not in a._pack and a.pruefung["repariert"]
+    # a clean pack: nothing found, nothing changed
+    assert (await a.pack_pruefen("Meisterschaft Fenrir", False))["vorspann"] is None
+    assert (await a.pack_pruefen("../x"))["dateien"] == 0

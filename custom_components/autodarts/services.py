@@ -68,6 +68,8 @@ DIENSTE = {
         vol.Optional("nur"): vol.All(cv.ensure_list, [cv.string]),
         vol.Optional("neu", default=False): cv.boolean,
     }),
+    "ansager_pack_pruefen": vol.Schema({vol.Required("name"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$")),
+                                        vol.Optional("reparieren", default=True): cv.boolean}),
     "ansager_pack_loeschen": vol.Schema({vol.Required("name"): vol.All(cv.string, vol.Match(r"^[\w\- ]{1,40}$"))}),
     "statistik_loeschen": vol.Schema({
         vol.Optional("id"): cv.string,
@@ -139,24 +141,27 @@ def ws_ansager_hoeren(hass: HomeAssistant, connection: ActiveConnection, msg: di
     connection.send_result(msg["id"])
 
 
-async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> None:
+async def _ansager(hass: HomeAssistant, name: str, d: dict[str, Any]) -> dict[str, Any] | None:
     ansager = _eintrag(hass).runtime_data.ansager
     if name == "ansager_testen":
         await ansager.testen(d.get("text"))
-        return
+        return None
     if name == "ansager_pack_erzeugen":
         namen = [str(p.get("name") or "") for p in _eintrag(hass).runtime_data.spiel.daten["spieler"]]
         ansager.pack_erzeugen(d["name"], namen, d.get("sprecher"), d.get("nur"), d["neu"])
-        return
+        return None
+    if name == "ansager_pack_pruefen":
+        return await ansager.pack_pruefen(d["name"], d["reparieren"])
     if name == "ansager_pack_loeschen":
         await ansager.pack_loeschen(d["name"])
-        return
+        return None
     try:
         await ansager.setzen(d["einstellungen"])
     except vol.Invalid as err:
         raise ServiceValidationError(
             translation_domain=DOMAIN, translation_key="caller_settings", translation_placeholders={"error": str(err)}
         ) from err
+    return None
 
 
 def async_setup_services(hass: HomeAssistant) -> None:
@@ -196,14 +201,15 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
-        elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen"):
-            await _ansager(hass, name, d)
+        elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen"):
+            antwort = await _ansager(hass, name, d)
+            return antwort if call.return_response else None
         return None
 
     for name, schema in DIENSTE.items():
         hass.services.async_register(
             DOMAIN, name, ausfuehren, schema=schema,
-            supports_response=SupportsResponse.OPTIONAL if name == "spieler_anlegen" else SupportsResponse.NONE,
+            supports_response=SupportsResponse.OPTIONAL if name in ("spieler_anlegen", "ansager_pack_pruefen") else SupportsResponse.NONE,
         )
 
 

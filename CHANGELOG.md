@@ -3,6 +3,19 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.20.0
+
+- Caller: scores are announced in every game mode (Cricket, Baseball, Shanghai …), not only X01.
+- **Test** plays an example visit: "140 · <player>, you require 92", joined from the chosen pack.
+- The style direction in front of the text is gone: Google AI read it out loud also in its short form. Live sentences now use the speaker of the chosen championship pack, so the voice does not change.
+- New action `autodarts.ansager_pack_pruefen`: finds a spoken direction at the start of the sounds of a pack and cuts it off at the pause after it; sounds where that does not work are made again with the next "Make championship pack". Originals stay in `_original`.
+
+**Deutsch**
+- Ansager: Punkte werden in allen Spielarten angesagt (Cricket, Baseball, Shanghai …), nicht nur bei X01.
+- **Testen** spielt ein Beispiel: „140 · <Spieler>, du brauchst 92“, zusammengesetzt aus dem gewählten Pack.
+- Die Stil-Anweisung vor dem Text ist weg: Google AI hat sie auch in kurzer Form mitgesprochen. Freie Sätze nutzen jetzt den Sprecher des gewählten Meisterschafts-Packs, die Stimme wechselt also nicht mehr.
+- Neue Aktion `autodarts.ansager_pack_pruefen`: findet eine mitgesprochene Anweisung am Anfang der Pack-Töne und schneidet sie an der Pause danach ab; Töne, bei denen das nicht geht, werden beim nächsten „Meisterschafts-Pack erzeugen“ neu gesprochen. Originale bleiben in `_original`.
+
 ## 1.19.3
 
 - Championship pack: the ✓ on a speaker now only shows when its pack really has sounds; tapping a speaker without sounds no longer selects an empty pack.

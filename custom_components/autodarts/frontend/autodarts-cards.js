@@ -159,6 +159,68 @@
   Object.assign(TEXTE.en, { tour_ko: 'Knockout', tour_liga: 'League', tour_hint: 'Knockout for 3–32 players, byes are drawn automatically. Every match uses the settings below.', liga_hint: 'League for 3–10 players: everyone plays everyone once. Win = 2 points, then leg difference.', of16: '{n} of {m}', t_last32: 'Round of 32', liga: 'League', liga_match: 'Match {n} of {m}', table: 'Table', fixtures: 'Matches', t_pl: 'P', t_w: 'W', t_pts: 'Pts', t_legs: 'Legs' });
   Object.assign(TEXTE.de, { tour_ko: 'K.-o.', tour_liga: 'Liga', tour_hint: 'K.-o. für 3–32 Spieler, Freilose werden automatisch verteilt. Jedes Match nutzt die Einstellungen unten.', liga_hint: 'Liga für 3–10 Spieler: jeder spielt einmal gegen jeden. Sieg = 2 Punkte, danach zählt die Leg-Differenz.', of16: '{n} von {m}', t_last32: 'Sechzehntelfinale', liga: 'Liga', liga_match: 'Spiel {n} von {m}', table: 'Tabelle', fixtures: 'Spiele', t_pl: 'Sp', t_w: 'S', t_pts: 'Pkt', t_legs: 'Legs' });
   // keypad (1.17)
+  // 1.25.0: more games
+  Object.assign(TEXTE.en, {
+    a_highscore: 'Count-Up', a_wild_mouse: 'Wild Mouse', a_mickey: 'Mickey Mouse', a_checkout: 'Checkout training', a_catch40: 'Catch 40', a_jdc: 'JDC Challenge', a_singles: 'Singles training',
+    a_bermuda: 'Bermuda', a_rtw: 'Round the World', a_gotcha: 'Gotcha', a_nine_lives: 'Nine Lives', a_football: 'Football', a_scram: 'Scram',
+    s_cricket: 'Close the numbers, score', s_wild_mouse: 'Cricket plus D, T, bed', s_mickey: 'Close 20–12, no points',
+    s_atc: '1 to 20 and bull', s_doppel: 'Every double', s_bobs27: 'Doubles, start at 27', s_checkout121: 'Check out 121 and up', s_checkout: 'Random finishes',
+    s_catch40: 'Finishes 61 to 100', s_jdc: 'Shanghai & doubles', s_singles: 'Every number once',
+    s_shanghai: 'S, D, T in one visit', s_killer: 'Take their lives', s_halve_it: 'Miss and you halve', s_golf: 'Fewest strokes', s_baseball: 'Nine innings', s_highscore: 'Most points',
+    s_bermuda: 'Halve-It, 13 targets', s_rtw: 'Race round the board', s_gotcha: 'Hit their score', s_nine_lives: '1 to 20, three lives', s_football: 'Bull, then doubles', s_scram: 'Stopper vs scorer',
+    h_highscore: 'Count-Up: every dart counts its points. Most points after the visits win. A tie plays extra visits.',
+    h_hidden: 'Hidden Cricket: six numbers and the bull, but the numbers stay hidden until somebody hits one. Then Cricket rules.',
+    h_wild_mouse: 'Cricket on 20–15 and the bull plus three extra targets: any double, any treble and three in a bed (three darts in the same bed). A dart marks its own number first, otherwise the doubles or trebles. Closed targets score while an opponent has them open.',
+    h_mickey: 'Close 20 to 12, three doubles, three trebles and the bull. No points – whoever closes everything first wins.',
+    h_checkout: 'A random finish from 2 to 170. Check it out with a double within three visits. Most checkouts win.',
+    h_catch40: 'Check out 61, 62 … 100 with a double, two visits each. 2 darts = 3 points, 3 darts = 2, second visit = 1. Maximum 120.',
+    h_jdc: 'Part 1: Shanghai on 10–15 (single, double and treble in one visit = +100). Part 2: one dart at each double D1–D20 (50 each) and the bull (100). Part 3: Shanghai on 15–20.',
+    h_singles: 'One visit at each number 1–20, then the bull. Single 1, double 2, treble 3 points. Maximum 186.',
+    h_bermuda: 'Targets 12, 13, 14, any double, 15, 16, 17, any treble, 18, 19, 20, bull, bullseye. Start at 0 – no hit halves your points.',
+    h_rtw: 'Hit 1 to 20 – up, down or in random order – then the bull. Every hit scores its points, the next dart already aims at the next number. First at the bull wins.',
+    h_gotcha: 'Everyone counts up from 0 to the target. Land exactly on another player\'s score and they go back to 0. Overshooting is a bust. Hit the target exactly to win.',
+    h_nine_lives: 'Hit 1 to 20 in order. A visit without hitting your number costs a life. First through or last one with lives wins.',
+    h_football: 'Hit the bull to get the ball, then every double is a goal. First to the goals wins.',
+    h_scram: 'Two players. The stopper closes 20–15 and the bull with three marks each, the scorer scores on everything still open. Then roles swap. Most points win.',
+    z_hidden: 'Hidden', with_3b: 'On', without_3b: 'Off', halve_on: 'Halve', halve_off: 'Nothing', o_up: '1 → 20', o_down: '20 → 1',
+    goals: 'Goals', order: 'Order', on_miss: 'No hit', three_bed: '3 in a bed', lbl_D: 'Dbl', lbl_T: 'Tpl', lbl_3B: '3·Bed',
+    needs_exact: '{g} needs exactly {n} players.', needs_min: '{g} needs at least {n} players.',
+    attempt2: 'Attempt {n} of 2', part_of: 'Part {n} of 3', to_go: '{n} to go', goals_w: 'goals', stopper: 'Stopper', scorer: 'Scorer',
+    get_ball: '{n}: hit the bull to get the ball', has_ball: '{n} has the ball – every double is a goal', is_stopper: '{n} is the stopper – close the numbers', is_scorer: '{n} scores on open numbers',
+    fx_gotcha: 'GOTCHA', fx_goal: 'GOAL', fx_swap: 'SWAP', fx_ball: 'BALL', back_to_0: '{n} back to 0', tie_extra: 'Tie – extra visit',
+    ev_goal: 'Goal (football)', ev_gotcha: 'Gotcha', has_ball_s: 'has the ball', needs_bull: 'needs the bull first'
+  });
+  Object.assign(TEXTE.de, {
+    a_highscore: 'Count-Up', a_wild_mouse: 'Wild Mouse', a_mickey: 'Mickey Mouse', a_checkout: 'Checkout-Training', a_catch40: 'Catch 40', a_jdc: 'JDC Challenge', a_singles: 'Singles-Training',
+    a_bermuda: 'Bermuda', a_rtw: 'Rund um die Welt', a_gotcha: 'Gotcha', a_nine_lives: 'Neun Leben', a_football: 'Fußball', a_scram: 'Scram',
+    s_cricket: 'Zahlen schließen, punkten', s_wild_mouse: 'Cricket plus D, T, Bed', s_mickey: '20–12 schließen',
+    s_atc: '1 bis 20 und Bull', s_doppel: 'Jedes Doppel', s_bobs27: 'Doppel, Start bei 27', s_checkout121: 'Ab 121 auschecken', s_checkout: 'Zufällige Finishes',
+    s_catch40: 'Finishes 61 bis 100', s_jdc: 'Shanghai & Doppel', s_singles: 'Jede Zahl einmal',
+    s_shanghai: 'S, D, T in einer Runde', s_killer: 'Leben abnehmen', s_halve_it: 'Daneben halbiert', s_golf: 'Wenigste Schläge', s_baseball: 'Neun Innings', s_highscore: 'Meiste Punkte',
+    s_bermuda: 'Halve-It, 13 Ziele', s_rtw: 'Wettlauf ums Board', s_gotcha: 'Stand treffen', s_nine_lives: '1 bis 20, drei Leben', s_football: 'Bull, dann Doppel', s_scram: 'Stopper vs. Scorer',
+    h_highscore: 'Count-Up: Jeder Dart zählt seine Punkte. Die meisten Punkte nach den Aufnahmen gewinnen. Bei Gleichstand gibt es Extra-Aufnahmen.',
+    h_hidden: 'Verdecktes Cricket: sechs Zahlen und Bull, aber die Zahlen sind verdeckt, bis jemand eine trifft. Dann gelten die Cricket-Regeln.',
+    h_wild_mouse: 'Cricket auf 20–15 und Bull plus drei Extra-Ziele: beliebiges Double, beliebiges Triple und 3 in a Bed (drei Darts im selben Feld). Ein Dart markiert zuerst seine eigene Zahl, sonst Doubles oder Triples. Geschlossene Ziele punkten, solange ein Gegner sie offen hat.',
+    h_mickey: 'Schließe 20 bis 12, drei Doubles, drei Triples und Bull. Ohne Punkte – wer zuerst alles zu hat, gewinnt.',
+    h_checkout: 'Ein zufälliges Finish von 2 bis 170. Checke es mit einem Double in drei Aufnahmen. Die meisten Checkouts gewinnen.',
+    h_catch40: 'Checke 61, 62 … 100 mit einem Double, je zwei Aufnahmen. 2 Darts = 3 Punkte, 3 Darts = 2, zweite Aufnahme = 1. Höchstens 120.',
+    h_jdc: 'Teil 1: Shanghai auf 10–15 (Single, Double und Triple in einer Aufnahme = +100). Teil 2: je ein Dart auf D1–D20 (je 50) und Bull (100). Teil 3: Shanghai auf 15–20.',
+    h_singles: 'Je eine Aufnahme auf 1–20, dann Bull. Single 1, Double 2, Triple 3 Punkte. Höchstens 186.',
+    h_bermuda: 'Ziele 12, 13, 14, beliebiges Double, 15, 16, 17, beliebiges Triple, 18, 19, 20, Bull, Bullseye. Start bei 0 – kein Treffer halbiert deine Punkte.',
+    h_rtw: 'Triff 1 bis 20 – auf-, absteigend oder zufällig –, dann Bull. Jeder Treffer zählt seine Punkte, der nächste Dart zielt schon auf die nächste Zahl. Wer zuerst Bull trifft, gewinnt.',
+    h_gotcha: 'Alle zählen von 0 hoch bis zum Ziel. Wer genau auf dem Stand eines anderen landet, schickt ihn zurück auf 0. Zu viel ist überworfen. Wer das Ziel genau trifft, gewinnt.',
+    h_nine_lives: 'Triff 1 bis 20 der Reihe nach. Eine Aufnahme ohne Treffer auf deine Zahl kostet ein Leben. Wer zuerst durch ist oder als Letzter noch Leben hat, gewinnt.',
+    h_football: 'Triff Bull, dann hast du den Ball. Danach ist jedes Double ein Tor. Wer zuerst die Tore hat, gewinnt.',
+    h_scram: 'Zwei Spieler. Der Stopper schließt 20–15 und Bull mit je drei Marks, der Scorer punktet auf allem, was noch offen ist. Dann Rollentausch. Die meisten Punkte gewinnen.',
+    z_hidden: 'Verdeckt', with_3b: 'An', without_3b: 'Aus', halve_on: 'Halbieren', halve_off: 'Nichts', o_up: '1 → 20', o_down: '20 → 1',
+    goals: 'Tore', order: 'Reihenfolge', on_miss: 'Kein Treffer', three_bed: '3 in a Bed', lbl_D: 'Dbl', lbl_T: 'Tpl', lbl_3B: '3·Bed',
+    needs_exact: '{g} braucht genau {n} Spieler.', needs_min: '{g} braucht mindestens {n} Spieler.',
+    attempt2: 'Versuch {n} von 2', part_of: 'Teil {n} von 3', to_go: 'noch {n}', goals_w: 'Tore', stopper: 'Stopper', scorer: 'Scorer',
+    get_ball: '{n}: triff Bull, dann hast du den Ball', has_ball: '{n} hat den Ball – jedes Double ist ein Tor', is_stopper: '{n} ist Stopper – schließe die Zahlen', is_scorer: '{n} punktet auf offenen Zahlen',
+    fx_gotcha: 'GOTCHA', fx_goal: 'TOR', fx_swap: 'WECHSEL', fx_ball: 'BALL', back_to_0: '{n} zurück auf 0', tie_extra: 'Gleichstand – Extra-Aufnahme',
+    ev_goal: 'Tor (Fußball)', ev_gotcha: 'Gotcha', has_ball_s: 'hat den Ball', needs_bull: 'braucht erst Bull'
+  });
+
   Object.assign(TEXTE.en, { kp_keys: 'Keys', kp_sum: 'Total', kp_board: 'Board', kp_cam: 'Camera', kp_miss: 'Miss', kp_sum_hint: 'points of the visit' });
   Object.assign(TEXTE.de, { kp_keys: 'Tasten', kp_sum: 'Summe', kp_board: 'Scheibe', kp_cam: 'Kamera', kp_miss: 'Daneben', kp_sum_hint: 'Punkte der Aufnahme' });
   // caller on this device (1.18)
@@ -260,7 +322,9 @@ button:disabled{opacity:.38;cursor:default;transform:none}
   const modusText = e => {
     if (e && e.spiel && e.spiel !== 'x01') {
       const teile = [t('a_' + e.spiel)];
-      if (e.spiel === 'cricket') { teile.push(t('v_' + (e.variante || 'standard'))); if (e.zahlen === 'tactics' || e.zahlen === 'random') teile.push(t('z_' + e.zahlen)); }
+      if (e.spiel === 'cricket') { teile.push(t('v_' + (e.variante || 'standard'))); if (['tactics', 'random', 'hidden'].includes(e.zahlen)) teile.push(t('z_' + e.zahlen)); }
+      if (e.spiel === 'gotcha') teile.push(String(e.zielwert || 301));
+      if (e.spiel === 'football') teile.push((e.zielwert || 10) + ' ' + t('goals'));
       if (e.spiel === 'atc' && e.variante && e.variante !== 'single') teile.push(t(e.variante === 'double' ? 'double' : 'treble'));
       if (+e.legs > 1) teile.push(t('first_legs', { n: e.legs }));
       return teile.join(' · ');
@@ -814,23 +878,44 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
   const STARTWERTE = [101, 170, 301, 501, 701, 901];
   const MODUS = [['straight', 'Straight'], ['double', 'Double'], ['master', 'Master']];
   const BOTS = [20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-  const GRUPPE = { x01: 'x01', cricket: 'cricket', atc: 'training', bobs27: 'training', doppel: 'training', checkout121: 'training', highscore: 'training',
-    shanghai: 'party', killer: 'party', halve_it: 'party', golf: 'party', baseball: 'party' };
+  // order inside a group = order of the tiles in the lobby
+  const GRUPPE = { x01: 'x01', cricket: 'cricket', wild_mouse: 'cricket', mickey: 'cricket',
+    atc: 'training', doppel: 'training', bobs27: 'training', checkout121: 'training', checkout: 'training', catch40: 'training', jdc: 'training', singles: 'training',
+    shanghai: 'party', killer: 'party', halve_it: 'party', golf: 'party', baseball: 'party', highscore: 'party',
+    bermuda: 'party', rtw: 'party', gotcha: 'party', nine_lives: 'party', football: 'party', scram: 'party' };
   const ART_ICON = { x01: 'mdi:numeric', cricket: 'mdi:grid', training: 'mdi:dumbbell', party: 'mdi:party-popper',
+    wild_mouse: 'mdi:rodent', mickey: 'mdi:mouse-variant',
     atc: 'mdi:clock-outline', bobs27: 'mdi:numeric-2-circle-outline', doppel: 'mdi:circle-double', checkout121: 'mdi:flag-checkered', highscore: 'mdi:trending-up',
-    shanghai: 'mdi:dice-multiple-outline', killer: 'mdi:skull-outline', halve_it: 'mdi:division', golf: 'mdi:golf', baseball: 'mdi:baseball' };
+    checkout: 'mdi:flag-outline', catch40: 'mdi:hand-back-right-outline', jdc: 'mdi:medal-outline', singles: 'mdi:numeric-1-circle-outline',
+    shanghai: 'mdi:dice-multiple-outline', killer: 'mdi:skull-outline', halve_it: 'mdi:division', golf: 'mdi:golf', baseball: 'mdi:baseball',
+    bermuda: 'mdi:triangle-outline', rtw: 'mdi:earth', gotcha: 'mdi:hand-pointing-right', nine_lives: 'mdi:cat', football: 'mdi:soccer', scram: 'mdi:swap-horizontal-bold' };
+  // players per game: [min, max]
+  const ART_SPIELER = { scram: [2, 2], killer: [2, 8] };
+  // games played like Cricket (marks table)
+  const CRICKETARTIG = ['cricket', 'wild_mouse', 'mickey'];
+  // games that check out a number (rest, attempt, way)
+  const CHECKARTIG = ['checkout121', 'checkout', 'catch40'];
   // options per game: [setting, [[value, text key or text], …]]
   const ART_OPT = {
-    cricket: [['variante', [['standard', 'v_standard'], ['cut_throat', 'v_cut_throat'], ['no_score', 'v_no_score']]], ['zahlen', [['classic', 'z_classic'], ['tactics', 'z_tactics'], ['random', 'z_random']]]],
+    cricket: [['variante', [['standard', 'v_standard'], ['cut_throat', 'v_cut_throat'], ['no_score', 'v_no_score']]], ['zahlen', [['classic', 'z_classic'], ['tactics', 'z_tactics'], ['random', 'z_random'], ['hidden', 'z_hidden']]]],
     atc: [['variante', [['single', 'any'], ['double', 'double'], ['triple', 'treble']]]],
     checkout121: [['runden', [[5, '5'], [10, '10'], [20, '20']]]],
-    highscore: [['runden', [[5, '5'], [10, '10'], [20, '20']]]],
+    highscore: [['runden', [[5, '5'], [8, '8'], [10, '10'], [20, '20']]]],
     shanghai: [['runden', [[7, '1–7'], [20, '1–20']]]],
     golf: [['runden', [[9, '9'], [18, '18']]]],
-    killer: [['leben', [[1, '1'], [3, '3'], [5, '5']]]]
+    killer: [['leben', [[1, '1'], [3, '3'], [5, '5']]]],
+    wild_mouse: [['variante', [['mit_3b', 'with_3b'], ['ohne_3b', 'without_3b']]]],
+    checkout: [['runden', [[5, '5'], [10, '10'], [20, '20']]]],
+    bermuda: [['variante', [['mit_halbieren', 'halve_on'], ['ohne_halbieren', 'halve_off']]]],
+    rtw: [['variante', [['auf', 'o_up'], ['ab', 'o_down'], ['zufall', 'z_random']]]],
+    gotcha: [['zielwert', [[101, '101'], [301, '301'], [501, '501']]], ['variante', [['straight', 'Straight'], ['double', 'Double'], ['master', 'Master']]]],
+    nine_lives: [['leben', [[1, '1'], [3, '3'], [5, '5']]]],
+    football: [['zielwert', [[5, '5'], [10, '10']]]]
   };
-  const OPT_TITEL = { variante: 'variant', zahlen: 'numbers', runden: 'rounds', leben: 'lives' };
-  const OPT_STANDARD = { variante: { cricket: 'standard', atc: 'single' }, runden: { checkout121: 10, highscore: 10, shanghai: 7, golf: 9 } };
+  const OPT_TITEL = { variante: 'variant', zahlen: 'numbers', runden: 'rounds', leben: 'lives', zielwert: 'target' };
+  const OPT_TITEL_ART = { 'gotcha:variante': 'checkout', 'football:zielwert': 'goals', 'rtw:variante': 'order', 'bermuda:variante': 'on_miss', 'wild_mouse:variante': 'three_bed', 'golf:runden': 'holes' };
+  const OPT_STANDARD = { variante: { cricket: 'standard', atc: 'single', wild_mouse: 'mit_3b', bermuda: 'mit_halbieren', rtw: 'auf', gotcha: 'straight' },
+    runden: { checkout121: 10, highscore: 8, shanghai: 7, golf: 9, checkout: 10 }, zielwert: { gotcha: 301, football: 10 } };
   // marks in cricket: /, X, circled X
   const MARK = ['', '<svg viewBox="0 0 24 24"><path d="M6 19L18 5"/></svg>', '<svg viewBox="0 0 24 24"><path d="M6 19L18 5M6 5l12 14"/></svg>',
     '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M7.5 16.5l9-9M7.5 7.5l9 9"/></svg>'];
@@ -851,7 +936,8 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     const P = brettP, k = BRETT_K / 170;
     const bogen = (r1, r2, w1, w2) => { const [a, b] = P(r2, w1), [c, d] = P(r2, w2), [e, g] = P(r1, w2), [i, j] = P(r1, w1); return 'M' + f1(a) + ' ' + f1(b) + 'A' + r2 + ' ' + r2 + ' 0 0 1 ' + f1(c) + ' ' + f1(d) + 'L' + f1(e) + ' ' + f1(g) + 'A' + r1 + ' ' + r1 + ' 0 0 0 ' + f1(i) + ' ' + f1(j) + 'Z'; };
     let d = '';
-    if (ziel === 'B' || ziel === 'S25' || ziel === 'D25' || ziel === '25') d = 'M60 ' + f1(60 - 15.9 * k) + 'a' + f1(15.9 * k) + ' ' + f1(15.9 * k) + ' 0 1 0 .01 0Z';
+    if (ziel === 'DB') d = 'M60 ' + f1(60 - 6.35 * k) + 'a' + f1(6.35 * k) + ' ' + f1(6.35 * k) + ' 0 1 0 .01 0Z';
+    else if (ziel === 'B' || ziel === 'S25' || ziel === 'D25' || ziel === '25') d = 'M60 ' + f1(60 - 15.9 * k) + 'a' + f1(15.9 * k) + ' ' + f1(15.9 * k) + ' 0 1 0 .01 0Z';
     else if (ziel === 'D' || ziel === 'T') { const r = ziel === 'D' ? [162, 170] : [99, 107]; d = 'M60 ' + f1(60 - r[1] * k) + 'a' + f1(r[1] * k) + ' ' + f1(r[1] * k) + ' 0 1 0 .01 0ZM60 ' + f1(60 - r[0] * k) + 'a' + f1(r[0] * k) + ' ' + f1(r[0] * k) + ' 0 1 0 .01 0Z'; }
     else {
       const m = /^([SDT]?)(\d+)$/.exec(ziel); if (!m) return '';
@@ -1110,6 +1196,17 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .achips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .achips button{display:flex;align-items:center;gap:6px;border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:600}
 .achips button ha-icon{--mdc-icon-size:18px}
+.atiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:6px;margin-top:10px}
+.atiles button{display:flex;align-items:center;gap:10px;border-radius:14px;padding:9px 10px;text-align:left;min-width:0;position:relative}
+.atiles button>ha-icon{--mdc-icon-size:22px;flex:none;opacity:.85}
+.atiles .an1{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.atiles .an1 b{font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atiles .an1 small{font-size:11.5px;color:var(--secondary-text-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atiles .spz{position:absolute;top:5px;right:7px;display:flex;align-items:center;gap:1px;font-size:10.5px;font-weight:700;color:var(--secondary-text-color)}
+.atiles .spz ha-icon{--mdc-icon-size:12px}
+.atiles button.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}
+.atiles button.an b,.atiles button.an>ha-icon{color:var(--primary-color);opacity:1}
+.atiles button.passtnicht{opacity:.5}
 .regel{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;color:var(--secondary-text-color);margin:10px 2px 2px}
 .regel ha-icon{--mdc-icon-size:18px;flex:none;margin-top:1px}
 .zm{fill:rgba(0,229,255,.28);stroke:#00e5ff;stroke-width:.9;animation:ad-ziel 1.6s ease-in-out infinite}
@@ -1134,6 +1231,16 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .ct .m.v3 svg{stroke:var(--green-color,#43a047)}
 .ct .pk>*{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
 .ct .mp>*{font-size:12.5px;color:var(--secondary-text-color)}
+.ct .r.verd .z{color:var(--secondary-text-color);font-size:16px;letter-spacing:.05em}
+.ct .z{white-space:nowrap}
+.zleiste{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0 10px;padding:6px;border-radius:16px}
+.zleiste>div{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 0}
+.zleiste b{font-size:17px;font-weight:800}
+.zleiste .m svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.zleiste .m{min-height:22px}
+.zleiste .zu b{color:var(--secondary-text-color);text-decoration:line-through;opacity:.6}
+.zleiste .zu .m svg{stroke:var(--green-color,#43a047)}
+.sk .sr small.ball{font-size:.55em;vertical-align:middle}
 .rang{display:grid;gap:6px;margin-top:12px}
 .rang div{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:8px;padding:10px 12px;border-radius:14px;font-size:15px}
 .rang b{font-size:20px;font-variant-numeric:tabular-nums}
@@ -1340,7 +1447,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       this._lob = {
         spieler: (l.spieler || []).slice(0, 16), startwert: l.startwert || 501, legs: l.legs || 1, sets: l.sets || 0,
         einwurf: l.einwurf || 'straight', auswurf: l.auswurf || 'double', bull_off: !!l.bull_off,
-        spiel: l.spiel || 'x01', variante: l.variante || '', zahlen: l.zahlen || 'classic', runden: l.runden || 0, leben: l.leben || 3
+        spiel: l.spiel || 'x01', variante: l.variante || '', zahlen: l.zahlen || 'classic', runden: l.runden || 0, leben: l.leben || 3, zielwert: l.zielwert || 0
       };
     }
     _sichtbar() { this._wach(); this._lvStrom(); this._abo(); }
@@ -1710,8 +1817,10 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       }
       if (!boardOnline(this._h) && !L.spieler.every(x => x.startsWith('bot:')))
         s += '<div class="warn"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon><span>' + t('board_off_hint') + '</span>' + (this._c.power_on ? '<button data-act="pcein">' + t('on') + '</button>' : '') + '</div>';
+      const gr = !tur && ART_SPIELER[L.spiel], falsch = gr && L.spieler.length && (L.spieler.length < gr[0] || L.spieler.length > gr[1]);
+      if (falsch) s += '<div class="warn"><ha-icon icon="mdi:account-alert-outline"></ha-icon><span>' + t(gr[0] === gr[1] ? 'needs_exact' : 'needs_min', { g: t('a_' + L.spiel), n: gr[0] }) + '</span></div>';
       s += tur ? '<button class="start" data-act="turstart"><ha-icon icon="mdi:tournament"></ha-icon>' + t('start_tour') + '</button></div>'
-        : '<button class="start" data-act="start"' + (L.spieler.length && L.spieler.length <= 8 ? '' : ' disabled') + '><ha-icon icon="mdi:play"></ha-icon>' + t('start_game') + '</button></div>';
+        : '<button class="start" data-act="start"' + (L.spieler.length && L.spieler.length <= 8 && !falsch ? '' : ' disabled') + '><ha-icon icon="mdi:play"></ha-icon>' + t('start_game') + '</button></div>';
       return s;
     }
     _bulloff(a) {
@@ -1757,18 +1866,24 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const g = GRUPPE[L.spiel] || 'x01';
       let s = '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:bullseye-arrow"></ha-icon>' + t('game_type') + '</div><div class="arten">' +
         ['x01', 'cricket', 'training', 'party'].map(x => '<button class="feld' + (g === x ? ' an' : '') + '" data-act="gruppe" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' + t('g_' + x) + '</button>').join('') + '</div>';
-      if (g === 'training' || g === 'party')
-        s += '<div class="achips">' + Object.keys(GRUPPE).filter(x => GRUPPE[x] === g).map(x => '<button class="feld' + (L.spiel === x ? ' an' : '') + '" data-act="art" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' + t('a_' + x) + '</button>').join('') + '</div>';
-      if (L.spiel !== 'x01') {
-        const v = L.spiel === 'cricket' && L.variante && L.variante !== 'standard' ? L.variante : L.spiel;
+      if (g !== 'x01') {
+        // tiles: name, one line of what it is, players if limited
+        const n = L.spieler.length;
+        s += '<div class="atiles">' + Object.keys(GRUPPE).filter(x => GRUPPE[x] === g).map(x => {
+          const gr = ART_SPIELER[x], passt = !gr || !n || (n >= gr[0] && n <= gr[1]);
+          return '<button class="feld' + (L.spiel === x ? ' an' : '') + (passt ? '' : ' passtnicht') + '" data-act="art" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' +
+            '<span class="an1"><b>' + t('a_' + x) + '</b><small>' + t('s_' + x) + '</small></span>' +
+            (gr ? '<span class="spz">' + (gr[0] === gr[1] ? gr[0] : gr[0] + '+') + ' <ha-icon icon="mdi:account"></ha-icon></span>' : '') + '</button>';
+        }).join('') + '</div>';
+        const v = L.spiel === 'cricket' && L.zahlen === 'hidden' ? 'hidden' : L.spiel === 'cricket' && L.variante && L.variante !== 'standard' ? L.variante : L.spiel;
         s += '<div class="regel"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t('h_' + v) + '</span></div>';
       }
       s += '</div>';
       if (L.spiel === 'x01') return s;
-      (ART_OPT[L.spiel] || []).forEach(([k]) => { if (L[k] === '' || L[k] == null || (k === 'runden' && !L[k]) || !ART_OPT[L.spiel].find(o => o[0] === k)[1].some(o => String(o[0]) === String(L[k]))) L[k] = (OPT_STANDARD[k] || {})[L.spiel] || (k === 'leben' ? 3 : ART_OPT[L.spiel].find(o => o[0] === k)[1][0][0]); });
+      (ART_OPT[L.spiel] || []).forEach(([k]) => { if (L[k] === '' || L[k] == null || ((k === 'runden' || k === 'zielwert') && !L[k]) || !ART_OPT[L.spiel].find(o => o[0] === k)[1].some(o => String(o[0]) === String(L[k]))) L[k] = (OPT_STANDARD[k] || {})[L.spiel] || (k === 'leben' ? 3 : ART_OPT[L.spiel].find(o => o[0] === k)[1][0][0]); });
       s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:tune-variant"></ha-icon>' + t('game') + '</div>';
       (ART_OPT[L.spiel] || []).forEach(([k, opts]) => {
-        s += '<div class="reihe"><span>' + t(L.spiel === 'golf' && k === 'runden' ? 'holes' : OPT_TITEL[k]) + '</span>' + seg(k, opts.map(([w, x]) => [w, TEXTE.en[x] !== undefined ? t(x) : x])) + '</div>';
+        s += '<div class="reihe"><span>' + t(OPT_TITEL_ART[L.spiel + ':' + k] || OPT_TITEL[k]) + '</span>' + seg(k, opts.map(([w, x]) => [w, TEXTE.en[x] !== undefined ? t(x) : x])) + '</div>';
       });
       s += '<div class="reihe"><span>' + t('first_to') + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="legs">−</button><b>' + legs(L.legs) + '</b><button class="feld" data-act="plus" data-k="legs">+</button></div></div>' +
         '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
@@ -1777,69 +1892,105 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     // text of a target: "D7", "18", "any double" …
     _zielText(z) {
       if (!z) return '';
-      if (z === 'D') return t('any_double'); if (z === 'T') return t('any_triple'); if (z === 'B' || z === 'S25' || z === 'D25' || z === '25') return z === 'S25' ? '25 / Bull' : 'Bull';
+      if (z === 'D') return t('any_double'); if (z === 'T') return t('any_triple'); if (z === 'DB') return 'Bullseye';
+      if (z === 'B' || z === 'S25' || z === 'D25' || z === '25') return z === 'S25' ? '25 / Bull' : 'Bull';
       return z[0] === 'S' ? z.slice(1) : z;
     }
     _rundeText(a, p) {
       const m = a.runden || 0; if (!m) return '';
-      const n = Math.min((p.runde || 0) + 1, m);
+      const n = (p.runde || 0) + 1;
+      if (n > m) return t('tie_extra');
       return t(a.art === 'golf' ? 'hole_of' : a.art === 'baseball' ? 'inning_of' : 'round_of', { n, m });
     }
     _matchArt(a) {
       const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, wer = sp[am] || {}, art = a.art;
+      const cricket = CRICKETARTIG.includes(art), check = CHECKARTIG.includes(art);
+      const herzen = p => '<span class="herz">' + '❤'.repeat(Math.max(0, p.leben || 0)) + '</span> ' + t('lives') + ' <b>' + (p.leben || 0) + '</b>';
       let oben;
-      if (art === 'cricket') oben = this._cricketTafel(a);
+      if (cricket) oben = this._cricketTafel(a);
       else {
+        // big value of a player tile
+        const gross = p => {
+          if (art === 'atc') return this._zielText(p.fertig ? 'D25' : (p.ziel || ''));
+          if (art === 'killer') return p.nummer;
+          if (art === 'nine_lives') return p.fertig ? '✓' : p.raus ? '–' : this._zielText(p.ziel || '');
+          if (art === 'football') return p.rest + (p.ball ? ' <small class="ball">⚽</small>' : '');
+          return p.rest;
+        };
+        // small line below it
         const neben = p => {
-          if (art === 'killer') return '<span class="herz">' + '❤'.repeat(Math.max(0, p.leben || 0)) + '</span> ' + t('lives') + ' <b>' + (p.leben || 0) + '</b>';
-          if (art === 'checkout121') return t('target_n', { n: p.zielwert }) + ' · ' + t('checks') + ' <b>' + (p.geschafft || 0) + '</b>';
+          if (art === 'killer' || art === 'nine_lives') return herzen(p);
+          if (art === 'checkout121' || art === 'checkout') return t('target_n', { n: p.zielwert }) + ' · ' + t('checks') + ' <b>' + (p.geschafft || 0) + '</b>';
+          if (art === 'catch40') return (p.zielwert ? t('target_n', { n: p.zielwert }) + ' · ' : '') + t('checks') + ' <b>' + (p.geschafft || 0) + '</b>';
           if (art === 'atc') return t('n_darts', { n: p.leg_darts });
+          if (art === 'rtw') return (p.fertig ? t('done_w') : t('target') + ' <b>' + esc(this._zielText(p.ziel)) + '</b>') + ' · ' + t('hits') + ' ' + (p.treffer || 0);
+          if (art === 'gotcha') return t('to_go', { n: p.restwert }) + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '');
+          if (art === 'football') return p.ball ? t('has_ball_s') : t('needs_bull');
+          if (art === 'scram') return '<b>' + t(p.rolle) + '</b>' + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '');
+          if (art === 'jdc') return t('part_of', { n: p.teil || 3 }) + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '');
           return this._rundeText(a, p) + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '');
         };
+        const zielImTile = ['atc', 'nine_lives', 'rtw', 'football', 'scram'].includes(art) || check;
         oben = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + sp.map((p, i) => '<div class="sk feld' + (i === am ? ' aktiv' : '') + (p.raus ? ' raus' : '') + '"><div class="sn">' +
           (p.bot ? '<ha-icon icon="mdi:robot-outline"></ha-icon>' : '') + esc(p.name) + (p.killer ? '<span class="kil">' + t('killer_w') + '</span>' : '') +
           (p.raus || p.fertig || +e.legs > 1 ? '<span class="lg">' + (p.raus ? t('out_w') : p.fertig ? t('done_w') : p.legs + ' L') + '</span>' : '') + '</div>' +
-          '<div class="sr">' + (art === 'atc' ? this._zielText(p.fertig ? 'D25' : (p.ziel || '')) : art === 'killer' ? p.nummer : p.rest) + '</div><div class="sa">' + neben(p) + '</div>' +
-          (i !== am && p.ziel && !p.raus && art !== 'atc' ? '<span class="zk">' + t('target') + ' ' + esc(this._zielText(p.ziel)) + '</span>' : '') + '</div>').join('') + '</div>';
+          '<div class="sr">' + gross(p) + '</div><div class="sa">' + neben(p) + '</div>' +
+          (i !== am && p.ziel && !p.raus && !zielImTile ? '<span class="zk">' + t('target') + ' ' + esc(this._zielText(p.ziel)) + '</span>' : '') + '</div>').join('') + '</div>';
+        if (art === 'scram') oben += this._zahlenLeiste(a.zahlen || [], (sp[0] || {}).marks || []);
       }
       let hinw, cls = '';
       if (a.leg_gewinner != null) { hinw = '<ha-icon icon="mdi:check-decagram"></ha-icon>' + t('leg_won', { n: esc(sp[a.leg_gewinner].name) }); cls = ' check'; }
       else if (au.fertig) hinw = '<ha-icon icon="mdi:hand-back-left-outline"></ha-icon>' + t('remove_darts');
       else if (wer.bot) hinw = '<ha-icon icon="mdi:robot-outline"></ha-icon>' + t('throws_now', { n: esc(wer.name) });
       else if (art === 'killer') hinw = '<ha-icon icon="mdi:skull-outline"></ha-icon>' + (wer.killer ? t('killer_aims', { n: esc(wer.name) }) : t('hit_double', { n: esc(wer.name), z: wer.nummer }));
+      else if (art === 'football') hinw = '<ha-icon icon="mdi:soccer"></ha-icon>' + t(wer.ball ? 'has_ball' : 'get_ball', { n: esc(wer.name) });
+      else if (art === 'scram') hinw = '<ha-icon icon="' + (wer.rolle === 'stopper' ? 'mdi:lock-outline' : 'mdi:plus-circle-outline') + '"></ha-icon>' + t(wer.rolle === 'stopper' ? 'is_stopper' : 'is_scorer', { n: esc(wer.name) });
       else hinw = '<ha-icon icon="mdi:target"></ha-icon>' + t('your_turn', { n: esc(wer.name) });
       const dz = [0, 1, 2].map(i => { const d = au.darts[i]; return '<button class="dz feld' + (d ? '' : ' leer') + '" data-act="dart" data-i="' + i + '"><b>' + (d ? ft(d.f) : '–') + '</b><small>' + (d ? pkt(d.f) + ' ' + t('pts') : t('dart') + ' ' + (i + 1)) + '</small></button>'; }).join('');
       let rechts = this._rundeText(a, wer);
-      if (art === 'cricket') rechts = t('mpr') + ' ' + z1(wer.avg);
-      if (art === 'checkout121') rechts = t('rest', { n: wer.rest }) + ' · ' + t('attempt', { n: Math.min(3, wer.versuch || 1) });
+      if (cricket) rechts = t('mpr') + ' ' + z1(wer.avg);
+      if (art === 'checkout121' || art === 'checkout') rechts = t('rest', { n: wer.rest }) + ' · ' + t('attempt', { n: Math.min(3, wer.versuch || 1) });
+      if (art === 'catch40') rechts = t('rest', { n: wer.restwert }) + ' · ' + t('attempt2', { n: Math.min(2, wer.versuch || 1) });
+      if (art === 'gotcha') rechts = t('to_go', { n: wer.restwert });
+      if (art === 'jdc') rechts = t('part_of', { n: wer.teil || 1 });
       if (art === 'atc') rechts = t('n_darts', { n: wer.leg_darts });
-      if (art === 'killer') rechts = '';
-      const einheit = { cricket: t('marks'), golf: t('strokes'), baseball: t('runs'), atc: t('hits'), doppel: t('hits') }[art];
-      const summe = art === 'cricket' ? (((a.verlauf || []).slice(-1)[0] || {}).m || 0) * (au.darts.length ? 1 : 0) : au.summe;
-      const ziel = a.ziel && art !== 'cricket' ? '<div class="ziel">' + esc(this._zielText(a.ziel)) + '<small>' + t('target') + '</small></div>' : '';
+      if (['killer', 'nine_lives', 'rtw', 'football', 'scram'].includes(art)) rechts = '';
+      const einheit = { golf: t('strokes'), baseball: t('runs'), atc: t('hits'), doppel: t('hits'), nine_lives: t('hits'), football: t('goals'), catch40: t('points') }[art] || (cricket ? t('marks') : '');
+      const summe = cricket ? (((a.verlauf || []).slice(-1)[0] || {}).m || 0) * (au.darts.length ? 1 : 0) : au.summe;
+      const ziel = a.ziel && !cricket ? '<div class="ziel">' + esc(this._zielText(a.ziel)) + '<small>' + t('target') + '</small></div>' : '';
       const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
       const golf = art === 'golf' && au.darts.length && !au.fertig ? '<div class="klein" style="margin:8px 0 0">' + t('golf_hint') + '</div>' : '';
+      const brettZiel = cricket || check || art === 'gotcha' || art === 'scram' ? null : a.ziel;
       let s = oben + '<div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
-        '<div class="summe"><b>' + summe + '</b><span>' + (einheit ? einheit + (rechts ? ' · ' : '') : '') + rechts + '</span></div>' + (art === 'checkout121' ? weg : '') + ziel + golf + this._vorige(a) + '</div>' +
-        this._brettHtml(au.darts, art === 'cricket' ? null : (art === 'checkout121' ? null : a.ziel)) + '</div>' +
+        '<div class="summe"><b>' + summe + '</b><span>' + (einheit ? einheit + (rechts ? ' · ' : '') : '') + rechts + '</span></div>' + (check || art === 'gotcha' ? weg : '') + ziel + golf + this._vorige(a) + '</div>' +
+        this._brettHtml(au.darts, brettZiel) + '</div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
         '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
       s += auf('verlauf', this._auf.verlauf, 'mdi:history', t('visits'), +e.legs > 1 ? t('leg') + ' ' + a.leg : '');
       if (this._auf.verlauf) s += '<div class="aufinhalt">' + this._verlauf(a) + '</div>';
       s += auf('regel', this._auf.regel, 'mdi:information-outline', t('a_' + art));
-      if (this._auf.regel) s += '<div class="aufinhalt"><div class="regel" style="margin:0">' + t('h_' + (art === 'cricket' && e.variante && e.variante !== 'standard' ? e.variante : art)) + '</div></div>';
+      if (this._auf.regel) s += '<div class="aufinhalt"><div class="regel" style="margin:0">' + t('h_' + this._regelKey(art, e)) + '</div></div>';
       s += auf('opt', this._auf.opt, 'mdi:dots-horizontal', t('game'));
       if (this._auf.opt) s += '<div class="aufinhalt"><button class="auf feld" style="margin-top:0;--sr-f:var(--red-color,#e53935)" data-act="abbr" data-lbl="' + t('cancel_noscore') + '"><ha-icon icon="mdi:close-circle-outline"></ha-icon><span class="lbl">' + t('cancel_noscore') + '</span></button></div>';
       return s;
     }
+    _regelKey(art, e) {
+      if (art === 'cricket' && e.zahlen === 'hidden') return 'hidden';
+      return art === 'cricket' && e.variante && e.variante !== 'standard' ? e.variante : art;
+    }
+    // Scram: the numbers and how far the stopper has closed them
+    _zahlenLeiste(zahlen, marks) {
+      return '<div class="zleiste feld">' + zahlen.map((z, k) => { const m = marks[k] || 0; return '<div class="' + (m >= 3 ? 'zu' : '') + '"><b>' + (z === 25 ? 'B' : z) + '</b><span class="m v' + m + '">' + MARK[m] + '</span></div>'; }).join('') + '</div>';
+    }
     _cricketTafel(a) {
-      const sp = a.spieler || [], zahlen = a.zahlen || [], am = a.am_zug, ohne = (a.einstellungen || {}).variante === 'no_score';
+      const sp = a.spieler || [], zahlen = a.zahlen || [], am = a.am_zug, ohne = (a.einstellungen || {}).variante === 'no_score' || a.art === 'mickey', verdeckt = a.verdeckt || [];
       const spalten = 'minmax(44px,.7fr) repeat(' + sp.length + ',minmax(0,1fr))';
       const zelle = (i, x, cls) => '<div class="' + (cls || '') + (i === am ? ' akt' : '') + '">' + x + '</div>';
+      const name = (z, k) => verdeckt[k] ? '?' : z === 25 ? 'B' : typeof z === 'string' ? t('lbl_' + z) : z;
       let s = '<div class="ct feld" style="--sp:' + spalten + '"><div class="r kopf"><div></div>' + sp.map((p, i) => zelle(i, (p.bot ? '🤖 ' : '') + esc(p.name) + (+(a.einstellungen || {}).legs > 1 ? ' · ' + p.legs : ''))).join('') + '</div>';
       zahlen.forEach((z, k) => {
         const zu = sp.every(p => (p.marks || [])[k] >= 3);
-        s += '<div class="r' + (zu ? ' zu' : '') + '"><div class="z">' + (z === 25 ? 'B' : z) + '</div>' + sp.map((p, i) => { const m = (p.marks || [])[k] || 0; return zelle(i, MARK[m], 'm v' + m); }).join('') + '</div>';
+        s += '<div class="r' + (zu ? ' zu' : '') + (verdeckt[k] ? ' verd' : '') + '"><div class="z">' + name(z, k) + '</div>' + sp.map((p, i) => { const m = (p.marks || [])[k] || 0; return zelle(i, MARK[m], 'm v' + m); }).join('') + '</div>';
       });
       if (!ohne) s += '<div class="r pk"><div></div>' + sp.map((p, i) => zelle(i, p.rest)).join('') + '</div>';
       s += '<div class="r mp"><div>' + t('mpr') + '</div>' + sp.map((p, i) => zelle(i, z1(p.avg))).join('') + '</div></div>';
@@ -1848,10 +1999,12 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     _endeArt(a) {
       const sp = a.spieler || [], g = sp[a.gewinner] || {}, e = a.einstellungen || {}, art = a.art;
       const weniger = art === 'golf' || (art === 'cricket' && e.variante === 'cut_throat');
-      const wert = p => art === 'checkout121' ? (p.geschafft || 0) : art === 'killer' ? (p.leben || 0) : p.rest;
+      const wert = p => art === 'checkout121' || art === 'checkout' ? (p.geschafft || 0) : art === 'killer' || art === 'nine_lives' ? (p.leben || 0) : p.rest;
       const reihe = sp.map((p, i) => i).sort((x, y) => (x === a.gewinner ? -1 : y === a.gewinner ? 1 : (+e.legs > 1 ? sp[y].legs - sp[x].legs : 0) || (weniger ? wert(sp[x]) - wert(sp[y]) : wert(sp[y]) - wert(sp[x]))));
-      const einheit = { cricket: e.variante === 'no_score' ? t('mpr') : t('points'), golf: t('strokes'), baseball: t('runs'), checkout121: t('checks'), killer: t('lives'), atc: t('n_darts', { n: '' }).trim() }[art] || t('points');
-      const zeig = p => art === 'atc' ? p.darts : art === 'cricket' && e.variante === 'no_score' ? z1(p.avg) : wert(p);
+      const ohne = (art === 'cricket' && e.variante === 'no_score') || art === 'mickey';
+      const einheit = { cricket: ohne ? t('mpr') : t('points'), mickey: t('mpr'), golf: t('strokes'), baseball: t('runs'), checkout121: t('checks'), checkout: t('checks'), killer: t('lives'),
+        nine_lives: t('lives'), football: t('goals'), atc: t('n_darts', { n: '' }).trim() }[art] || t('points');
+      const zeig = p => art === 'atc' ? p.darts : ohne ? z1(p.avg) : wert(p);
       return '<div class="sieg"><ha-icon icon="mdi:trophy"></ha-icon><h2>' + t('wins', { n: esc(g.name) }) + '</h2><div>' + esc(modusText(e)) + '</div></div>' +
         '<div class="rang">' + reihe.map((i, k) => '<div class="feld' + (i === a.gewinner ? ' g' : '') + '"><span>' + (k + 1) + '.</span><span>' + esc(sp[i].name) + (+e.legs > 1 ? ' · ' + sp[i].legs + ' L' : '') + '</span><b>' + zeig(sp[i]) + ' <small style="font-size:12px;font-weight:600;color:var(--secondary-text-color)">' + einheit + '</small></b></div>').join('') + '</div>' +
         '<div class="zweier"><button class="lk weiter" data-act="revanche"><ha-icon icon="mdi:refresh"></ha-icon>' + t('rematch') + '</button><button class="lk feld" data-act="neues"><ha-icon icon="mdi:account-group"></ha-icon>' + t('new_game') + '</button></div>' +
@@ -1869,7 +2022,11 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         if (match) return this._fxGross('gold', feuerwerk(5, .4) + konfetti(50, .2) + '<div class="pokal">🏆</div>' + wort(t('fx_win'), true) + unter(wer, modusText(a.einstellungen)), 5200, 'fx-stoss', 'gross');
         return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(30) + wort('LEG', true) + unter(t('fx_leg', { n: wer })), 3200, 'fx-stoss', 'jubel');
       }
-      const raus = x.filter(v => v.startsWith('raus')), leben = x.filter(v => v.startsWith('leben:'));
+      const raus = x.filter(v => v.startsWith('raus')), leben = x.filter(v => v.startsWith('leben:')), gotcha = x.filter(v => v.startsWith('gotcha:'));
+      if (gotcha.length) return this._fxGross('bust', '<div class="pokal">🎯</div>' + wort(t('fx_gotcha'), true) + unter(wer, gotcha.map(v => t('back_to_0', { n: (sp[+v.slice(7)] || {}).name || '' })).join(' · ')), 2800, 'fx-stoss', 'buzz');
+      if (x.includes('tor')) return this._fxGross('gruen', '<div class="pokal">⚽</div><div class="welle"></div>' + konfetti(26) + wort(t('fx_goal'), true) + unter(wer, String(z.r)), 2800, 'fx-stoss', 'jubel');
+      if (x.includes('wechsel')) return this._fxGross('silber', '<div class="pokal">🔄</div>' + wort(t('fx_swap'), true) + unter(t('stopper') + ' ⇄ ' + t('scorer')), 2600, 'fx-stoss', 'jubel');
+      if (x.includes('shanghai')) return this._fxGross('regenbogen', strahlen + konfetti(36) + wort('SHANGHAI!', true) + unter(wer, '+100'), 3400, 'fx-stoss', 'jubel');
       if (x.includes('killer')) return this._fxGross('bust', '<div class="pokal">💀</div>' + wort(t('fx_killer'), true) + unter(wer), 2600, 'fx-stoss', 'buzz');
       if (raus.length) {
         const namen = raus.map(v => (sp[v.startsWith('raus:') ? +v.slice(5) : z.s] || {}).name).join(', ');
@@ -1887,6 +2044,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (x.includes('check')) return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(24) + wort(t('fx_check'), true) + unter(wer), 2800, 'fx-stoss', 'jubel');
       if (x.includes('verfehlt')) return this._fxGross('grau', wort(t('fx_missed'), true) + unter(wer), 2200);
       if (x.includes('bust')) return this._fxGross('bust', RISS_SVG + wort(t('fx_bust'), t('fx_bust').length > 5) + unter(wer), 2000, 'fx-wackeln', 'buzz');
+      if (x.includes('ball')) return this._fxGross('gruen', '<div class="pokal">⚽</div>' + wort(t('fx_ball'), false) + unter(wer), 1800);
       if (x.includes('geschafft')) return this._fxGross('gruen', '<div class="welle"></div>' + konfetti(30) + wort(t('fx_done'), true) + unter(wer), 3000, 'fx-stoss', 'jubel');
       const zu = x.filter(v => v.startsWith('zu:'));
       if (zu.length) return this._fxGross('gruen', wort(zu.map(v => v === 'zu:25' ? 'BULL' : v.slice(3)).join(' · '), zu.length > 1) + unter(t('fx_closed', { z: '' }).trim() + ' · ' + wer), 1800);
@@ -1900,13 +2058,13 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       v = v.filter(z => z.d.length || z.p).slice(-5).reverse();
       if (!v.length) return '';
       return '<div class="vor">' + v.map(z => '<span class="' + (z.b ? 'b' : '') + (z.c ? ' c' : '') + '"><i>' + esc(((sp[z.s] || {}).name || '?').slice(0, 10)) + '</i>' +
-        (a.art === 'cricket' ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01') ? 'Bust' : z.p)) + '</span>').join('') + '</div>';
+        (CRICKETARTIG.includes(a.art) ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01' || a.art === 'gotcha') ? 'Bust' : z.p)) + '</span>').join('') + '</div>';
     }
     _verlauf(a) {
       const sp = a.spieler || [], v = (a.verlauf || []).slice().reverse();
       if (!v.length) return '<div class="leer">' + t('no_visit') + '</div>';
       return '<div class="vl">' + v.map(z => '<div class="vz' + (z.b ? ' bu' : '') + (z.c ? ' co' : '') + '" data-act="vz" data-i="' + z.i + '"><span>' + esc((sp[z.s] || {}).name) + '</span><span>' +
-        (z.d.length ? z.d.map(ft).join(' · ') : '–') + '</span><b>' + (a.art === 'cricket' ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01') ? 'Bust' : z.p)) + '</b><span class="r">' + z.r + '</span></div>').join('') + '</div>' +
+        (z.d.length ? z.d.map(ft).join(' · ') : '–') + '</span><b>' + (CRICKETARTIG.includes(a.art) ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01' || a.art === 'gotcha') ? 'Bust' : z.p)) + '</b><span class="r">' + z.r + '</span></div>').join('') + '</div>' +
         '<div class="klein">' + t('tap_fix') + '</div>';
     }
     _statTab(sp) {
@@ -1983,9 +2141,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'weg': L.spieler.splice(+b.dataset.i, 1); neu(); break;
         case 'hoch': { const i = +b.dataset.i; [L.spieler[i - 1], L.spieler[i]] = [L.spieler[i], L.spieler[i - 1]]; neu(); break; }
         case 'mischen': for (let i = L.spieler.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L.spieler[i], L.spieler[j]] = [L.spieler[j], L.spieler[i]]; } neu(); break;
-        case 'set': { const v = b.dataset.v, k = b.dataset.k; L[k] = ['startwert', 'runden', 'leben'].includes(k) ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
-        case 'gruppe': { const g = b.dataset.v; if (g !== GRUPPE[L.spiel]) { L.spiel = g === 'training' ? 'atc' : g === 'party' ? 'shanghai' : g; L.variante = ''; L.runden = 0; } neu(); break; }
-        case 'art': L.spiel = b.dataset.v; L.variante = ''; L.runden = 0; neu(); break;
+        case 'set': { const v = b.dataset.v, k = b.dataset.k; L[k] = ['startwert', 'runden', 'leben', 'zielwert'].includes(k) ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
+        case 'gruppe': { const g = b.dataset.v; if (g !== GRUPPE[L.spiel]) { L.spiel = g === 'training' ? 'atc' : g === 'party' ? 'shanghai' : g; L.variante = ''; L.runden = 0; L.zielwert = 0; } neu(); break; }
+        case 'art': if (L.spiel !== b.dataset.v) { L.spiel = b.dataset.v; L.variante = ''; L.runden = 0; L.zielwert = 0; } neu(); break;
         case 'plus': case 'minus': { const k = b.dataset.k, d = act === 'plus' ? 1 : -1; L[k] = Math.max(k === 'legs' ? 1 : 0, Math.min(k === 'legs' ? 21 : 13, L[k] + d)); neu(); break; }
         case 'neu':
           this._modal('<h3>' + t('new_player') + '</h3><input maxlength="20" placeholder="' + t('name') + '"><div class="mknoepfe"><button class="feld" data-act="mzu">' + t('cancel') + '</button><button class="ja" data-act="neuok">' + t('create') + '</button></div>');
@@ -2000,7 +2158,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         case 'pcein': if (this._c.power_on) ausloesen(h, this._c.power_on, false); break;
         case 'start': case 'turstart':
           this._dienst(act === 'turstart' ? 'turnier_starten' : 'spiel_starten', { spieler: L.spieler, spiel: L.spiel, startwert: L.startwert, legs: L.legs, sets: L.spiel === 'x01' ? L.sets : 0, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off,
-            variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben, ...(act === 'turstart' ? { turnier_modus: this._turMod || 'ko' } : {}) });
+            variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben, zielwert: L.zielwert || 0, ...(act === 'turstart' ? { turnier_modus: this._turMod || 'ko' } : {}) });
           this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
         case 'undo': this._dienst('rueckgaengig'); break;
         case 'weiter': this._dienst('weiter'); break;
@@ -2282,7 +2440,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
             ka('140+', p.n140) + ka('100+', p.n100) + ka(t('legs'), p.legs) + ka(t('darts'), zahl(p.darts)) + '</div>' +
             this._profil(p, sp) +
             (Object.keys(p.arten || {}).length ? '<div class="kach" style="margin-top:8px">' + Object.entries(p.arten).filter(([, g]) => g.spiele).map(([art, g]) =>
-              ka(t('a_' + art), t('games_wins', { g: g.spiele, w: g.siege }) + (g.best != null ? '<br><small>' + t('best') + ' ' + (art === 'cricket' ? z1(g.best) + ' MPR' : g.best) + '</small>' : ''))).join('') + '</div>' : '') +
+              ka(t('a_' + art), t('games_wins', { g: g.spiele, w: g.siege }) + (g.best != null ? '<br><small>' + t('best') + ' ' + (CRICKETARTIG.includes(art) ? z1(g.best) + ' MPR' : g.best) + '</small>' : ''))).join('') + '</div>' : '') +
             '<div class="plknoepfe"><button class="feld" data-act="umb" data-id="' + p.id + '" data-n="' + esc(p.name) + '"><ha-icon icon="mdi:pencil"></ha-icon><span class="lbl">' + t('rename') + '</span></button>' +
             '<button class="feld" data-act="statweg" data-id="' + p.id + '" data-lbl="' + t('del_stats') + '"><ha-icon icon="mdi:delete-sweep-outline"></ha-icon><span class="lbl">' + t('del_stats') + '</span></button>' +
             '<button class="feld" data-act="spweg" data-id="' + p.id + '" data-lbl="' + t('del_player') + '"><ha-icon icon="mdi:account-remove"></ha-icon><span class="lbl">' + t('del_player') + '</span></button></div></div>';

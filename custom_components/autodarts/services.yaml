@@ -4,36 +4,43 @@ spiel_starten:
   fields: &startfelder
     spiel:
       name: Spielart
-      description: x01, cricket, atc (Rund um die Uhr), bobs27, doppel, checkout121, highscore, shanghai, killer, halve_it, golf, baseball
+      description: "x01; Cricket: cricket, wild_mouse, mickey; Training: atc (Rund um die Uhr), bobs27, doppel, checkout121, checkout, catch40, jdc, singles; Party: highscore (Count-Up), shanghai, killer, halve_it, golf, baseball, bermuda, rtw (Round the World), gotcha, nine_lives, football, scram (genau 2 Spieler)"
       example: cricket
       selector:
         select:
-          options: ["x01", "cricket", "atc", "bobs27", "doppel", "checkout121", "highscore", "shanghai", "killer", "halve_it", "golf", "baseball"]
+          options: ["x01", "cricket", "wild_mouse", "mickey", "atc", "bobs27", "doppel", "checkout121", "checkout", "catch40", "jdc", "singles", "highscore", "shanghai", "killer", "halve_it", "golf", "baseball", "bermuda", "rtw", "gotcha", "nine_lives", "football", "scram"]
     variante:
       name: Variante
-      description: "Cricket: standard, cut_throat, no_score. Rund um die Uhr: single, double, triple."
+      description: "Cricket: standard, cut_throat, no_score. Wild Mouse: ohne_3b. Rund um die Uhr: single, double, triple. Round the World: auf, ab, zufall. Bermuda: ohne_halbieren. Gotcha: straight, double, master (Finish)."
       example: cut_throat
       selector:
         text:
     zahlen:
       name: Cricket-Zahlen
-      description: classic (15–20, Bull), tactics (10–20, Bull), random (6 zufällige Zahlen, Bull)
+      description: classic (15–20, Bull), tactics (10–20, Bull), random (6 zufällige Zahlen, Bull), hidden (6 verdeckte Zahlen, Bull)
       selector:
         select:
-          options: ["classic", "tactics", "random"]
+          options: ["classic", "tactics", "random", "hidden"]
     runden:
       name: Runden
-      description: "Highscore und 121: Anzahl Runden. Shanghai: 7 oder 20. Golf: 9 oder 18 Löcher."
+      description: "Count-Up, 121 und Checkout-Training: Anzahl Runden. Shanghai: 7 oder 20. Golf: 9 oder 18 Löcher."
       selector:
         number:
           min: 0
           max: 30
     leben:
-      name: Leben (Killer)
+      name: Leben (Killer, Nine Lives)
       selector:
         number:
           min: 1
           max: 9
+    zielwert:
+      name: Ziel
+      description: "Gotcha: Zielpunkte (101–1001, Standard 301). Fußball: Tore zum Sieg (Standard 10)."
+      selector:
+        number:
+          min: 0
+          max: 1001
     spieler:
       name: Spieler
       description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler) und Bots als bot:55 (Average). Höchstens 8.

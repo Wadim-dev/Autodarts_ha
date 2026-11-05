@@ -160,6 +160,7 @@ TEXTE = {
         "game_on": "Game on!", "leg": "Game shot, and the leg, {n}!", "set": "Game shot, and the set, {n}!",
         "match": "Game shot, and the match, {n}!", "nine": "A nine-darter! {n}!", "tournament": "{n} wins the tournament!",
         "shanghai": "Shanghai, {n}!", "killer": "{n} is a killer!", "eliminated": "{n} is out!", "walk": "Ladies and gentlemen: {n}!",
+        "goal": "Goal, {n}!", "gotcha": "Gotcha! {v} goes back to zero!",
         "require": "you require", "0": "No score!",
         "p_require": "You require", "p_leg": "Game shot, and the leg!", "p_set": "Game shot, and the set!",
         "p_match": "Game shot, and the match!", "p_nine": "A nine-darter!", "p_tournament": "wins the tournament!",
@@ -170,6 +171,7 @@ TEXTE = {
         "game_on": "Game on!", "leg": "Game shot! Leg für {n}!", "set": "Game shot! Satz für {n}!",
         "match": "Game shot! Spiel für {n}!", "nine": "Ein Neun-Darter! {n}!", "tournament": "{n} gewinnt das Turnier!",
         "shanghai": "Shanghai, {n}!", "killer": "{n} ist Killer!", "eliminated": "{n} ist raus!", "walk": "Meine Damen und Herren: {n}!",
+        "goal": "Tor für {n}!", "gotcha": "Gotcha! {v} muss zurück auf null!",
         "require": "du brauchst", "0": "No score!",
         "p_require": "Du brauchst", "p_leg": "Game shot! Und das Leg!", "p_set": "Game shot! Und der Satz!",
         "p_match": "Game shot! Und das Spiel!", "p_nine": "Ein Neun-Darter!", "p_tournament": "gewinnt das Turnier!",
@@ -496,9 +498,9 @@ class Ansager:
                 n = e[k].get("player", name)
                 return schluessel, tx[schluessel].format(n=n), [schluessel, _slug(n)]
         if self.einst["besondere"]:
-            for k in ("shanghai", "killer", "eliminated"):
+            for k in ("shanghai", "killer", "eliminated", "gotcha", "goal"):
                 if k in e:
-                    return k, tx[k].format(n=e[k].get("player", name)), []
+                    return k, tx[k].format(n=e[k].get("player", name), v=e[k].get("victim", "")), []
         if "visit" not in e:
             return None
         teile: list[str] = []

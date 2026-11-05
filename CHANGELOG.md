@@ -3,6 +3,22 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.25.0
+
+- **29 games.** New in Cricket: **Tactics** and **Hidden** numbers (six random numbers that show up when someone hits them), **Wild Mouse** (plus any double, any treble and 3 in a bed) and **Mickey Mouse** (20–12, doubles, trebles, bull). New training: **Singles**, **Checkout Training** (random finishes, the same for everyone), **Catch 40** and the **JDC Challenge**. New party games: **Bermuda**, **Round the World**, **Gotcha**, **Nine Lives**, **Football** and **Scram**. Highscore is now called **Count-Up** (8 visits).
+- New-game screen: the games of a group are tiles with a short line, a badge shows games for a fixed number of players, and the start button tells you when the player count does not fit.
+- Every game has its own rule text, targets on the board, effects (gotcha, goal, role swap …), caller sentences, voice commands and bots.
+- A tie in Count-Up, Shanghai, Halve-It, Bermuda, Golf or Baseball goes to extra rounds (up to five).
+- Checkout ways in Gotcha, 121 and Checkout Training only show what is possible with the darts left in the visit.
+
+**Deutsch**
+
+- **29 Spiele.** Neu bei Cricket: **Tactics** und **verdeckte** Zahlen (sechs zufällige Zahlen, die erst beim Treffen aufgedeckt werden), **Wild Mouse** (dazu beliebiges Double, Triple und 3 in a Bed) und **Mickey Mouse** (20–12, Doubles, Triples, Bull). Neue Trainings: **Singles**, **Checkout-Training** (zufällige Finishes, für alle gleich), **Catch 40** und die **JDC Challenge**. Neue Partyspiele: **Bermuda**, **Round the World**, **Gotcha**, **Nine Lives**, **Fußball** und **Scram**. Highscore heißt jetzt **Count-Up** (8 Aufnahmen).
+- Neues-Spiel-Seite: Die Spiele einer Gruppe sind Kacheln mit einer kurzen Zeile, ein Abzeichen zeigt Spiele mit fester Spielerzahl, und der Start-Knopf sagt, wenn die Spielerzahl nicht passt.
+- Jedes Spiel hat eigenen Regeltext, Ziele auf der Scheibe, Effekte (Gotcha, Tor, Rollentausch …), Ansager-Sätze, Sprachbefehle und Bots.
+- Gleichstand bei Count-Up, Shanghai, Halve-It, Bermuda, Golf oder Baseball geht in Extra-Runden (bis zu fünf).
+- Checkout-Wege bei Gotcha, 121 und Checkout-Training zeigen nur, was mit den restlichen Darts der Aufnahme geht.
+
 ## 1.24.0
 
 - New card **DartNest Tile** (`custom:autodarts-tile-card`): the board as one compact row with the board scene behind it – status colour, live darts as dots, the running game or today's values. Tap opens a window with the overview card (live darts, power, play, settings, players), today's values (`today`) and any own cards (`cards`). Pull down, ✕ or the back button closes it. CSS animations only, paused when not visible.

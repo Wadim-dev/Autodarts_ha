@@ -846,7 +846,15 @@ class Spielleiter:
                 "gegen": pr.get("gegen", {}),
                 "abzeichen": auswertung.abzeichen(g, pr, beste),
             })
-        return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte")}
+        return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte"),
+                "strom": self.daten.get("strom") or {}}
+
+    async def strom_setzen(self, werte: dict[str, str]) -> None:
+        """Steckdose des Board-PCs für alle DartNest-Karten, optional mit Leistungsmesser,
+        eigenem Ein-/Ausschalten (z. B. Skript, das den PC erst herunterfährt) und PC-online-Sensor."""
+        self.daten["strom"] = {k: v for k, v in werte.items() if v}
+        self._speichern()
+        self._melden()
 
 
 async def _pause(sekunden: float) -> None:

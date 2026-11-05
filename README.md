@@ -53,24 +53,11 @@
 
 ## Play
 
-<table>
-  <tr>
-    <td width="62%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/game.png" alt="Game screen"></td>
-    <td width="38%" valign="top">
-      <b>The game screen</b> is made for a tablet next to the board: big scores, average, checkout ways and every dart where it landed.<br><br>
-      ✏️ Tap any visit to correct it – the score is recalculated.<br>
-      📷 Show the straightened camera image instead of the drawn board.<br>
-      🖐️ No cameras or board off? A keypad appears by itself.<br>
-      🔒 The screen stays awake during a game.
-    </td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/play.png" alt="Game screen on a tablet and the keypad on a phone" width="900"></p>
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-game.png" alt="Game screen with the live camera image" width="900"><br><sub>Real board: the straightened camera image right in the game screen.</sub></p>
+Big scores, average, checkout ways and every dart where it landed. ✏️ Tap any visit to correct it · 📷 show the straightened camera image instead of the drawn board · 🖐️ no cameras or board off? a keypad appears by itself · 🔒 the screen stays awake during a game.
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/games.png" alt="29 games in four groups" width="900"></p>
-
-**29 games in four groups.** Pick X01, Cricket, Training or Party, then tap a tile – the rules are right below it.
 
 | X01 | Cricket (8) | Training (8) | Party (12) |
 |---|---|---|---|
@@ -78,94 +65,42 @@
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/new-games.png" alt="Gotcha, Wild Mouse, Football and Scram" width="900"></p>
 
-Every game knows its own rules: whose turn it is, what to aim for, who is ahead. A tie in a points game such as Count-Up or Golf goes to extra rounds. No cameras or board off? A keypad appears by itself.
+Every game knows its own rules: whose turn it is, what to aim for, who is ahead. A tie in a points game such as Count-Up or Golf goes to extra rounds. Bots from beginner to pro make every evening a match – even alone.
 
 ## Celebrate
 
-<table>
-  <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-180.png" alt="180 effect"></td>
-    <td width="50%" valign="top">
-      <b>Stadium moments.</b> Spotlights and confetti on a 180, cracks on a bust, fireworks and a trophy for the match winner, a rainbow for the nine-darter.<br><br>
-      <b>Caller.</b> Scores in every game mode, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both. Make a <b>championship pack</b> with a stage announcer voice in one tap, or upload your own sounds.<br><br>
-      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects plus WLED effects and presets, set up by tap. Afterwards everything goes back to how it was.
-    </td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real.png" alt="Live camera image in the game and the 180 effect on a real board" width="900"></p>
 
-<table>
-  <tr>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/light-editor.png" alt="New light effect"></td>
-  </tr>
-  <tr>
-    <td><b>Caller</b> – speaker, voice and sound pack in three steps.</td>
-    <td><b>Light effects</b> – one rule per moment, test with ▶.</td>
-    <td><b>New effect</b> – pick the moment, the effect and your lamps. No YAML.</td>
-  </tr>
-</table>
+**Stadium moments.** Spotlights and confetti on a 180, cracks on a bust, fireworks and a trophy for the match winner, a rainbow for the nine-darter.
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/celebrate.png" alt="Caller, light effects and the light effect editor" width="900"></p>
+
+**Caller.** Scores in every game, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both. Make a **championship pack** with a stage announcer voice in one tap, or upload your own sounds.
+**Lights.** Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects plus WLED effects and presets. Afterwards everything goes back to how it was. No YAML.
 
 ## Get better
 
-<table>
-  <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/players.png" alt="Players"></td>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/aim-map.png" alt="Aim map"></td>
-  </tr>
-  <tr>
-    <td><b>Players</b> – average, first 9, checkout rate, rating, trend, badges, head to head and a ranking.</td>
-    <td><b>Aim map</b> – where <i>you</i> score most with your own spread. Often it is not the T20.</td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/stats.png" alt="Players with statistics and the aim map" width="900"></p>
 
-Bots from beginner to pro (average adjustable) make every evening a match – even alone.
+Average, first 9, checkout rate, rating, trend, badges, head to head and a ranking. The **aim map** shows where *you* score most with your own spread – often it is not the T20.
 
 ## Tournaments
 
-<table>
-  <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tournament.png" alt="Knockout"></td>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/league.png" alt="League"></td>
-  </tr>
-  <tr>
-    <td><b>Knockout</b> for 3–32 players with bracket, byes and a champion celebration.</td>
-    <td><b>League</b> for 3–10 players: everyone against everyone, with table.</td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tournaments.png" alt="Starting a tournament, knockout bracket and league table" width="900"></p>
+
+**Knockout** for 3–32 players with bracket, byes and a champion celebration, or a **league** for 3–10 players with table. The next match starts with one tap.
 
 ## Board Manager inside Home Assistant
 
-<table>
-  <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager"></td>
-    <td width="50%" valign="top">
-      All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page.<br><br>
-      <b>Smart plug friendly:</b> switch the board PC off whenever you like. DartNest shows <i>Off</i> and continues by itself when the board is back – with an optional power button and start-up animation.
-    </td>
-  </tr>
-</table>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
 
-<table>
-  <tr>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-off.png" alt="Board off"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-starting.png" alt="Board starting"></td>
-    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-ready.png" alt="Board ready"></td>
-  </tr>
-  <tr>
-    <td><b>Off</b> – one tap on <i>Switch on</i>.</td>
-    <td><b>Starting</b> – the board lights up while the PC boots.</td>
-    <td><b>Ready</b> – throw. Darts, visit and today's average at a glance.</td>
-  </tr>
-</table>
-
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/camera-settings.png" alt="Camera settings" width="700"><br><sub>Camera resolution, frame rate and standby by tap.</sub></p>
+All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** switch the board PC off whenever you like. DartNest shows *Off* and carries on by itself when the board is back.
 
 <sub>Screenshots with the German interface come from a real board at home.</sub>
 
 ## Everywhere
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/panel.png" alt="DartNest in the sidebar" width="70%">&nbsp;<img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/panel-phone.png" alt="DartNest on a phone" width="22%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/everywhere.png" alt="Sidebar on PC and phone, tile and tile window" width="900"></p>
 
 The same screens work on PC, tablet and phone, in English and German. Want them on your own dashboard? **Edit dashboard → Add card → search "DartNest"** – no resources to add.
 
@@ -293,7 +228,6 @@ While the board is offline the game card shows a **keypad** instead of the board
 
 Your choice of Keys/Total/Board is remembered per device. **Tap the board** under the camera image switches to tapping while the board is online. On a keyboard type `T20`, `D16`, `S5`, `25`, `50` (or `B`) or `0` (or `M`) and press Enter; Enter alone finishes the visit, Backspace undoes the last dart.
 
-![Keypad](docs/images/keypad.png)
 
 #### Voice (Assist)
 
@@ -314,7 +248,6 @@ The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3
 
 **League** (3–10 players): everyone plays everyone once. The card shows the table (played, wins, points, legs) and all matches; a win gives 2 points, then the leg difference counts.
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/league-lobby.png" alt="Choosing knockout or league" width="420"></p>
 
 #### Caller
 
@@ -368,7 +301,7 @@ Effects run in Home Assistant itself, also when no dashboard is open. Afterwards
 - **WLED preset** plays a preset you saved in WLED (e.g. a "Champion" animation for a match win). Only WLED lights are offered.
 - Add WLED as usual under **Settings → Devices & services → WLED**; the strip shows up in the editor by itself. Afterwards the light, its effect, speed and intensity go back to how they were.
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights-wled.png" alt="WLED preset" width="420"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/wled.png" alt="WLED preset" width="700"></p>
 
 </details>
 
@@ -425,7 +358,7 @@ cards:                                  # any cards below, e.g. a statistics gra
     entities: [sensor.darts_average_today]
 ```
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tile.png" alt="Tile" width="49%"> <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tile-window.png" alt="Tile window" width="49%"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/everywhere.png" alt="Tile and tile window" width="700"></p>
 
 ```yaml
 type: custom:autodarts-game-card

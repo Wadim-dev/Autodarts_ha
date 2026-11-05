@@ -19,6 +19,7 @@
 <p align="center">
   <a href="https://github.com/Wadim-dev/DartNest_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/DartNest_ha?style=flat-square&color=ff7a50" alt="Release"></a>
   <a href="https://github.com/Wadim-dev/DartNest_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/DartNest_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
+  <a href="custom_components/autodarts/quality_scale.yaml"><img src="https://img.shields.io/badge/quality%20scale-platinum-e5e4e2?style=flat-square" alt="Quality scale: Platinum"></a>
   <img src="https://img.shields.io/badge/100%25-local-00a37a?style=flat-square" alt="100 % local">
   <img src="https://img.shields.io/badge/languages-EN%20%7C%20DE-blue?style=flat-square" alt="English and German">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/DartNest_ha?style=flat-square" alt="License"></a>
@@ -65,6 +66,8 @@
   </tr>
 </table>
 
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-game.png" alt="Game screen with the live camera image" width="900"><br><sub>Real board: the straightened camera image right in the game screen.</sub></p>
+
 <table>
   <tr>
     <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lobby.png" alt="New game"></td>
@@ -87,20 +90,22 @@
     <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-180.png" alt="180 effect"></td>
     <td width="50%" valign="top">
       <b>Stadium moments.</b> Spotlights and confetti on a 180, cracks on a bust, fireworks and a trophy for the match winner, a rainbow for the nine-darter.<br><br>
-      <b>Caller.</b> Scores, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both.<br><br>
-      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects, WLED included, set up by tap. Afterwards everything goes back to how it was.
+      <b>Caller.</b> Scores in every game mode, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both. Make a <b>championship pack</b> with a stage announcer voice in one tap, or upload your own sounds.<br><br>
+      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects plus WLED effects and presets, set up by tap. Afterwards everything goes back to how it was.
     </td>
   </tr>
 </table>
 
 <table>
   <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/light-editor.png" alt="New light effect"></td>
   </tr>
   <tr>
     <td><b>Caller</b> – speaker, voice and sound pack in three steps.</td>
     <td><b>Light effects</b> – one rule per moment, test with ▶.</td>
+    <td><b>New effect</b> – pick the moment, the effect and your lamps. No YAML.</td>
   </tr>
 </table>
 
@@ -143,6 +148,23 @@ Bots from beginner to pro (average adjustable) make every evening a match – ev
     </td>
   </tr>
 </table>
+
+<table>
+  <tr>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-off.png" alt="Board off"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-starting.png" alt="Board starting"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-ready.png" alt="Board ready"></td>
+  </tr>
+  <tr>
+    <td><b>Off</b> – one tap on <i>Switch on</i>.</td>
+    <td><b>Starting</b> – the board lights up while the PC boots.</td>
+    <td><b>Ready</b> – throw. Darts, visit and today's average at a glance.</td>
+  </tr>
+</table>
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/camera-settings.png" alt="Camera settings" width="700"><br><sub>Camera resolution, frame rate and standby by tap.</sub></p>
+
+<sub>Screenshots with the German interface come from a real board at home.</sub>
 
 ## Everywhere
 
@@ -652,7 +674,7 @@ logger:
 
 ## Contributing
 
-Private project, no outside contributions. The code follows the rules of the Home Assistant quality scale (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
+Private project, no outside contributions. The code meets all rules of the Home Assistant quality scale up to **Platinum** (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
 
 ## Legal notice
 
@@ -679,7 +701,7 @@ Private project, no outside contributions. The code follows the rules of the Hom
 **Was drin ist**
 
 - **Spielen:** X01, Cricket, 5 Trainings- und 5 Partyspiele für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
-- **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides; 18 Lichteffekte (auch WLED) per Klick.
+- **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein.

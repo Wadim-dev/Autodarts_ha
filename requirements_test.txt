@@ -3,3 +3,5 @@ pytest-cov
 PyTurboJPEG
 hassil==3.5.0  # same as homeassistant/components/conversation/manifest.json of the tested HA
 home-assistant-intents==2026.1.28
+mutagen  # imported by homeassistant.components.tts (caller tests)
+ha-ffmpeg

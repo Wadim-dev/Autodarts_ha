@@ -418,3 +418,44 @@ def test_pruefen_wie_gemessen(tmp_path) -> None:
     for k, rest in {"26": 1.6, "140": 1.6, "game_on": 1.4, "require": 0.9, "leg": 2.1}.items():
         with wave.open(str(tmp_path / f"{k}.wav"), "rb") as w:
             assert w.getnframes() / w.getframerate() == pytest.approx(rest + 0.06, abs=0.04), k
+
+
+async def test_pack_macht_von_selbst_weiter(hass: HomeAssistant, geladen, lautsprecher, monkeypatch, hass_ws_client) -> None:
+    """At the daily limit a pack waits and continues by itself; stop ends that; a sample uses the speaker."""
+    from homeassistant.helpers import entity_registry as er
+
+    monkeypatch.setattr(ansager_modul, "PAUSE", 0)
+    er.async_get(hass).async_get_or_create("tts", ansager_modul.GOOGLE_AI, "x", suggested_object_id="gemini")
+    hass.states.async_set("tts.gemini", "unknown")
+    a = geladen.runtime_data.ansager
+    await _setzen(hass, stimme="tts.gemini")
+    gewartet = []
+    monkeypatch.setattr(a, "_wecken", lambda s: gewartet.append(s))
+    with (patch("homeassistant.components.tts.generate_media_source_id", return_value="tts:x"),
+          patch("homeassistant.components.tts.async_get_media_source_audio", side_effect=ValueError("429 PerDay"))):
+        await hass.services.async_call(DOMAIN, "ansager_pack_erzeugen", {"sprecher": "orus", "name": "Meisterschaft Orus"}, blocking=True)
+        await a._erzeuger
+        await hass.async_block_till_done()
+    assert gewartet == [ansager_modul.NOCHMAL] and a._auftrag == {"pack": "Meisterschaft Orus", "sprecher": "orus"}
+    ws = await hass_ws_client(hass)
+    await ws.send_json({"id": 1, "type": "autodarts/ansager"})
+    antwort = (await ws.receive_json())["result"]
+    assert antwort["auftrag"]["pack"] == "Meisterschaft Orus"
+    await hass.services.async_call(DOMAIN, "ansager_pack_anhalten", {}, blocking=True)
+    assert a._auftrag == {} and a.erzeugung["fehler"] == "stopped"
+    await hass.services.async_call(DOMAIN, "ansager_testen", {"sprecher": "puck"}, blocking=True)
+    assert lautsprecher["tts"][-1].data["options"] == {"voice": "puck"} and lautsprecher["tts"][-1].data["message"] == "One hundred and eighty!"
+
+
+async def test_wecker_setzt_fort(hass: HomeAssistant, geladen, lautsprecher) -> None:
+    a = geladen.runtime_data.ansager
+    a._auftrag = {"pack": "P", "sprecher": None}
+    with patch.object(a, "pack_erzeugen") as erz:
+        a._wecken(0)
+        await hass.async_block_till_done()
+        from homeassistant.util import dt as dt_util
+        from pytest_homeassistant_custom_component.common import async_fire_time_changed
+        async_fire_time_changed(hass, dt_util.utcnow())
+        await hass.async_block_till_done()
+    assert erz.call_args[0][0] == "P"
+    await a.beenden()

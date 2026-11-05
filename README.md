@@ -136,7 +136,7 @@ The same cards can also be put on your own dashboards: **Edit dashboard → Add 
     <td><img src="https://raw.githubusercontent.com/Wadim-dev/Autodarts_ha/main/docs/images/league.png" alt="League"></td>
   </tr>
   <tr>
-    <td><b>Caller</b> – speakers, voice, sound pack, what to announce and a walk-on song per player.</td>
+    <td><b>Caller</b> – three steps: where it plays, which voice or pack, what it announces; sample button on top, packs with a menu and a safe delete.</td>
     <td><b>League</b> – everyone against everyone, table with points and leg difference.</td>
   </tr>
 </table>
@@ -335,17 +335,14 @@ The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3
 
 ### Caller
 
-Open **Autodarts → Caller** and choose where it plays – freely combined:
+Open **Autodarts → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
 
-- **On speakers**: switch it on and tick one or more speakers. It announces in Home Assistant itself, also with no dashboard open.
-- **On this device**: plays the same announcements (voice, sound pack, walk-on songs) and the game sounds on the phone or tablet you are holding, while a game card is open. The speaker button at the top of the game card switches the same thing. Set per device.
+1. **Where should it play?** – **On this device** plays the announcements, walk-on songs and game sounds on the phone or tablet you are holding, while a game card is open (set per device; the speaker button of the game card switches the same). **On speakers** announces in Home Assistant itself, also with no dashboard open – tick one or more speakers.
+2. **Which voice?** – pick one row: the normal voice (any text-to-speech of Home Assistant, e.g. Piper or Google Translate) or a sound pack. Each pack row shows how many sounds it has and what is missing. The ⋮ button of a pack opens its menu: use, make missing sounds, stop, delete. Deleting always asks once more, shows how many sounds go and cannot be done by a single tap.
+3. **What should it announce?** – **scores** of every visit in every game mode, **"you require …"** (X01), **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
 
-What it announces:
-
-- **Scores** of every visit in every game mode, **"you require …"** (X01) when the next player can check out, **game shot** for leg, set and match, **specials** (nine-darter, Shanghai, Killer, tournament win) and **"Game on"**.
-- **Voice**: any text-to-speech of Home Assistant (e.g. Piper or Google Translate, Settings → Voice assistants).
-- **Sound packs**: Media → My media → `autodarts` → `caller` → new folder, upload files named `180.mp3`, `140.mp3`, `bust.mp3`, `leg.mp3`, `set.mp3`, `match.mp3`, `game_on.mp3`, `nine.mp3` … The pack appears in the card; whatever it does not have is spoken.
-- **Championship pack**: tap **Make championship pack** and the chosen voice speaks every score, "you require", game shot, leg, set, match and your player names once and saves them as a pack. With Google AI each speaker (Fenrir, Orus …) gets its own pack "Meisterschaft <speaker>", and tapping a speaker that has one switches to it at once. A visit like "140 · Ben, you require 100" is then joined from these sounds and plays at once, without waiting for the voice. It runs in the background and can be continued; tap again after adding players. A free Google AI key allows 100 sounds a day, so a full pack (about 180 sounds) takes two days – tap again the next day. Sentences that are not in the pack are spoken live, with Google AI by the same speaker. The text is sent to the voice as it is; packs from 1.19 where the voice also read out a style direction are repaired with `autodarts.ansager_pack_pruefen`.
+- **New championship pack** (with a Google AI voice): opens a window that explains what happens, lists the speakers (Fenrir, Orus, Puck …) with a short description and a **Sample** button each, and marks the ones that already have a pack. **Make pack** speaks every score, "you require", game shot, leg, set, match and your player names once and saves them as the pack "Meisterschaft <speaker>". A visit like "140 · Ben, you require 100" is then joined from these sounds and plays at once. A free Google AI key allows 100 sounds a day, so a full pack (about 180 sounds) takes two days: at the daily limit the pack waits and **continues by itself** a few hours later, also after a restart – nothing to tap. **Stop** in the pack menu ends that. New players: **Make missing sounds** in the pack menu. Sentences that are not in the pack are spoken live by the same speaker.
+- **Own sound packs**: Media → My media → `autodarts` → `caller` → new folder, upload files named `180.mp3`, `140.mp3`, `bust.mp3`, `leg.mp3`, `set.mp3`, `match.mp3`, `game_on.mp3`, `nine.mp3` … The pack appears in step 2; whatever it does not have is spoken. Packs from 1.19 where the voice also read out a style direction are repaired with `autodarts.ansager_pack_pruefen`.
 - **Walk-on songs**: upload music to Media → My media → `autodarts` → `walkon` and pick a song per player in the card. At the start of a game each player is introduced with their song (5–60 seconds), then "Game on".
 
 Alexa/Echo speakers that support announcements get them as an announcement, so music keeps playing.
@@ -406,7 +403,8 @@ Ready-made automations. Click the button, confirm in Home Assistant, then fill i
 | `autodarts.turnier_starten` | Start a tournament: `turnier_modus` `ko` (3–32 `spieler`) or `liga` (3–10); same fields as `spiel_starten`, used for every match. Starts the first match. |
 | `autodarts.aufnahme_eintragen` | Enter the score of a whole X01 visit (`punkte` 0–180, optional `spieler` = name of the player whose turn it is). |
 | `autodarts.ansager_setzen` | Save the caller settings (`einstellungen`). The caller card does this for you. |
-| `autodarts.ansager_testen` | Speak a test sentence (`text`); without text an example visit "140 · <player>, you require 92" from the chosen pack. |
+| `autodarts.ansager_testen` | Speak a test sentence (`text`); without text an example visit "140 · <player>, you require 92" from the chosen pack. `sprecher` plays a sample of a Google AI speaker. |
+| `autodarts.ansager_pack_anhalten` | Stop making a pack; finished sounds stay and it does not continue by itself. |
 | `autodarts.ansager_pack_pruefen` | Find a spoken direction at the start of the sounds of a pack (`name`) and cut it off; `reparieren: false` only reports. Originals stay in `_original`. |
 | `autodarts.ansager_pack_loeschen` | Delete a sound pack (`name`). The caller card does this for you. |
 | `autodarts.ansager_pack_erzeugen` | Make a sound pack with the chosen voice (`name`, `sprecher` for Google AI, `nur` for single sounds). The caller card does this for you. |

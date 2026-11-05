@@ -33,6 +33,7 @@ import wave
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.storage import Store
 import voluptuous as vol
 
@@ -45,6 +46,7 @@ MEDIA_ANNOUNCE = 1048576  # MediaPlayerEntityFeature.MEDIA_ANNOUNCE
 MIX = "_mix"  # joined announcements of a pack (cache)
 MIX_MAX = 300
 PAUSE = 6.5  # seconds between two sounds: Google AI allows 10 a minute
+NOCHMAL = 3 * 3600  # after the daily limit of the voice: try again this many seconds later
 UNMOEGLICH = {163, 166, 169, 172, 173, 175, 176, 178, 179}  # scores three darts cannot make
 GOOGLE_AI = "google_generative_ai_conversation"  # voices with selectable speakers (Fenrir …)
 ORIGINAL = "_original"  # copies of pack files before a repair (1.20)
@@ -296,10 +298,16 @@ def _leer_weg(ordner: Path) -> None:
 class Ansager:
     """Turns game events into announcements on the chosen speakers."""
 
-    def __init__(self, hass: HomeAssistant, stand: Callable[[], dict[str, Any] | None]) -> None:
+    def __init__(self, hass: HomeAssistant, stand: Callable[[], dict[str, Any] | None],
+                 namen: Callable[[], list[str]] | None = None) -> None:
         self.hass = hass
         self._stand = stand
+        self._namen = namen or list
         self._store: Store[dict[str, Any]] = Store(hass, 1, "autodarts.ansager")
+        # a pack that is still being made (survives a restart; continues by itself after the daily limit)
+        self._auftrag_store: Store[dict[str, Any]] = Store(hass, 1, "autodarts.ansager_auftrag")
+        self._auftrag: dict[str, Any] = {}
+        self._wecker: Callable[[], None] | None = None
         self.einst: dict[str, Any] = EINSTELLUNGEN({})
         self._puffer: list[tuple[str, dict[str, Any]]] = []
         self._geplant = False
@@ -332,6 +340,9 @@ class Ansager:
         except vol.Invalid as err:
             _LOGGER.warning("Caller settings ignored: %s", err)
         await self._pack_lesen()
+        self._auftrag = (await self._auftrag_store.async_load()) or {}
+        if self._auftrag.get("pack"):
+            self._wecken(120)  # continue a pack that was not finished before the restart
 
     async def setzen(self, einst: dict[str, Any]) -> None:
         self.einst = EINSTELLUNGEN(dict(einst))
@@ -341,13 +352,20 @@ class Ansager:
     async def uebersicht(self) -> dict[str, Any]:
         daten = await self.hass.async_add_executor_job(_uebersicht, self._basis)
         stimmen = sorted(self.hass.states.async_entity_ids("tts"))
-        return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, "pruefung": self.pruefung, **daten}
+        soll = set(self.pack_texte(self._namen()))
+        info = {k: {"toene": len(v), "fehlen": len(soll - set(v)) if k.startswith("Meisterschaft") else None}
+                for k, v in daten["packs"].items()}
+        return {"einstellungen": self.einst, "stimmen": stimmen, "erzeugung": self.erzeugung, "pruefung": self.pruefung,
+                "info": info, "auftrag": self._auftrag, **daten}
 
     async def _pack_lesen(self) -> None:
         pack = self.einst["pack"]
         self._pack = await self.hass.async_add_executor_job(_dateien, self._basis.joinpath(*ORDNER, pack)) if pack else {}
 
     async def beenden(self) -> None:
+        if self._wecker:
+            self._wecker()
+            self._wecker = None
         alle = [t for t in [*self._aufgaben, self._einlauf, self._erzeuger] if t]
         for t in alle:
             t.cancel()
@@ -456,8 +474,14 @@ class Ansager:
         self._aufgaben.add(t)
         t.add_done_callback(self._aufgaben.discard)
 
-    async def testen(self, text: str | None = None) -> None:
-        """A text, or an example visit: "140 · Wadim, you require 92" (joined from the pack if it has the sounds)."""
+    async def testen(self, text: str | None = None, sprecher: str | None = None) -> None:
+        """A text, or an example visit: "140 · Wadim, you require 92" (joined from the pack if it has the sounds).
+
+        With a speaker (Google AI) the voice says "180" live with that speaker: a sample before making a pack.
+        """
+        if sprecher:
+            await self._sagen("", text or self._t()["180"], sprecher=sprecher)
+            return
         if text:
             await self._sagen("", text)
             return
@@ -504,9 +528,11 @@ class Ansager:
                 return {"voice": m.group(1).lower()}
         return None
 
-    async def _sagen(self, schluessel: str, text: str, keys: list[str] | None = None) -> None:
+    async def _sagen(self, schluessel: str, text: str, keys: list[str] | None = None, sprecher: str | None = None) -> None:
         """Play the pack files (joined), the pack file of the key, or speak the text."""
         try:
+            if sprecher:
+                keys, schluessel = None, ""
             if keys and len(keys) > 1 and all(k.lower() in self._pack for k in keys):
                 ordner = self._basis.joinpath(*ORDNER, self.einst["pack"])
                 datei = await self.hass.async_add_executor_job(_mischen, ordner, [self._pack[k.lower()] for k in keys])
@@ -522,7 +548,7 @@ class Ansager:
             if not stimme:
                 _LOGGER.warning("Caller: no voice (TTS) available")
                 return
-            optionen = self._optionen(stimme)
+            optionen = {"voice": sprecher} if sprecher and self._google(stimme) else self._optionen(stimme)
             if self._boxen:
                 await self._dienst("tts", "speak", {"entity_id": stimme, "media_player_entity_id": self.einst["lautsprecher"],
                                                     "message": text, "cache": True, **({"options": optionen} if optionen else {})})
@@ -583,6 +609,8 @@ class Ansager:
             texte = {k: v for k, v in texte.items() if k in nur}
         self.erzeugung = {"pack": name, "fertig": 0, "gesamt": len(texte), "laeuft": True, "fehler": None}
         self._erzeuger = self.hass.async_create_background_task(self._erzeugen(name, texte, sprecher, neu), "autodarts caller pack")
+        if not nur:  # a whole pack: remember it, so it continues after the daily limit or a restart
+            self.hass.async_create_task(self._auftrag_setzen({"pack": name, "sprecher": sprecher}))
 
     async def _erzeugen(self, name: str, texte: dict[str, str], sprecher: str | None, neu: bool = False) -> None:
         from homeassistant.components.tts import async_get_media_source_audio, generate_media_source_id
@@ -616,7 +644,8 @@ class Ansager:
                     except Exception as err:  # rate limit of the voice service: wait and try again
                         fehler += 1
                         if "per_day" in str(err) or "PerDay" in str(err):
-                            st["fehler"] = "daily limit"  # the voice allows only so many a day: continue tomorrow
+                            st["fehler"] = "daily limit"  # the voice allows only so many a day: continues by itself later
+                            self._wecken(NOCHMAL)
                             return
                         if fehler > 6:
                             st["fehler"] = str(err)[:200]
@@ -627,6 +656,7 @@ class Ansager:
                 st["fertig"] += 1
                 if google:
                     await asyncio.sleep(PAUSE)
+            await self._auftrag_setzen({})
             if name != self.einst["pack"]:
                 await self.setzen({**self.einst, "pack": name})  # the pack just made is used right away
             else:
@@ -652,8 +682,40 @@ class Ansager:
             await self._pack_lesen()
         return bericht
 
+    async def pack_anhalten(self) -> None:
+        """Stop making a pack (what is made stays); it does not continue by itself any more."""
+        if self._erzeuger and not self._erzeuger.done():
+            self._erzeuger.cancel()
+            await asyncio.gather(self._erzeuger, return_exceptions=True)
+        await self._auftrag_setzen({})
+        if self.erzeugung:
+            self.erzeugung = {**self.erzeugung, "laeuft": False, "fehler": "stopped"}
+
+    async def _auftrag_setzen(self, auftrag: dict[str, Any]) -> None:
+        if not auftrag and self._wecker:
+            self._wecker()
+            self._wecker = None
+        if auftrag != self._auftrag:
+            self._auftrag = auftrag
+            await self._auftrag_store.async_save(auftrag)
+
+    @callback
+    def _wecken(self, sekunden: float) -> None:
+        if self._wecker:
+            self._wecker()
+
+        @callback
+        def weiter(_jetzt: Any) -> None:
+            self._wecker = None
+            if (a := self._auftrag).get("pack") and not (self._erzeuger and not self._erzeuger.done()):
+                self.pack_erzeugen(a["pack"], self._namen(), a.get("sprecher"), None)
+
+        self._wecker = async_call_later(self.hass, sekunden, weiter)
+
     async def pack_loeschen(self, name: str) -> None:
         """Delete a pack folder (only below autodarts/caller)."""
+        if self._auftrag.get("pack") == name:
+            await self.pack_anhalten()
         if self._erzeuger and not self._erzeuger.done() and self.erzeugung.get("pack") == name:
             self._erzeuger.cancel()
         ordner = self._basis.joinpath(*ORDNER, name)

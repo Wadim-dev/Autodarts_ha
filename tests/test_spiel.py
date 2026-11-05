@@ -229,3 +229,55 @@ async def test_strom_fuer_alle_karten(hass: HomeAssistant, geladen) -> None:
     assert a["strom"] == {"schalter": "switch.darts", "leistung": "sensor.darts_watt", "ausschalten": "script.pc_aus"}
     await _dienst(hass, "strom_setzen")
     assert hass.states.get(SPIELER).attributes["strom"] == {}
+
+
+async def test_teams_werfen_abwechselnd(hass: HomeAssistant, geladen) -> None:
+    anna, ben, carl = await _spieler(hass, "Anna", "Ben", "Carl")
+    await _dienst(hass, "spiel_starten", spieler=[f"team:{anna}+{ben}", carl], startwert=501)
+    sp = _attr(hass, "spieler")
+    assert sp[0]["name"] == "Anna & Ben" and sp[0]["werfer"] == "Anna"
+    assert "werfer" not in sp[1]
+    for _ in range(2):  # team, Carl
+        await _dienst(hass, "wurf_aendern", dart=0, feld="T20")
+        await _dienst(hass, "weiter")
+    sp = _attr(hass, "spieler")
+    assert sp[0]["werfer"] == "Ben" and sp[0]["rest"] == 441
+    assert [v.get("w") for v in _attr(hass, "verlauf")] == ["Anna", None]
+    await _dienst(hass, "wurf_aendern", dart=0, feld="T20")
+    assert _attr(hass, "spieler")[0]["werfer"] == "Ben"  # open visit stays with Ben
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "spiel_starten", spieler=[f"team:{anna}+{ben}", anna])
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "spiel_starten", spieler=[f"team:{anna}", carl])
+
+
+async def test_team_mit_bot(hass: HomeAssistant, geladen) -> None:
+    (anna,) = await _spieler(hass, "Anna")
+    with patch("custom_components.autodarts.spiel._pause"):
+        await _dienst(hass, "spiel_starten", spieler=[f"team:bot:60+{anna}", "bot:40"], startwert=501)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        # bot of the team and the other bot throw, then it is Anna's turn in the team
+        assert _attr(hass, "am_zug") == 0
+        assert _attr(hass, "spieler")[0]["werfer"] == "Anna"
+        assert _attr(hass, "verlauf")[0]["w"] == "Bot 60"
+
+
+async def test_handicap_dienst(hass: HomeAssistant, geladen) -> None:
+    anna, ben = await _spieler(hass, "Anna", "Ben")
+    await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=501, handicap={ben: 301}, bull_5050=True, max_runden=10)
+    assert [s["rest"] for s in _attr(hass, "spieler")] == [501, 301]
+    letzte = hass.states.get(SPIELER).attributes["letzte"]
+    assert letzte["handicap"] == {ben: 301} and letzte["bull_5050"] and letzte["max_runden"] == 10
+    with pytest.raises(ServiceValidationError):
+        await _dienst(hass, "spiel_starten", spieler=[anna, ben], handicap={ben: 333})
+
+
+async def test_turnier_mit_teams_und_handicap(hass: HomeAssistant, geladen) -> None:
+    ids = await _spieler(hass, "A", "B", "C", "D", "E", "F")
+    teams = [f"team:{ids[i]}+{ids[i + 1]}" for i in (0, 2, 4)]
+    await _dienst(hass, "turnier_starten", spieler=teams, turnier_modus="doppel_ko", startwert=501, handicap={teams[2]: 301})
+    tu = _attr(hass, "turnier")
+    assert tu["modus"] == "doppel_ko" and tu["phase"] == "oben"
+    namen = {s["name"]: s for s in _attr(hass, "spieler")}
+    assert set(namen) <= {"A & B", "C & D", "E & F"}
+    assert all(s["rest"] == (301 if n == "E & F" else 501) for n, s in namen.items())

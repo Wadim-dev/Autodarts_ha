@@ -34,11 +34,14 @@ START = {
     vol.Optional("legs"): vol.Coerce(int),
     vol.Optional("sets"): vol.Coerce(int),
     vol.Optional("bull_off"): cv.boolean,
+    vol.Optional("bull_5050"): cv.boolean,
+    vol.Optional("max_runden"): vol.All(vol.Coerce(int), vol.Range(0, 50)),
+    vol.Optional("handicap"): {cv.string: vol.Coerce(int)},
 }
 
 DIENSTE = {
     "spiel_starten": vol.Schema(START),
-    "turnier_starten": vol.Schema({**START, vol.Optional("turnier_modus", default="ko"): vol.In(["ko", "liga"])}),
+    "turnier_starten": vol.Schema({**START, vol.Optional("turnier_modus", default="ko"): vol.In(["ko", "doppel_ko", "gruppen", "liga"])}),
     "spiel_abbrechen": vol.Schema({}),
     "turnier_weiter": vol.Schema({}),
     "turnier_abbrechen": vol.Schema({}),

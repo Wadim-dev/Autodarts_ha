@@ -164,3 +164,51 @@ def test_bull_abstand() -> None:
     assert x01.bull_abstand({"x": 0.3, "y": 0.4}) == pytest.approx(0.5)
     assert x01.bull_abstand({"f": "D25"}) == 0.02
     assert x01.bull_abstand({"f": "T20"}) == 9.0
+
+
+def test_handicap_eigener_startwert() -> None:
+    sp = _spiel([["T20"], ["T20"]], start=501)
+    sp["spieler"][1]["start"] = 301
+    st = x01.auswerten(sp)
+    assert [s["rest"] for s in st["spieler"]] == [441, 241]
+    # next leg starts again at the own start value
+    sp = _spiel([["T20", "T20", "D20"]], start=301, legs=2, aus="double")
+    sp["spieler"][0]["start"] = 160
+    st = x01.auswerten(sp)
+    assert st["spieler"][0]["legs"] == 1
+    assert [s["rest"] for s in st["spieler"]] == [160, 301]
+
+
+def test_bull_5050() -> None:
+    sp = _spiel([["S25", "S25", "S25"]], start=501)
+    assert x01.auswerten(sp)["spieler"][0]["rest"] == 426
+    sp["einstellungen"]["bull_5050"] = True
+    assert x01.auswerten(sp)["spieler"][0]["rest"] == 351
+    # outer bull finishes 50 with double out
+    sp = _spiel([["S25"]], start=101, aus="double")
+    sp["einstellungen"]["bull_5050"] = True
+    sp["spieler"][0]["start"] = 50
+    st = x01.auswerten(sp)
+    assert st["gewinner"] == 0 and st["spieler"][0]["treffer"] == 1
+
+
+def test_rundenlimit() -> None:
+    # 2 rounds: P0 scores 100 + 60, P1 scores 60 + 140 → P1 has the lower rest and wins the leg
+    sp = _spiel([["T20", "S20", "S20"], ["T20"], ["T20"], ["T20", "T20", "S20"]], start=501, legs=2)
+    sp["einstellungen"]["max_runden"] = 2
+    st = x01.auswerten(sp)
+    assert st["runden"] == 2
+    assert [s["legs"] for s in st["spieler"]] == [0, 1]
+    assert st["spieler"][1]["treffer"] == 0  # no checkout
+    assert st["am_zug"] == 1  # P1 starts the next leg
+    assert [s["rest"] for s in st["spieler"]] == [501, 501]
+    # tie: the one who threw first in the leg wins
+    sp = _spiel([["T20"], ["T20"]], start=501)
+    sp["einstellungen"]["max_runden"] = 1
+    st = x01.auswerten(sp)
+    assert st["gewinner"] == 0
+    # leg not over until everyone has thrown the last round
+    sp = _spiel([["T20"]], start=501)
+    sp["einstellungen"]["max_runden"] = 1
+    st = x01.auswerten(sp)
+    assert st["gewinner"] is None and st["spieler"][0]["runde"] == 1 and st["spieler"][1]["runde"] == 0

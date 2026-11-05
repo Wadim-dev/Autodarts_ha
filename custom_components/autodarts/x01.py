@@ -130,15 +130,18 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
     e = spiel["einstellungen"]
     start, ein, aus = int(e["startwert"]), e["einwurf"], e["auswurf"]
     legs_ziel, sets_ziel = int(e["legs"]), int(e.get("sets") or 0)
+    bull_5050 = bool(e.get("bull_5050"))
+    max_runden = int(e.get("max_runden") or 0)
     spieler = spiel["spieler"]
     n = len(spieler)
+    starts = [int(s.get("start") or start) for s in spieler]  # handicap: own start value per player
     reihe = spiel.get("reihenfolge") or list(range(n))
     st = [_leer_stat() for _ in range(n)]
     sets = [0] * n
     legs = [0] * n
 
     def neues_leg() -> tuple[list[int], list[bool], list[int], list[int], list[Any]]:
-        return [start] * n, [ein == "straight"] * n, [0] * n, [0] * n, [None] * n
+        return list(starts), [ein == "straight"] * n, [0] * n, [0] * n, [None] * n
 
     rest, offen, leg_darts, leg_aufn, letzte = neues_leg()
     leg_nr = 0
@@ -160,6 +163,8 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
         for dart in aufn["d"][:3]:
             if bust or checkout:
                 break
+            if bull_5050 and dart["f"] == "S25":  # 50/50 bull: the outer bull counts as bull
+                dart = {**dart, "f": "D25"}
             pkt, fak = wert(dart["f"])
             genutzt += 1
             if offen[p] and ein_dart_finish(r, aus):
@@ -204,28 +209,35 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
         verlauf.append({"i": i, "s": p, "d": [d["f"] for d in aufn["d"][:3]], "p": punkte, "r": rest[p], "b": bust, "c": checkout})
         if letzt:
             aktuell = {"darts": aufn["d"][:3], "summe": punkte, "bust": bust, "checkout": checkout, "rest_vor": rest_vor, "fertig": fertig}
-        if checkout:
-            s["treffer"] += 1
-            s["finish"] = max(s["finish"], summe)
-            s["legs"] += 1
-            s["bestes_leg"] = min(s["bestes_leg"] or 999, leg_darts[p])
-            legs[p] += 1
-            ansage = f"Leg {spieler[p]['name']}"
+        sieger = p if checkout else None
+        if sieger is None and fertig and max_runden and all(a >= max_runden for a in leg_aufn):
+            # round limit reached: lowest rest wins the leg, on a tie the one who threw first
+            beginn = leg_nr % n
+            folge = [reihe[(beginn + j) % n] for j in range(n)]
+            sieger = min(folge, key=lambda k: (rest[k], folge.index(k)))
+        if sieger is not None:
+            if checkout:
+                s["treffer"] += 1
+                s["finish"] = max(s["finish"], summe)
+                s["bestes_leg"] = min(s["bestes_leg"] or 999, leg_darts[p])
+            st[sieger]["legs"] += 1
+            legs[sieger] += 1
+            ansage = f"Leg {spieler[sieger]['name']}"
             ende = False
-            if sets_ziel and legs[p] >= legs_ziel:
-                sets[p] += 1
-                s["sets"] += 1
-                ansage = f"Satz {spieler[p]['name']}"
+            if sets_ziel and legs[sieger] >= legs_ziel:
+                sets[sieger] += 1
+                st[sieger]["sets"] += 1
+                ansage = f"Satz {spieler[sieger]['name']}"
                 legs = [0] * n
-                ende = sets[p] >= sets_ziel
+                ende = sets[sieger] >= sets_ziel
             elif not sets_ziel:
-                ende = legs[p] >= legs_ziel
+                ende = legs[sieger] >= legs_ziel
             if ende:
-                gewinner = p
-                ansage = f"Spiel {spieler[p]['name']}"
+                gewinner = sieger
+                ansage = f"Spiel {spieler[sieger]['name']}"
                 break
             if not zu:
-                leg_gewinner = p
+                leg_gewinner = sieger
                 break
             leg_nr += 1
             pos = leg_nr
@@ -266,6 +278,7 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
             "n180": s["n180"], "n140": s["n140"], "n100": s["n100"],
             "bestes_leg": s["bestes_leg"],
             "weg": weg(rest[k], 3, aus) if offen[k] else None,
+            "runde": leg_aufn[k],
         })
     return {
         "am_zug": am_zug,
@@ -275,6 +288,7 @@ def auswerten(spiel: dict[str, Any]) -> dict[str, Any]:
         "statistik": st,
         "gewinner": gewinner,
         "leg_gewinner": leg_gewinner,
+        "runden": max_runden,
         "leg": leg_nr + 1,
         "set": sum(sets) + 1 if gewinner is None else sum(sets),
         "verlauf": verlauf,

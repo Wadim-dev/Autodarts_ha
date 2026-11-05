@@ -128,3 +128,85 @@ async def test_liga_im_spiel(hass: HomeAssistant, geladen) -> None:
     zehn = [x for x in await _spieler(hass, *[f"P{i}" for i in range(8)])] + [anna, ben, cem]
     with pytest.raises(ServiceValidationError):
         await _dienst(hass, "turnier_starten", spieler=zehn, spiel="highscore", runden=1, turnier_modus="liga")
+
+
+def _durchspielen(t: dict, wahl) -> list[tuple[str, int, int, int]]:
+    """Plays every match (wahl picks the winner) and returns (key, a, b, winner)."""
+    gespielt = []
+    for _ in range(500):
+        n = turnier.naechstes_match(t)
+        if n is None:
+            break
+        k, a, b = n
+        assert a != b
+        s = wahl(k, a, b)
+        t["ergebnisse"][k] = s
+        gespielt.append((k, a, b, s))
+    return gespielt
+
+
+@pytest.mark.parametrize("n", range(3, 17))
+@pytest.mark.parametrize("glueck", [0, 1, 2])
+def test_doppel_ko_vollstaendig(n: int, glueck: int) -> None:
+    import random
+
+    zufall = random.Random(n * 10 + glueck)
+    namen = [f"P{i}" for i in range(n)]
+    t = {**_t(namen), "modus": "doppel_ko"}
+    # glueck 0: better seed always wins, 1: worse seed wins, 2: random
+    gespielt = _durchspielen(t, lambda k, a, b: min(a, b) if glueck == 0 else max(a, b) if glueck == 1 else zufall.choice([a, b]))
+    ch = turnier.champion(t)
+    assert ch is not None
+    niederlagen = {i: 0 for i in range(n)}
+    for _k, a, b, s in gespielt:
+        niederlagen[b if s == a else a] += 1
+    # everyone but the champion is out after exactly two defeats, the champion has at most one
+    assert niederlagen[ch] <= 1
+    assert all(v == 2 for i, v in niederlagen.items() if i != ch)
+    assert len(gespielt) in (2 * n - 2, 2 * n - 1)
+    if glueck == 0:
+        assert ch == 0
+    v = turnier.ansicht(t, None)
+    assert v["sieger"] == namen[ch] and v["naechstes"] is None
+    assert v["unten"] and v["finale"]
+
+
+def test_doppel_ko_entscheidungsspiel() -> None:
+    t = {**_t(["A", "B", "C", "D"]), "modus": "doppel_ko"}
+    # A wins the winners bracket, B comes through the losers bracket and beats A in the final
+    gespielt = _durchspielen(t, lambda k, a, b: min(a, b) if k.startswith("w") or 1 not in (a, b) else 1)
+    keys = [g[0] for g in gespielt]
+    assert keys[-2:] == ["f0", "f1"]
+    assert turnier.champion(t) == 1
+    v = turnier.ansicht(t, "f1")
+    assert v["phase"] == "entscheidung" and len(v["finale"]) == 2
+
+
+@pytest.mark.parametrize("n", [6, 7, 9, 11, 12, 16, 23, 24, 32])
+def test_gruppen_vollstaendig(n: int) -> None:
+    namen = [f"P{i}" for i in range(n)]
+    t = {**_t(namen), "modus": "gruppen"}
+    einteilung = turnier.gruppen_einteilung(n)
+    assert sorted(i for g in einteilung for i in g) == list(range(n))
+    assert all(3 <= len(g) <= 6 for g in einteilung)
+    assert max(len(g) for g in einteilung) - min(len(g) for g in einteilung) <= 1
+    v = turnier.ansicht(t, None)
+    assert v["runden"][0][0]["pa"].startswith("1 ")  # places before the groups are done
+    gespielt = _durchspielen(t, lambda k, a, b: min(a, b))
+    g = len(einteilung)
+    gruppenspiele = sum(len(x) * (len(x) - 1) // 2 for x in einteilung)
+    assert len(gespielt) == gruppenspiele + 2 * g - 1
+    # group winners never meet their own runner-up in the first knockout round
+    erste = [x for x in gespielt if x[0].startswith("k0-")]
+    gruppe_von = {i: gi for gi, x in enumerate(einteilung) for i in x}
+    assert all(gruppe_von[a] != gruppe_von[b] for _k, a, b, _s in erste)
+    assert turnier.champion(t) == 0
+    v = turnier.ansicht(t, None)
+    assert len(v["gruppen"]) == g and v["sieger"] == "P0"
+
+
+def test_gruppen_banner() -> None:
+    t = {**_t([f"P{i}" for i in range(6)]), "modus": "gruppen"}
+    k, _a, _b = turnier.naechstes_match(t)
+    v = turnier.ansicht(t, k)
+    assert v["phase"] == "gruppe" and v["gruppe"] == "A" and v["match_nr"][1:3] == [1, 3]

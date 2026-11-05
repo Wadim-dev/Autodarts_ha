@@ -90,8 +90,8 @@
     <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/real-180.png" alt="180 effect"></td>
     <td width="50%" valign="top">
       <b>Stadium moments.</b> Spotlights and confetti on a 180, cracks on a bust, fireworks and a trophy for the match winner, a rainbow for the nine-darter.<br><br>
-      <b>Caller.</b> Scores, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both.<br><br>
-      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects, WLED included, set up by tap. Afterwards everything goes back to how it was.
+      <b>Caller.</b> Scores in every game mode, "you require 32", game shot and a walk-on song per player – on your speakers, on the phone, or both. Make a <b>championship pack</b> with a stage announcer voice in one tap, or upload your own sounds.<br><br>
+      <b>Lights.</b> Let your lamps flash, pulse or burn like fire on a 180, a checkout or a won leg – 18 effects plus WLED effects and presets, set up by tap. Afterwards everything goes back to how it was.
     </td>
   </tr>
 </table>
@@ -701,7 +701,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 **Was drin ist**
 
 - **Spielen:** X01, Cricket, 5 Trainings- und 5 Partyspiele für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
-- **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides; 18 Lichteffekte (auch WLED) per Klick.
+- **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein.

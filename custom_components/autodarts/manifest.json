@@ -3,6 +3,7 @@
   "name": "Autodarts (unofficial)",
   "after_dependencies": [
     "conversation",
+    "ffmpeg",
     "frontend",
     "http",
     "light",

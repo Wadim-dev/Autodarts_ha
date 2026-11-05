@@ -33,6 +33,14 @@ TV_URL = f"/{DOMAIN}/tv"
 PLATTFORMEN = ("androidtv", "androidtv_remote", "cast")
 SILK = "com.amazon.cloud9"
 PING = 20.0
+SILK_AUS = "DARTNEST_SILK_OFF"  # printed by the ADB command when Silk is switched off
+
+
+def _adb_befehl(url: str) -> str:
+    """Fire TV: Silk browser; marks a switched-off Silk; other Android TVs: their default browser."""
+    oeffnen = f"am start -a android.intent.action.VIEW -d '{url}'"
+    return (f"if pm list packages -e {SILK} | grep -q {SILK}; then {oeffnen} {SILK}; "
+            f"elif pm path {SILK} >/dev/null 2>&1; then echo {SILK_AUS}; else {oeffnen}; fi")
 
 
 def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
@@ -109,14 +117,20 @@ class Fernseher:
                 if p == "androidtv":
                     # Fire TV: Silk browser; other Android TVs: their default browser
                     await self._dienst("media_player", "turn_on", eid)
-                    befehl = (f"pm path {SILK} >/dev/null 2>&1 && am start -a android.intent.action.VIEW -d '{url}' {SILK}"
-                              f" || am start -a android.intent.action.VIEW -d '{url}'")
-                    await self._dienst("androidtv", "adb_command", eid, {"command": befehl})
+                    await self._dienst("androidtv", "adb_command", eid, {"command": _adb_befehl(url)})
+                    zustand = self.hass.states.get(eid)
+                    antwort = str(zustand.attributes.get("adb_response") or "") if zustand else ""
+                    if SILK_AUS in antwort:
+                        raise _fehler("tv_silk_off", entity=eid)
+                    if "Error" in antwort:
+                        raise _fehler("tv_failed", entity=eid, error=antwort.strip().splitlines()[-1])
                 elif p == "androidtv_remote":
                     await self._dienst("media_player", "turn_on", eid)
                     await self._dienst("media_player", "play_media", eid, {"media_content_type": "url", "media_content_id": url})
                 else:
                     await self._cast(eid, url)
+            except ServiceValidationError:
+                raise
             except HomeAssistantError as err:
                 raise _fehler("tv_failed", entity=eid, error=str(err)) from err
 

@@ -268,7 +268,7 @@ Open **DartNest → TV** (or the **Settings** card → TV). The card shows a liv
 - **Show by itself when a game starts**: the TV opens the scoreboard at every new game.
 - **Link for any browser**: the page works on every screen in your home network (smart TV browser, old tablet, PC). It needs no login, so the link contains a secret key; **New link** makes a new one and the old one stops working.
 
-The page shows the players with rest, legs and sets, average, last visit and checkout, the current visit dart by dart, 180, bust and leg effects, the bull-off and the result. All game modes work (Cricket with marks, teams with the member who throws). Between games: clock, date, ranking and the last games. Fire TV opens the page in the **Silk browser** (install it from the Amazon app store if it is missing).
+The page shows the players with rest, legs and sets, average, last visit and checkout, the current visit dart by dart, 180, bust and leg effects, the bull-off and the result. All game modes work (Cricket with marks, teams with the member who throws). Between games: clock, date, ranking and the last games. Fire TV opens the page in the **Silk browser** (install it from the Amazon app store if it is missing; if it was switched off, the card says so – switch it on under *Settings → Applications → Manage installed applications → Silk Browser*).
 
 #### Caller
 

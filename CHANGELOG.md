@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.27.1
+
+- Fire TV: when the Silk browser is switched off, **Show on TV** now says so and how to switch it on, instead of doing nothing. Other start problems of the TV are shown as a message too.
+
+**Deutsch**
+
+- Fire TV: Ist der Silk-Browser ausgeschaltet, sagt **Auf dem Fernseher zeigen** das jetzt samt Weg zum Einschalten, statt nichts zu tun. Andere Startprobleme des Fernsehers erscheinen ebenfalls als Meldung.
+
 ## 1.27.0
 
 - **Scoreboard on the TV.** New tab **DartNest → TV**: tick your Fire TV, Google TV or Chromecast and tap **Show on TV**. The TV shows the game big and live with every dart – scores, legs and sets, average, checkout, the current visit, 180/bust/leg effects, bull-off and the result, in every game mode and with teams. Between games it shows the clock, the ranking and the last games. **Show by itself when a game starts** opens it at every new game. The page also works in any browser at home (link in the card, no login).

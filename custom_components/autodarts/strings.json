@@ -130,6 +130,9 @@
     },
     "tv_no_url": {
       "message": "Home Assistant has no network address yet. Set it under Settings → System → Network."
+    },
+    "tv_silk_off": {
+      "message": "The Silk browser is switched off on {entity}. Switch it on under Settings → Applications → Manage installed applications → Silk Browser → Enable, then try again."
     }
   },
   "entity": {

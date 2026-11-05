@@ -220,3 +220,12 @@ async def test_dienst_ohne_integration(hass: HomeAssistant, geladen) -> None:
 def test_modus_text() -> None:
     e = {"startwert": 501, "einwurf": "master", "auswurf": "straight", "legs": 3, "sets": 0}
     assert modus_text(e) == "501 · Master In · Straight Out · Erster bis 3 Legs"
+
+
+async def test_strom_fuer_alle_karten(hass: HomeAssistant, geladen) -> None:
+    """The power plug is stored once and shown to every card through the players sensor."""
+    await _dienst(hass, "strom_setzen", schalter="switch.darts", leistung="sensor.darts_watt", ausschalten="script.pc_aus")
+    a = hass.states.get(SPIELER).attributes
+    assert a["strom"] == {"schalter": "switch.darts", "leistung": "sensor.darts_watt", "ausschalten": "script.pc_aus"}
+    await _dienst(hass, "strom_setzen")
+    assert hass.states.get(SPIELER).attributes["strom"] == {}

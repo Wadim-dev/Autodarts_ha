@@ -163,6 +163,9 @@
     "turnier_abbrechen": {
       "service": "mdi:trophy-broken"
     },
+    "strom_setzen": {
+      "service": "mdi:power-plug"
+    },
     "lichteffekte_setzen": {
       "service": "mdi:lightbulb-group-outline"
     },

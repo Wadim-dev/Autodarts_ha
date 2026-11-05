@@ -160,6 +160,41 @@ statistik_loeschen:
       name: Spielverlauf auch löschen
       selector:
         boolean:
+strom_setzen:
+  name: Steckdose des Board-PCs
+  description: Steckdose, an der der Board-PC hängt. Alle DartNest-Karten (auch die Seitenleiste) zeigen dann den Ein/Aus-Knopf. Leer lassen entfernt sie. Die Karte „Board Manager“ macht das per Klick.
+  fields:
+    schalter:
+      name: Steckdose
+      example: switch.darts_steckdose
+      selector:
+        entity:
+          domain: switch
+    leistung:
+      name: Leistungsmesser (optional)
+      description: Leistung der Steckdose in Watt; damit erkennt DartNest, wann der PC wirklich aus ist.
+      selector:
+        entity:
+          domain: sensor
+          device_class: power
+    einschalten:
+      name: Einschalten mit (optional)
+      description: Statt nur die Steckdose einzuschalten, z. B. ein Skript.
+      selector:
+        entity:
+          domain: [script, button, input_button, automation, switch, scene]
+    ausschalten:
+      name: Ausschalten mit (optional)
+      description: z. B. ein Skript, das den PC erst herunterfährt und dann die Steckdose ausschaltet. Ohne wird die Steckdose direkt ausgeschaltet.
+      selector:
+        entity:
+          domain: [script, button, input_button, automation, switch]
+    pc_online:
+      name: PC läuft (optional)
+      description: Sensor, der an ist, solange der Board-PC läuft.
+      selector:
+        entity:
+          domain: binary_sensor
 lichteffekte_setzen:
   name: Lichteffekte speichern
   description: >-

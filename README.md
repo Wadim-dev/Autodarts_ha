@@ -389,6 +389,22 @@ details:                                # line under the live darts
     name: Highest today
 ```
 
+**Tile** – the same as one compact row with the board scene behind it (live darts, status colour, running game). Tap opens a window with the overview card, today's values and your own cards. It takes every option of the overview card, plus:
+
+```yaml
+type: custom:autodarts-tile-card
+name: Darts                             # title of the row and the window
+today:                                  # values in the window under "Today"
+  - entity: sensor.darts_average_today
+    name: Average
+    digits: 1
+cards:                                  # any cards below, e.g. a statistics graph
+  - type: statistics-graph
+    entities: [sensor.darts_average_today]
+```
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tile.png" alt="Tile" width="49%"> <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tile-window.png" alt="Tile window" width="49%"></p>
+
 ```yaml
 type: custom:autodarts-game-card
 back_path: /dashboard-darts/0           # back arrow; without it the arrow goes back in history
@@ -705,7 +721,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein.
-- **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*.
+- **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.
 
 **Rechtliches:** Kostenloses, privates, nicht kommerzielles Hobbyprojekt, kein offizielles Produkt von Autodarts. „Autodarts“ und andere Marken gehören ihren Inhabern und werden nur genannt, um zu sagen, mit welchen Boards DartNest funktioniert. DartNest spricht nur mit dem Board Manager im eigenen Netz, nutzt keine Online-Dienste, Konten oder Server von Autodarts und umgeht keine Schutzmaßnahmen. Spieler und Statistiken bleiben im eigenen Home Assistant. Nutzung auf eigene Gefahr, ohne Gewähr ([MIT-Lizenz](LICENSE)); die Haftung ist so weit ausgeschlossen, wie es gesetzlich zulässig ist (bei Vorsatz und grober Fahrlässigkeit nach deutschem Recht nicht).

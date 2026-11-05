@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.24.0
+
+- New card **DartNest Tile** (`custom:autodarts-tile-card`): the board as one compact row with the board scene behind it – status colour, live darts as dots, the running game or today's values. Tap opens a window with the overview card (live darts, power, play, settings, players), today's values (`today`) and any own cards (`cards`). Pull down, ✕ or the back button closes it. CSS animations only, paused when not visible.
+
+**Deutsch**
+
+- Neue Karte **DartNest-Kachel** (`custom:autodarts-tile-card`): das Board als kompakte Zeile mit der Board-Szene dahinter – Statusfarbe, Live-Würfe als Punkte, das laufende Spiel oder die Werte von heute. Tippen öffnet ein Fenster mit der Übersichtskarte (Live-Würfe, Ein/Aus, Spielen, Einstellungen, Spieler), den Werten von heute (`today`) und beliebigen eigenen Karten (`cards`). Nach unten ziehen, ✕ oder Zurück schließt es. Nur CSS-Animationen, angehalten, wenn nicht sichtbar.
+
 ## 1.23.0
 
 - Caller: the championship pack says the right number in the right language. Scores went to the voice as digits ("100!"), so it had to guess the language – some sounds came out in English in a German pack, some said another number (a 100 announced as 180). Scores are now spoken as words in the language of Home Assistant ("Einhundert!").

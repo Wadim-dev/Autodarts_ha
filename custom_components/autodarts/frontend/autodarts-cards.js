@@ -1,5 +1,6 @@
 /* DartNest cards for Home Assistant (shipped with the DartNest integration for Autodarts boards, loaded automatically).
    custom:autodarts-overview-card  Board scene with live darts, optional power on/off, shortcuts
+   custom:autodarts-tile-card      The same as one compact row with the scene behind it; tap opens a window with everything
    custom:autodarts-game-card      Local X01 game: lobby, bull-off, match, result, corrections, caller
    custom:autodarts-manager-card   Board Manager: cameras with calibration grid, controls, system values, settings
    custom:autodarts-players-card   Players, overall statistics, recent games
@@ -531,6 +532,174 @@ button:disabled{opacity:.38;cursor:default;transform:none}
     }
   }
   customElements.define('autodarts-overview-card', AutodartsOverviewCard);
+
+  /* ---------- Tile: one compact row with the board scene behind it, tap opens a window (1.24) ---------- */
+  Object.assign(TEXTE.en, { d_tile: 'One compact row with the board scene behind it; tap opens a window with live darts, power, shortcuts and today', tile_tap: 'Tap for play, power and settings', today: 'Today', t_close: 'Close' });
+  Object.assign(TEXTE.de, { d_tile: 'Eine kompakte Zeile mit der Board-Szene dahinter; Tippen öffnet ein Fenster mit Live-Würfen, Ein/Aus, Abkürzungen und Heute', tile_tap: 'Antippen für Spielen, Ein/Aus und Einstellungen', today: 'Heute', t_close: 'Schließen' });
+  const SZ_F = { aus: GR, startet: A, runter: A, bereit: G, ziehen: A, kalib: '#26a69a', gestoppt: B, weg: A };
+  const K_CSS = `
+ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;overflow:hidden;padding:14px;box-sizing:border-box}
+.ic,.tx,.ak,.pf{position:relative;z-index:1}
+.bg{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.55;-webkit-mask-image:linear-gradient(90deg,transparent 25%,#000 70%);mask-image:linear-gradient(90deg,transparent 25%,#000 70%)}
+.bg .szene{height:100%;border-radius:0;cursor:inherit}
+.bg .szene svg{right:-6px;top:-30%;height:160%}
+.ic{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--f) 20%,transparent);color:var(--f);flex:none}
+.ic ha-icon{--mdc-icon-size:24px}
+.tx{flex:1;min-width:0}
+.tx b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx span{display:block;font-size:12.5px;color:var(--secondary-text-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ak{flex:none;display:flex;gap:4px}
+.ak i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
+.pf{--mdc-icon-size:22px;color:var(--secondary-text-color)}
+dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-height:100%;background:transparent;color:var(--primary-text-color);overflow:hidden}
+dialog[open]{display:flex;align-items:flex-end;justify-content:center}
+dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5))}
+.blatt{width:min(560px,100%);max-height:92%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;border-radius:26px 26px 0 0;padding:6px 6px calc(12px + env(safe-area-inset-bottom,0px));
+ background:var(--ha-bottom-sheet-surface-background,var(--ha-dialog-surface-background,var(--card-background-color,var(--primary-background-color))));
+ -webkit-backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);
+ box-shadow:var(--dialog-box-shadow,0 -8px 40px rgba(0,0,0,.35));animation:ad-rauf .22s ease-out}
+.griff{width:40px;height:4px;border-radius:9px;margin:4px auto 6px;background:color-mix(in srgb,var(--primary-text-color) 25%,transparent)}
+.fkopf{display:flex;align-items:center;gap:10px;padding:0 8px 6px 12px;font-size:17px;font-weight:700}
+.fkopf ha-icon{--mdc-icon-size:22px;color:var(--f)}
+.fkopf span{flex:1}
+.fkopf button{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--primary-text-color) 9%,transparent)}
+.inhalt>*{display:block;margin-top:8px}
+.inhalt>*:first-child{margin-top:0}
+.inhalt{--ha-card-background:transparent;--ha-card-box-shadow:none;--ha-card-border-width:0}
+.hgitter{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;padding:0 8px}
+.hgitter .w{cursor:default}
+@keyframes ad-rauf{from{transform:translateY(40px);opacity:0}}
+@media (min-width:700px){dialog[open]{align-items:center}.blatt{border-radius:26px;max-height:88%}}
+@media (prefers-reduced-motion:reduce){.blatt{animation:none}}`;
+  class AutodartsTileCard extends AutodartsOverviewCard {
+    static getStubConfig() { return {}; }
+    getCardSize() { return 1; }
+    set hass(h) {
+      this._h = h; sprachePruefen(h);
+      if (!this._r || this._spr !== SPR) this._bauen();
+      this._zeichnen();
+      if (this._d && this._d.open) this._innenHass();
+    }
+    _bauen() {
+      this._spr = SPR;
+      const r = this._r = this.shadowRoot || this.attachShadow({ mode: 'open' });
+      r.innerHTML = '<style>' + BASIS + B_CSS + K_CSS + '</style><ha-card><div class="bg"><div class="szene">' + SZENE + '</div></div>' +
+        '<div class="ic"><ha-icon></ha-icon></div><div class="tx"><b></b><span></span></div><span class="ak"></span><ha-icon class="pf" icon="mdi:chevron-right"></ha-icon></ha-card>' +
+        '<dialog><div class="blatt"><div class="griff"></div><div class="fkopf"><ha-icon icon="mdi:bullseye-arrow"></ha-icon><span>' + esc(this._c.name || 'Darts') + '</span>' +
+        '<button class="fzu" aria-label="' + t('t_close') + '"><ha-icon icon="mdi:close"></ha-icon></button></div><div class="inhalt"></div></div></dialog>';
+      r.querySelector('ha-card').addEventListener('click', () => this._auf());
+      const d = this._d = r.querySelector('dialog'), bl = this._bl = r.querySelector('.blatt');
+      d.addEventListener('click', e => { if (e.target === d) d.close(); });
+      r.querySelector('.fzu').addEventListener('click', () => d.close());
+      d.addEventListener('close', () => this._zu());
+      // more info of an entity opens above the page: close the window first, so it is not hidden behind it
+      bl.addEventListener('hass-more-info', () => { this._hist = false; d.close(); });
+      this._pop = () => { if (!(history.state && history.state.adFenster)) { this._hist = false; if (d.open) d.close(); } };
+      // a shortcut in the window goes to another page: close without going back
+      this._weg = () => { if (d.open && !(history.state && history.state.adFenster)) { this._hist = false; d.close(); } };
+      // pull down closes (only when scrolled to the top)
+      let y0 = null, dy = 0, zieh = false;
+      const ende = () => {
+        if (zieh) {
+          if (dy > Math.min(140, bl.offsetHeight * 0.25)) { bl.style.transition = 'transform .18s ease-in'; bl.style.transform = 'translateY(100%)'; setTimeout(() => d.close(), 170); }
+          else { bl.style.transition = 'transform .2s ease'; bl.style.transform = ''; }
+        }
+        y0 = null; zieh = false;
+      };
+      bl.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('button,input,select') ? e.touches[0].clientY : null; dy = 0; zieh = false; }, { passive: true });
+      bl.addEventListener('touchmove', e => {
+        if (y0 === null) return;
+        const dd = e.touches[0].clientY - y0;
+        if (!zieh) { if (Math.abs(dd) < 8) return; if (dd < 0 || bl.scrollTop > 0) { y0 = null; return; } zieh = true; bl.style.transition = 'none'; }
+        dy = Math.max(0, dd); bl.style.transform = 'translateY(' + dy + 'px)'; e.preventDefault();
+      }, { passive: false });
+      bl.addEventListener('touchend', ende); bl.addEventListener('touchcancel', ende);
+      this._sicht = true;
+      const still = () => this.toggleAttribute('still', document.hidden || (!this._sicht && !d.open));
+      this._still = still;
+      if (this._io) this._io.disconnect();
+      if ('IntersectionObserver' in window) { this._io = new IntersectionObserver(e => { this._sicht = e[0].isIntersecting; still(); }); if (this.isConnected) this._io.observe(this); }
+      if (!this._vis) { this._vis = () => this._still && this._still(); document.addEventListener('visibilitychange', this._vis); }
+      this._innen = null;
+    }
+    connectedCallback() { if (this._io) this._io.observe(this); }
+    disconnectedCallback() { if (this._io) this._io.disconnect(); if (this._d && this._d.open) { this._hist = false; this._d.close(); } }
+    // window content: the overview card with the same options, then today's values and own cards (only made when opened)
+    async _inhalt() {
+      if (this._innen) return;
+      const c = this._c, box = this._r.querySelector('.inhalt');
+      const ov = document.createElement('autodarts-overview-card');
+      const oc = Object.assign({}, c); delete oc.type; delete oc.cards; delete oc.today; delete oc.name;
+      ov.setConfig(oc);
+      this._innen = [ov];
+      box.appendChild(ov);
+      if (c.today && c.today.length) {
+        const heute = document.createElement('div');
+        heute.className = 'heute';
+        this._innen.push(heute);
+        box.appendChild(heute);
+      }
+      if (c.cards && c.cards.length && window.loadCardHelpers) {
+        try {
+          const hilfe = await window.loadCardHelpers();
+          c.cards.forEach(cc => { const el = hilfe.createCardElement(cc); this._innen.push(el); box.appendChild(el); });
+        } catch (e) {}
+      }
+      this._innenHass();
+    }
+    _innenHass() {
+      (this._innen || []).forEach(el => {
+        if (el.className === 'heute') {
+          const w = (this._c.today || []).map(x => { const e = typeof x === 'string' ? { entity: x } : x, s = st(this._h, e.entity); if (!s) return '';
+            const v = parseFloat(s.state);
+            return '<div class="w feld" data-id="' + esc(e.entity) + '"><small>' + esc(e.name || s.attributes.friendly_name || e.entity) + '</small><b>' + esc(isNaN(v) ? s.state : zahl(v, e.digits || 0)) + '</b></div>'; }).join('');
+          const html = '<div class="titel" style="margin:6px 10px 8px"><ha-icon icon="mdi:calendar-today"></ha-icon>' + t('today') + '</div><div class="hgitter">' + w + '</div>';
+          if (el._html !== html) { el._html = html; el.innerHTML = html; }
+        } else el.hass = this._h;
+      });
+    }
+    _auf() {
+      const d = this._d; if (d.open) return;
+      this._bl.style.transition = ''; this._bl.style.transform = '';
+      try { d.showModal(); } catch (e) { d.setAttribute('open', ''); }
+      this._bl.scrollTop = 0; this._still();
+      this._inhalt();
+      try { history.pushState(Object.assign({}, history.state, { adFenster: 1 }), ''); this._hist = true; window.addEventListener('popstate', this._pop); window.addEventListener('location-changed', this._weg); } catch (e) {}
+    }
+    _zu() {
+      window.removeEventListener('popstate', this._pop); window.removeEventListener('location-changed', this._weg); this._still();
+      if (this._hist) { this._hist = false; history.back(); }
+    }
+    _zeichnen() {
+      const h = this._h, r = this._r, c = this._c;
+      const sz = this._szene(), [name, icon] = SZ[sz];
+      if (this.getAttribute('sz') !== sz) this.setAttribute('sz', sz);
+      const online = ['bereit', 'ziehen', 'kalib', 'gestoppt', 'weg'].includes(sz);
+      this.style.setProperty('--f', SZ_F[sz]);
+      const ic = r.querySelector('.ic ha-icon'); if (ic.getAttribute('icon') !== icon) ic.setAttribute('icon', icon);
+      let n = 0;
+      const punkte = [1, 2, 3].map((nr, i) => {
+        const id = E(h, 'sensor.throw_' + nr), x = zst(h, id), p = online ? position(x, i, att(h, id)) : null, d = r.querySelector('.d' + i);
+        if (p) { n++; d.setAttribute('transform', 'translate(' + f1(p[0]) + ' ' + f1(p[1]) + ')'); }
+        d.classList.toggle('an', !!p);
+        return p ? ['#e53935', '#1e88e5', '#fdd835'][i] : '';
+      });
+      const summe = Math.round(num(h, E(h, 'sensor.visit_score')));
+      const sa = att(h, E(h, 'sensor.game')), ph = phase(sa);
+      let unter = this._info(c.info).replace(/<\/?b>/g, '');
+      if (ph === 'running' || ph === 'bulloff') {
+        unter = (ph === 'bulloff' ? 'Bull-Off' : t('game_running')) + ' · ' + (sa.spieler || []).map(p => p.name + ' ' + p.rest).join(' · ');
+      } else if (sz === 'bereit' && n > 0 && n < 3) unter = t('dart_of', { n: n + 1, s: summe });
+      else if (sz === 'ziehen') unter = t('visit_pts', { s: summe });
+      else if (sz === 'startet') unter = an(h, c.pc_online) ? t('pc_running') : t('about_minute');
+      else if (sz === 'aus' && !unter) unter = t('tile_tap');
+      r.querySelector('.tx b').textContent = (c.name || 'Darts') + ' · ' + t(name);
+      r.querySelector('.tx span').textContent = unter;
+      const ak = punkte.filter(Boolean).map(f => '<i style="--c:' + f + '"></i>').join('');
+      const akEl = r.querySelector('.ak'); if (akEl.innerHTML !== ak) akEl.innerHTML = ak;
+    }
+  }
+  customElements.define('autodarts-tile-card', AutodartsTileCard);
 
   /* ---------- shared parts of the page cards ---------- */
   const SEITEN_CSS = `
@@ -2013,7 +2182,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
 .plk .gr{margin-left:auto;text-align:right;font-size:22px;font-weight:800;line-height:1}
 .plk .gr small{display:block;font-size:11px;font-weight:600}
 .pld{padding:0 14px 14px}
-.kach{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:6px}
+.kach{display:grid;grid-template-columns:repeat(auto-fit,minmax(80px,1fr));gap:6px}
 .ka{border-radius:12px;padding:8px 10px}
 .ka small{display:block;font-size:11.5px;color:var(--secondary-text-color);font-weight:600}.ka b{font-size:16px}
 .plknoepfe{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -2532,6 +2701,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   window.customCards = window.customCards || [];
   window.customCards.push(
     { type: 'autodarts-overview-card', name: 'DartNest Overview', description: t('d_overview'), preview: true },
+    { type: 'autodarts-tile-card', name: 'DartNest Tile', description: t('d_tile'), preview: true },
     { type: 'autodarts-game-card', name: 'DartNest Game', description: t('d_game') },
     { type: 'autodarts-manager-card', name: 'DartNest Board Manager', description: t('d_manager') },
     { type: 'autodarts-players-card', name: 'DartNest Players', description: t('d_players') },

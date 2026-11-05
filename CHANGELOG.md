@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.22.2
+
+- The Marketplace lists the integration as "DartNest for Autodarts", so it is easy to find. In Home Assistant it is still called DartNest.
+
+**Deutsch**
+
+- Im Marketplace heißt die Integration jetzt „DartNest for Autodarts“, damit man sie leicht findet. In Home Assistant heißt sie weiter DartNest.
+
 ## 1.22.1
 
 - README with real screenshots from a home board, the Platinum quality scale badge and the championship pack in the highlights.

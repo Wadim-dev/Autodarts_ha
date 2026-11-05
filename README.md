@@ -19,6 +19,7 @@
 <p align="center">
   <a href="https://github.com/Wadim-dev/DartNest_ha/releases"><img src="https://img.shields.io/github/v/release/Wadim-dev/DartNest_ha?style=flat-square&color=ff7a50" alt="Release"></a>
   <a href="https://github.com/Wadim-dev/DartNest_ha/actions/workflows/validate.yml"><img src="https://img.shields.io/github/actions/workflow/status/Wadim-dev/DartNest_ha/validate.yml?branch=main&label=checks&style=flat-square" alt="Checks"></a>
+  <a href="custom_components/autodarts/quality_scale.yaml"><img src="https://img.shields.io/badge/quality%20scale-platinum-e5e4e2?style=flat-square" alt="Quality scale: Platinum"></a>
   <img src="https://img.shields.io/badge/100%25-local-00a37a?style=flat-square" alt="100 % local">
   <img src="https://img.shields.io/badge/languages-EN%20%7C%20DE-blue?style=flat-square" alt="English and German">
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Wadim-dev/DartNest_ha?style=flat-square" alt="License"></a>
@@ -673,7 +674,7 @@ logger:
 
 ## Contributing
 
-Private project, no outside contributions. The code follows the rules of the Home Assistant quality scale (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
+Private project, no outside contributions. The code meets all rules of the Home Assistant quality scale up to **Platinum** (see [quality_scale.yaml](custom_components/autodarts/quality_scale.yaml)). The repository runs hassfest, the test suite (98 % coverage), ruff and mypy --strict on every push.
 
 ## Legal notice
 

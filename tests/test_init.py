@@ -55,8 +55,8 @@ async def test_karten_werden_geladen(hass: HomeAssistant) -> None:
     pfad = hass.http.async_register_static_paths.call_args[0][0][0]
     assert pfad.url_path == KARTEN_URL and pfad.path.endswith("autodarts-cards.js")
     assert extra.call_args[0][1].startswith(KARTEN_URL + "?v=")
-    # the sidebar panel "Autodarts" shows all cards as tabs; a second call does not register it again
+    # the sidebar panel "DartNest" shows all cards as tabs; a second call does not register it again
     panel = hass.data["frontend_panels"]["autodarts"]
-    assert panel.sidebar_title == "Autodarts" and panel.config["_panel_custom"]["name"] == "autodarts-panel"
+    assert panel.sidebar_title == "DartNest" and panel.config["_panel_custom"]["name"] == "autodarts-panel"
     with patch("custom_components.autodarts.add_extra_js_url"):
         await _karten_anmelden(hass)

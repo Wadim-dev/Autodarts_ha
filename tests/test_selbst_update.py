@@ -18,6 +18,13 @@ from custom_components.autodarts import update as update_modul
 UPD = "update.autodarts_board_integration"
 
 
+@pytest.fixture(autouse=True)
+def eingeschaltet():
+    """The entity is off by default (updates come through the Marketplace); switch it on for these tests."""
+    with patch.object(update_modul.IntegrationUpdate, "_attr_entity_registry_enabled_default", True):
+        yield
+
+
 async def test_selbst_update(hass: HomeAssistant, geladen, tmp_path: Path, hass_ws_client) -> None:
     neustart = async_mock_service(hass, "homeassistant", "restart")
     ziel = tmp_path / "autodarts"

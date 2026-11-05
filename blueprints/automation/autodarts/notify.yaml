@@ -2,7 +2,7 @@ blueprint:
   name: Autodarts – Push on wins and highlights
   description: Sends a push notification for match wins, tournament wins, nine-darters or other events.
   domain: automation
-  source_url: https://github.com/Wadim-dev/Autodarts_ha/blob/main/blueprints/automation/autodarts/notify.yaml
+  source_url: https://github.com/Wadim-dev/DartNest_ha/blob/main/blueprints/automation/autodarts/notify.yaml
   input:
     event_entity:
       name: Game event

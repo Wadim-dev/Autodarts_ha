@@ -1,4 +1,4 @@
-/* Autodarts cards for Home Assistant (shipped with the Autodarts integration, loaded automatically).
+/* DartNest cards for Home Assistant (shipped with the DartNest integration for Autodarts boards, loaded automatically).
    custom:autodarts-overview-card  Board scene with live darts, optional power on/off, shortcuts
    custom:autodarts-game-card      Local X01 game: lobby, bull-off, match, result, corrections, caller
    custom:autodarts-manager-card   Board Manager: cameras with calibration grid, controls, system values, settings
@@ -15,7 +15,7 @@
       dart: 'Dart', visit: 'Visit', on: 'Turn on', off: 'Turn off', off_q: 'Really turn off?', play: 'Play', manager: 'Board Manager', players: 'Players',
       sc_off: 'Board off', sc_starting: 'Starting …', sc_stopping: 'Shutting down …', sc_ready: 'Ready – throw!', sc_takeout: 'Remove darts', sc_calib: 'Calibrating …', sc_stopped: 'Detection stopped', sc_lost: 'Connection lost',
       dart_of: 'Dart {n} of 3 · {s} so far', visit_pts: 'Visit {s} points', pc_running: 'PC is running, Autodarts is starting', about_minute: 'Takes about a minute', plug_after: 'The plug switches off afterwards',
-      plug_on: 'Plug on', ready_hint: 'Throw a dart to start', game_running: 'Game running', back: 'Back', missing: 'Autodarts integration not found',
+      plug_on: 'Plug on', ready_hint: 'Throw a dart to start', game_running: 'Game running', back: 'Back', missing: 'DartNest integration not found',
       new_game: 'New game', game_over: 'Game over', darts: 'Darts', local: 'Local in Home Assistant', cancel_game: 'Cancel game', caller: 'Caller', fullscreen: 'Full screen',
       nobody: 'Nobody yet – tap below.', of6: '{n} of 8', shuffle: 'Shuffle order', new_player: 'New player', bot: 'Bot', bot_level: 'Bot level (average)', average: 'Average',
       game: 'Game', start_value: 'Start value', legs_per_set: 'Legs per set', first_to: 'First to', checkout: 'Check-out', checkin: 'Check-in', more: 'More settings',
@@ -83,7 +83,7 @@
       dart: 'Dart', visit: 'Aufnahme', on: 'Einschalten', off: 'Ausschalten', off_q: 'Wirklich aus?', play: 'Spielen', manager: 'Board Manager', players: 'Spieler',
       sc_off: 'Board aus', sc_starting: 'Startet …', sc_stopping: 'Fährt herunter …', sc_ready: 'Bereit – wirf!', sc_takeout: 'Darts ziehen', sc_calib: 'Kalibriert …', sc_stopped: 'Erkennung gestoppt', sc_lost: 'Verbindung kurz weg',
       dart_of: 'Dart {n} von 3 · bisher {s}', visit_pts: 'Aufnahme {s} Punkte', pc_running: 'PC läuft, Autodarts startet', about_minute: 'Dauert etwa eine Minute', plug_after: 'Steckdose geht danach aus',
-      plug_on: 'Steckdose an', ready_hint: 'Wirf einen Dart zum Start', game_running: 'Spiel läuft', back: 'Zurück', missing: 'Integration „Autodarts“ nicht gefunden',
+      plug_on: 'Steckdose an', ready_hint: 'Wirf einen Dart zum Start', game_running: 'Spiel läuft', back: 'Zurück', missing: 'Integration „DartNest“ nicht gefunden',
       new_game: 'Neues Spiel', game_over: 'Spielende', darts: 'Darts', local: 'Lokal in Home Assistant', cancel_game: 'Spiel abbrechen', caller: 'Ansage', fullscreen: 'Vollbild',
       nobody: 'Noch niemand dabei – unten antippen.', of6: '{n} von 8', shuffle: 'Reihenfolge mischen', new_player: 'Neuer Spieler', bot: 'Bot', bot_level: 'Bot-Stärke (Average)', average: 'Average',
       game: 'Spiel', start_value: 'Startwert', legs_per_set: 'Legs je Satz', first_to: 'Erster bis', checkout: 'Auswurf', checkin: 'Einwurf', more: 'Weitere Einstellungen',
@@ -632,7 +632,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
     _dienst(srv, data) { aktion(this._h, 'autodarts', srv, data || {}); }
     _fehlt() {
       if (E(this._h, 'sensor.game') && st(this._h, E(this._h, 'sensor.game'))) return false;
-      this._kopf('Autodarts', t('missing')); this._setze('<div class="leer">' + t('missing') + '</div>'); return true;
+      this._kopf('DartNest', t('missing')); this._setze('<div class="leer">' + t('missing') + '</div>'); return true;
     }
   }
 
@@ -2455,7 +2455,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-caller-card', AutodartsCallerCard);
 
-  /* ---------- Sidebar panel "Autodarts": all cards as tabs, no setup needed ---------- */
+  /* ---------- Sidebar panel "DartNest": all cards as tabs, no setup needed ---------- */
   const PANEL_TABS = [
     ['board', 'autodarts-overview-card', 'mdi:bullseye', 'tab_board'],
     ['spiel', 'autodarts-game-card', 'mdi:bullseye-arrow', 'play'],
@@ -2484,7 +2484,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     connectedCallback() {
       if (!this._r) {
         this._r = this.attachShadow({ mode: 'open' });
-        this._r.innerHTML = '<style>' + PANEL_CSS + '</style><div class="leiste"><ha-menu-button></ha-menu-button><span class="name">Autodarts</span><div class="tabs"></div></div><div class="inhalt"></div>';
+        this._r.innerHTML = '<style>' + PANEL_CSS + '</style><div class="leiste"><ha-menu-button></ha-menu-button><span class="name">DartNest</span><div class="tabs"></div></div><div class="inhalt"></div>';
         this._menu = this._r.querySelector('ha-menu-button');
         this._r.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (b) gehe('/' + this._basis() + '/' + b.dataset.tab); });
         this._ort = () => this._zeigen();
@@ -2520,12 +2520,12 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   SPR = sprache(document.querySelector('home-assistant') && document.querySelector('home-assistant').hass);
   window.customCards = window.customCards || [];
   window.customCards.push(
-    { type: 'autodarts-overview-card', name: 'Autodarts Overview', description: t('d_overview'), preview: true },
-    { type: 'autodarts-game-card', name: 'Autodarts Game', description: t('d_game') },
-    { type: 'autodarts-manager-card', name: 'Autodarts Board Manager', description: t('d_manager') },
-    { type: 'autodarts-players-card', name: 'Autodarts Players', description: t('d_players') },
-    { type: 'autodarts-lights-card', name: 'Autodarts Light effects', description: t('d_lights') },
-    { type: 'autodarts-caller-card', name: 'Autodarts Caller', description: t('d_caller') }
+    { type: 'autodarts-overview-card', name: 'DartNest Overview', description: t('d_overview'), preview: true },
+    { type: 'autodarts-game-card', name: 'DartNest Game', description: t('d_game') },
+    { type: 'autodarts-manager-card', name: 'DartNest Board Manager', description: t('d_manager') },
+    { type: 'autodarts-players-card', name: 'DartNest Players', description: t('d_players') },
+    { type: 'autodarts-lights-card', name: 'DartNest Light effects', description: t('d_lights') },
+    { type: 'autodarts-caller-card', name: 'DartNest Caller', description: t('d_caller') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

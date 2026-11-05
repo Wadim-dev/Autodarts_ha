@@ -3,6 +3,16 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.22.1
+
+- README with real screenshots from a home board, the Platinum quality scale badge and the championship pack in the highlights.
+- The automatic checks install ffmpeg, so all tests run on GitHub too.
+
+**Deutsch**
+
+- README mit echten Bildern von einem Board zuhause, Platinum-Abzeichen und dem Meisterschafts-Pack bei den Highlights.
+- Die automatischen Prüfungen installieren ffmpeg, damit alle Tests auch auf GitHub laufen.
+
 ## 1.22.0
 
 - **New name: DartNest.** The integration, its logo, the sidebar entry and the cards are now called DartNest, so it is clear that this is an unofficial project and not a product of Autodarts. It still works with Autodarts boards. Nothing changes for you: entity IDs, actions, dashboards and settings stay the same.

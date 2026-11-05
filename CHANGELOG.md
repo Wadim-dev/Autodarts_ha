@@ -3,6 +3,18 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.27.0
+
+- **Scoreboard on the TV.** New tab **DartNest → TV**: tick your Fire TV, Google TV or Chromecast and tap **Show on TV**. The TV shows the game big and live with every dart – scores, legs and sets, average, checkout, the current visit, 180/bust/leg effects, bull-off and the result, in every game mode and with teams. Between games it shows the clock, the ranking and the last games. **Show by itself when a game starts** opens it at every new game. The page also works in any browser at home (link in the card, no login).
+- **Settings menu card** (`custom:autodarts-settings-card`): one card with big buttons for Board, Light effects, Caller and TV – each opens its settings, the back arrow returns to the menu.
+- TV button at the top of the game card once a TV is chosen. New actions `autodarts.fernseher_zeigen`, `fernseher_beenden`, `fernseher_setzen`.
+
+**Deutsch**
+
+- **Spielstand auf dem Fernseher.** Neuer Reiter **DartNest → Fernseher**: Fire TV, Google TV oder Chromecast anhaken und **Auf dem Fernseher zeigen** tippen. Der Fernseher zeigt das Spiel groß und live mit jedem Dart – Punkte, Legs und Sätze, Average, Checkout, die aktuelle Aufnahme, Effekte bei 180/Bust/Leg, Bull-Off und Ergebnis, in allen Spielarten und mit Teams. Zwischen den Spielen zeigt er Uhr, Rangliste und die letzten Spiele. **Von selbst zeigen, wenn ein Spiel startet** öffnet ihn bei jedem neuen Spiel. Die Seite geht auch in jedem Browser zu Hause (Link in der Karte, ohne Anmeldung).
+- **Einstellungs-Menükarte** (`custom:autodarts-settings-card`): eine Karte mit großen Knöpfen für Board, Lichteffekte, Ansager und Fernseher – jeder öffnet seine Einstellungen, der Zurück-Pfeil führt ins Menü.
+- Fernseher-Knopf oben in der Spielkarte, sobald ein Fernseher gewählt ist. Neue Aktionen `autodarts.fernseher_zeigen`, `fernseher_beenden`, `fernseher_setzen`.
+
 ## 1.26.0
 
 - **Tournaments in four formats.** New: **Double KO** for 3–16 players (winners and losers bracket, grand final where the losers-bracket winner has to win twice) and **Groups + KO** for 6–32 players (2, 4 or 8 groups, the best two of each go on, players of the same group do not meet in the first KO round). Knockout and league stay. The lobby has **Single game / Tournament** and four format tiles with player ranges and a short rule.

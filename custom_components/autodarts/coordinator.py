@@ -22,6 +22,7 @@ from .const import DOMAIN
 
 if TYPE_CHECKING:
     from .ansager import Ansager
+    from .fernseher import Fernseher
     from .lichter import Lichtshow
     from .spiel import Spielleiter
 
@@ -171,6 +172,7 @@ class DartsDaten:
     spiel: Spielleiter
     lichter: Lichtshow
     ansager: Ansager
+    fernseher: Fernseher
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

@@ -67,6 +67,13 @@ DIENSTE = {
         vol.Optional("pc_online", default=""): vol.Any("", cv.entity_id),
     }),
     "lichteffekt_testen": vol.Schema({vol.Required("regel"): dict}),
+    "fernseher_zeigen": vol.Schema({vol.Optional("geraete"): cv.entity_ids}),
+    "fernseher_beenden": vol.Schema({vol.Optional("geraete"): cv.entity_ids}),
+    "fernseher_setzen": vol.Schema({
+        vol.Optional("geraete"): vol.Any(cv.entity_ids, []),
+        vol.Optional("auto"): cv.boolean,
+        vol.Optional("neuer_link", default=False): cv.boolean,
+    }),
     "aufnahme_eintragen": vol.Schema({
         vol.Optional("spieler"): cv.string,
         vol.Required("punkte"): vol.All(vol.Coerce(int), vol.Range(0, 180)),
@@ -219,6 +226,14 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name == "strom_setzen":
             await s.strom_setzen({k: d[k] for k in ("schalter", "leistung", "einschalten", "ausschalten", "pc_online")})
+        elif name.startswith("fernseher_"):
+            tv = _eintrag(hass).runtime_data.fernseher
+            if name == "fernseher_zeigen":
+                await tv.zeigen(d.get("geraete"))
+            elif name == "fernseher_beenden":
+                await tv.beenden(d.get("geraete"))
+            else:
+                await tv.setzen(d.get("geraete"), d.get("auto"), d["neuer_link"])
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
         elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen", "ansager_pack_anhalten"):

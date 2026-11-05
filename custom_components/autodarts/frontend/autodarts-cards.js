@@ -874,7 +874,7 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
       this._r.addEventListener('click', e => {
         const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
         const a = b.dataset.act;
-        if (a === 'zurueck') { if (document.fullscreenElement) document.exitFullscreen(); if (this._c.back_path) gehe(this._c.back_path); else history.back(); return; }
+        if (a === 'zurueck') { if (document.fullscreenElement) document.exitFullscreen(); if (this._zurueck) this._zurueck(); else if (this._c.back_path) gehe(this._c.back_path); else history.back(); return; }
         if (a === 'tgl') { this._auf[b.dataset.x] = !this._auf[b.dataset.x]; this._alt = null; this._zeichnen(); return; }
         if (a === 'mzu') { this._modal(null); return; }
         if (e.target.closest('.modal') && !e.target.closest('.mbox')) { this._modal(null); return; }
@@ -1755,6 +1755,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         (ph === 'running' || ph === 'bulloff' ? '<button class="ik" data-act="xabbr" title="' + t('cancel_game') + '"><ha-icon icon="mdi:close"></ha-icon></button>' : '') +
         (this._c.effects === false ? '' : '<button class="ik' + (this._fxAn() ? ' an' : '') + '" data-act="fx" title="' + t('effects') + '"><ha-icon icon="' + (this._fxAn() ? 'mdi:creation' : 'mdi:creation-outline') + '"></ha-icon></button>') +
         '<button class="ik' + (ansage ? ' an' : '') + '" data-act="ansage" title="' + t('caller') + '"><ha-icon icon="' + (ansage ? 'mdi:volume-high' : 'mdi:volume-off') + '"></ha-icon></button>' +
+        ((tvInfo(h).geraete || []).length ? '<button class="ik" data-act="tv" title="' + t('tv_show') + '"><ha-icon icon="mdi:television-play"></ha-icon></button>' : '') +
         '<button class="ik" data-act="vollbild" title="' + t('fullscreen') + '"><ha-icon icon="' + (vb ? 'mdi:fullscreen-exit' : 'mdi:fullscreen') + '"></ha-icon></button>');
       if (ph !== this._phAlt) {
         if (ph === 'idle') this._lobbyStart();
@@ -2193,6 +2194,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         '<button class="feld" data-act="pf" data-f="" style="color:var(--red-color,#e53935)">' + t('clear') + '</button></div><div class="mknoepfe"><button class="feld" data-act="mzu">' + t('cancel') + '</button></div>');
     }
     _klick(act, b, e) {
+      if (act === 'tv') { tvZeigen(this, this._h); return; }
       const h = this._h, L = this._lob, a = att(h, this._spiel);
       const neu = () => { this._alt = null; this._zeichnen(); };
       if (this._ansage()) fxKlang('');  // sounds need a tap once to be allowed
@@ -2938,6 +2940,145 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-caller-card', AutodartsCallerCard);
 
+  /* ---------- TV card: the scoreboard on Fire TV, Google TV, Chromecast or any browser ---------- */
+  Object.assign(TEXTE.en, { tv_title: 'TV', d_tv: 'Shows the game big on the TV, with clock and ranking in between', tv_sub_none: 'No TV chosen yet', tv_show: 'Show on TV', tv_stop: 'Take off TV', tv_pick: 'Which TV?', tv_auto: 'Show by itself when a game starts', tv_auto_s: 'The TV switches on and opens the scoreboard', tv_link: 'Link for any browser', tv_copy: 'Copy', tv_open: 'Open', tv_new: 'New link', tv_new_q: 'Old link stops working – sure?', tv_copied: 'Link copied',
+    tv_none: 'No suitable TV found yet. Add it in Home Assistant first:', tv_firetv: 'Fire TV and Android TV: integration "Android Debug Bridge"', tv_gtv: 'Google TV: integration "Android TV Remote"', tv_cc: 'Chromecast: integration "Google Cast" (usually found by itself)',
+    tv_hint: 'Between games the TV shows the clock, the ranking and the last games. The link works without login – share it only at home.', tv_sent: 'Sent to the TV', tv_off: 'off', tv_on_state: 'on', tv_preview: 'Preview', settings_title: 'Settings', d_settings: 'All DartNest settings behind clear buttons: board, lights, caller, TV',
+    m_board: 'Board', m_board_s: 'Cameras, calibration, power', m_lights_s: 'Lights at 180, checkout …', m_caller_s: 'Speakers, voice, walk-on songs', m_tv_s: 'Scoreboard and clock on the TV', online: 'online', offline: 'offline', n_tv: '{n} TV' });
+  Object.assign(TEXTE.de, { tv_title: 'Fernseher', d_tv: 'Zeigt das Spiel groß auf dem Fernseher, dazwischen Uhr und Rangliste', tv_sub_none: 'Noch kein Fernseher gewählt', tv_show: 'Auf dem Fernseher zeigen', tv_stop: 'Vom Fernseher nehmen', tv_pick: 'Welcher Fernseher?', tv_auto: 'Von selbst zeigen, wenn ein Spiel startet', tv_auto_s: 'Der Fernseher geht an und öffnet die Anzeige', tv_link: 'Link für jeden Browser', tv_copy: 'Kopieren', tv_open: 'Öffnen', tv_new: 'Neuer Link', tv_new_q: 'Alter Link geht dann nicht mehr – sicher?', tv_copied: 'Link kopiert',
+    tv_none: 'Noch kein passender Fernseher gefunden. Zuerst in Home Assistant hinzufügen:', tv_firetv: 'Fire TV und Android TV: Integration „Android Debug Bridge“', tv_gtv: 'Google TV: Integration „Android TV Remote“', tv_cc: 'Chromecast: Integration „Google Cast“ (meist schon von selbst gefunden)',
+    tv_hint: 'Zwischen den Spielen zeigt der Fernseher Uhr, Rangliste und die letzten Spiele. Der Link geht ohne Anmeldung – nur zu Hause weitergeben.', tv_sent: 'An den Fernseher geschickt', tv_off: 'aus', tv_on_state: 'an', tv_preview: 'Vorschau', settings_title: 'Einstellungen', d_settings: 'Alle DartNest-Einstellungen hinter klaren Knöpfen: Board, Licht, Ansager, Fernseher',
+    m_board: 'Board', m_board_s: 'Kameras, Kalibrierung, Strom', m_lights_s: 'Licht bei 180, Checkout …', m_caller_s: 'Lautsprecher, Stimme, Einlaufmusik', m_tv_s: 'Spielstand und Uhr auf dem Fernseher', online: 'online', offline: 'offline', n_tv: '{n} Fernseher' });
+  const TV_ART = { androidtv: 'Fire TV / Android TV', androidtv_remote: 'Google TV', cast: 'Chromecast' };
+  const tvInfo = h => att(h, E(h, 'sensor.players')).tv || { geraete: [], auto: false, url: '' };
+  const meldung = (el, text) => el.dispatchEvent(new CustomEvent('hass-notification', { detail: { message: text }, bubbles: true, composed: true }));
+  // starts the page on the chosen TVs; errors (TV off, not reachable) come back as a message
+  const tvZeigen = (el, h) => h.callService('autodarts', 'fernseher_zeigen', {}).then(() => meldung(el, t('tv_sent')), e => meldung(el, (e && e.message) || String(e)));
+  const TV_CSS = `
+.tvbild{position:relative;margin:0 auto 14px;width:min(100%,420px);aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#0d0f14;border:6px solid #23262d;box-shadow:0 10px 30px rgba(0,0,0,.35);display:block;padding:0;cursor:pointer}
+.tvbild iframe{position:absolute;left:0;top:0;width:1280px;height:720px;border:0;transform-origin:0 0;pointer-events:none}
+.tvbild:after{content:'';position:absolute;left:50%;bottom:-16px;width:90px;height:8px;margin-left:-45px;border-radius:4px;background:#23262d}
+.zwei{display:grid;grid-template-columns:1fr auto;gap:8px}
+.zwei .start{margin:0}
+.zwei .stop{display:flex;align-items:center;gap:8px;border-radius:20px;padding:0 16px;font-weight:700}
+.wahl{display:flex;align-items:center;gap:12px;width:100%;box-sizing:border-box;border-radius:16px;padding:12px 14px;margin-top:8px;text-align:left}
+.wahl.an{border-color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 16%,transparent)}
+.wahl>ha-icon{--mdc-icon-size:24px;color:var(--secondary-text-color);flex:none}.wahl.an>ha-icon{color:var(--primary-color)}
+.wahl span{flex:1;min-width:0}.wahl b{display:block;font-size:15px}.wahl small{display:block;font-size:12.5px;color:var(--secondary-text-color);margin-top:2px}
+.wahl .pk{width:10px;height:10px;border-radius:50%;flex:none;background:var(--disabled-color,#9e9e9e)}.wahl .pk.on{background:var(--green-color,#43a047)}
+.link{display:flex;align-items:center;gap:8px;border-radius:16px;padding:8px 8px 8px 14px}
+.link code{flex:1;min-width:0;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--secondary-text-color)}
+.link button{display:flex;align-items:center;gap:6px;border-radius:12px;padding:8px 10px;font-size:13px;font-weight:700;flex:none}
+.link button ha-icon{--mdc-icon-size:18px}
+.neuer{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:8px 12px;margin-top:8px;font-size:13px;font-weight:600;--sr-f:var(--red-color,#e53935)}
+.ohne{border-radius:16px;padding:12px 14px;font-size:13.5px;line-height:1.5}
+.ohne ul{margin:6px 0 0;padding-left:18px}`;
+  class AutodartsTvCard extends DartsSeite {
+    static get CSS() { return TV_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;box-sizing:border-box;text-align:left;margin-top:8px}.schalter>ha-icon{--mdc-icon-size:28px;flex:none}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter.an>ha-icon{color:var(--primary-color)}.schalter span{flex:1}.schalter b{display:block;font-size:15px}.schalter small{display:block;font-size:12.5px;color:var(--secondary-text-color);font-weight:500;margin-top:2px}'; }
+    getCardSize() { return 9; }
+    _tvs() {
+      const h = this._h;
+      return Object.values(h.entities || {}).filter(e => e && e.entity_id.startsWith('media_player.') && TV_ART[e.platform] && !e.hidden && !e.disabled_by)
+        .map(e => e.entity_id).sort((a, b) => this._name(a).localeCompare(this._name(b)));
+    }
+    _name(id) { const s = st(this._h, id); return (s && s.attributes.friendly_name) || id; }
+    _zeichnen() {
+      if (this._fehlt()) return;
+      const h = this._h, tv = tvInfo(h), gew = this._gew || tv.geraete || [], alle = this._tvs();
+      if (this._gew && JSON.stringify(this._gew) === JSON.stringify(tv.geraete)) this._gew = null;
+      const auto = this._auto != null ? this._auto : tv.auto;
+      if (this._auto != null && this._auto === tv.auto) this._auto = null;
+      this._kopf(t('tv_title'), gew.length ? gew.map(id => this._name(id)).join(', ') : t('tv_sub_none'));
+      let s = '<button class="tvbild" data-act="oeffnen" title="' + t('tv_open') + '"><iframe tabindex="-1" loading="lazy" src="' + esc(tv.url ? new URL(tv.url).pathname : '') + '"></iframe></button>' +
+        '<div class="zwei"><button class="start" data-act="zeigen"' + (gew.length ? '' : ' disabled') + '><ha-icon icon="mdi:television-play"></ha-icon>' + t('tv_show') + '</button>' +
+        '<button class="stop feld" data-act="stop"' + (gew.length ? '' : ' disabled') + ' title="' + t('tv_stop') + '"><ha-icon icon="mdi:television-off"></ha-icon></button></div>' +
+        '<div class="titel"><ha-icon icon="mdi:television"></ha-icon>' + t('tv_pick') + '</div>';
+      if (!alle.length) s += '<div class="ohne feld">' + t('tv_none') + '<ul><li>' + t('tv_firetv') + '</li><li>' + t('tv_gtv') + '</li><li>' + t('tv_cc') + '</li></ul></div>';
+      alle.forEach(id => {
+        const an = gew.includes(id), z = zst(h, id), e = h.entities[id];
+        s += '<button class="wahl feld' + (an ? ' an' : '') + '" data-act="geraet" data-id="' + id + '"><ha-icon icon="' + (an ? 'mdi:checkbox-marked-circle' : 'mdi:checkbox-blank-circle-outline') + '"></ha-icon><span><b>' + esc(this._name(id)) + '</b><small>' + TV_ART[e.platform] + '</small></span>' +
+          '<i class="pk' + (z && z !== 'off' && z !== 'unavailable' && z !== 'standby' ? ' on' : '') + '"></i></button>';
+      });
+      s += '<button class="schalter feld' + (auto ? ' an' : '') + '" data-act="auto"' + (gew.length ? '' : ' disabled') + '><ha-icon icon="' + (auto ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon><span><b>' + t('tv_auto') + '</b><small>' + t('tv_auto_s') + '</small></span></button>' +
+        '<div class="titel"><ha-icon icon="mdi:link-variant"></ha-icon>' + t('tv_link') + '</div>' +
+        '<div class="link feld"><code>' + esc(tv.url) + '</code><button class="feld" data-act="kopie"><ha-icon icon="mdi:content-copy"></ha-icon>' + t('tv_copy') + '</button></div>' +
+        '<button class="neuer feld" data-act="neu" data-lbl="' + t('tv_new') + '"><ha-icon icon="mdi:link-variant-off" style="--mdc-icon-size:16px"></ha-icon><span class="lbl">' + t('tv_new') + '</span></button>' +
+        '<div class="klein">' + t('tv_hint') + '</div>';
+      this._setze(s);
+      const f = this._r.querySelector('.tvbild iframe'), b = this._r.querySelector('.tvbild');
+      if (f && b) { const w = b.clientWidth || 400; f.style.transform = 'scale(' + (w / 1280) + ')'; if (!this._ro && 'ResizeObserver' in window) { this._ro = new ResizeObserver(() => { const i = this._r.querySelector('.tvbild iframe'), bb = this._r.querySelector('.tvbild'); if (i && bb) i.style.transform = 'scale(' + (bb.clientWidth / 1280) + ')'; }); this._ro.observe(b); } }
+    }
+    _setzen(daten) { return this._h.callService('autodarts', 'fernseher_setzen', daten).catch(e => meldung(this, (e && e.message) || String(e))); }
+    _klick(act, b) {
+      const h = this._h, tv = tvInfo(h), gew = this._gew || tv.geraete || [];
+      if (act === 'zeigen') { tvZeigen(this, h); return; }
+      if (act === 'stop') { h.callService('autodarts', 'fernseher_beenden', {}).catch(e => meldung(this, (e && e.message) || String(e))); return; }
+      if (act === 'geraet') { const id = b.dataset.id; this._gew = gew.includes(id) ? gew.filter(x => x !== id) : gew.concat(id); this._alt = null; this._zeichnen(); this._setzen({ geraete: this._gew }); return; }
+      if (act === 'auto') { this._auto = !(this._auto != null ? this._auto : tv.auto); this._alt = null; this._zeichnen(); this._setzen({ auto: this._auto }); return; }
+      if (act === 'oeffnen') { if (tv.url) window.open(new URL(tv.url).pathname, '_blank', 'noopener'); return; }
+      if (act === 'kopie') {
+        const fertig = () => meldung(this, t('tv_copied'));
+        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(tv.url).then(fertig, () => window.prompt('', tv.url));
+        else window.prompt('', tv.url);
+        return;
+      }
+      if (act === 'neu') zweimal(this, b, t('tv_new_q'), () => { this._setzen({ neuer_link: true }); });
+    }
+  }
+  customElements.define('autodarts-tv-card', AutodartsTvCard);
+
+  /* ---------- Settings card: one menu with big buttons, each opens the matching card ---------- */
+  const MENUE = [
+    ['board', 'autodarts-manager-card', 'mdi:camera-iris', 'm_board', 'm_board_s', '#26a69a'],
+    ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title', 'm_lights_s', '#ffb300'],
+    ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title', 'm_caller_s', '#7e57c2'],
+    ['tv', 'autodarts-tv-card', 'mdi:television-play', 'tv_title', 'm_tv_s', '#ef5350']
+  ];
+  const MENUE_CSS = `
+.menue{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.mk{display:flex;align-items:center;gap:14px;border-radius:20px;padding:16px;text-align:left;min-height:84px;box-sizing:border-box}
+.mk .ic{width:48px;height:48px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex:none;background:color-mix(in srgb,var(--mf) 20%,transparent);color:var(--mf)}
+.mk .ic ha-icon{--mdc-icon-size:28px}
+.mk span{flex:1;min-width:0}.mk b{display:block;font-size:16px}.mk small{display:block;font-size:12.5px;color:var(--secondary-text-color);margin-top:3px;line-height:1.35}
+.mk .st{display:inline-block;font-style:normal;margin-top:5px;font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 8px;background:color-mix(in srgb,var(--primary-text-color) 8%,transparent);color:var(--secondary-text-color)}
+.mk .st.gut{background:color-mix(in srgb,var(--green-color,#43a047) 18%,transparent);color:var(--green-color,#43a047)}
+.mk>ha-icon{--mdc-icon-size:22px;color:var(--secondary-text-color)}`;
+  class AutodartsSettingsCard extends DartsSeite {
+    static get CSS() { return MENUE_CSS; }
+    getCardSize() { return 4; }
+    setConfig(c) { super.setConfig(c); if (this._kind) { this._kind = null; this._wahl = null; } }
+    _status(k) {
+      const h = this._h;
+      if (k === 'board') { const on = boardOnline(h); return ['<i class="st' + (on ? ' gut' : '') + '">' + t(on ? 'online' : 'offline') + '</i>', on]; }
+      if (k === 'tv') { const n = (tvInfo(h).geraete || []).length; return n ? ['<i class="st gut">' + t('n_tv', { n }) + '</i>', true] : ['', false]; }
+      return ['', false];
+    }
+    _zeichnen() {
+      if (this._kind) { this._kind.hass = this._h; return; }
+      if (this._fehlt()) return;
+      this._kopf(t('settings_title'), 'DartNest');
+      this._setze('<div class="menue">' + MENUE.map(([k, , icon, ti, sub, f]) => '<button class="mk feld" data-act="menue" data-k="' + k + '" style="--mf:' + f + '"><span class="ic"><ha-icon icon="' + icon + '"></ha-icon></span><span><b>' + t(ti) + '</b><small>' + t(sub) + '</small>' + this._status(k)[0] + '</span><ha-icon icon="mdi:chevron-right"></ha-icon></button>').join('') + '</div>');
+    }
+    _klick(act, b) {
+      if (act !== 'menue') return;
+      const def = MENUE.find(x => x[0] === b.dataset.k);
+      const k = document.createElement(def[1]);
+      k.setConfig(Object.assign({}, this._c[def[0]] || {}, { back_button: true }));
+      k._zurueck = () => this._menue();
+      this._kind = k;
+      this._r.querySelector('ha-card').style.display = 'none';
+      this._r.appendChild(k);
+      k.hass = this._h;
+      try { k.scrollIntoView({ block: 'nearest' }); } catch (e) {}
+    }
+    _menue() {
+      if (this._kind) { this._kind.remove(); this._kind = null; }
+      this._r.querySelector('ha-card').style.display = '';
+      this._alt = null; this._zeichnen();
+    }
+  }
+  customElements.define('autodarts-settings-card', AutodartsSettingsCard);
+
   /* ---------- Sidebar panel "DartNest": all cards as tabs, no setup needed ---------- */
   const PANEL_TABS = [
     ['board', 'autodarts-overview-card', 'mdi:bullseye', 'tab_board'],
@@ -2945,6 +3086,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     ['spieler', 'autodarts-players-card', 'mdi:account-group', 'players'],
     ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title'],
     ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title'],
+    ['fernseher', 'autodarts-tv-card', 'mdi:television-play', 'tv_title'],
     ['manager', 'autodarts-manager-card', 'mdi:camera-iris', 'manager']
   ];
   const PANEL_CSS = `
@@ -3009,7 +3151,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     { type: 'autodarts-manager-card', name: 'DartNest Board Manager', description: t('d_manager') },
     { type: 'autodarts-players-card', name: 'DartNest Players', description: t('d_players') },
     { type: 'autodarts-lights-card', name: 'DartNest Light effects', description: t('d_lights') },
-    { type: 'autodarts-caller-card', name: 'DartNest Caller', description: t('d_caller') }
+    { type: 'autodarts-caller-card', name: 'DartNest Caller', description: t('d_caller') },
+    { type: 'autodarts-tv-card', name: 'DartNest TV', description: t('d_tv') },
+    { type: 'autodarts-settings-card', name: 'DartNest Settings', description: t('d_settings') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

@@ -166,6 +166,15 @@
     "strom_setzen": {
       "service": "mdi:power-plug"
     },
+    "fernseher_zeigen": {
+      "service": "mdi:television-play"
+    },
+    "fernseher_beenden": {
+      "service": "mdi:television-off"
+    },
+    "fernseher_setzen": {
+      "service": "mdi:television-guide"
+    },
     "lichteffekte_setzen": {
       "service": "mdi:lightbulb-group-outline"
     },

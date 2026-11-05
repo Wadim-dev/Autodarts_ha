@@ -118,6 +118,18 @@
     },
     "player_twice": {
       "message": "Ein Spieler kann nur einmal mitspielen (auch nicht in zwei Teams)."
+    },
+    "no_tv": {
+      "message": "Noch kein Fernseher gewählt. Unter DartNest-Einstellungen → Fernseher auswählen."
+    },
+    "tv_unsupported": {
+      "message": "{entity} ist kein Fire TV, Android-/Google-TV oder Chromecast."
+    },
+    "tv_failed": {
+      "message": "Die DartNest-Seite konnte auf {entity} nicht gestartet werden: {error}"
+    },
+    "tv_no_url": {
+      "message": "Home Assistant hat noch keine Netzwerkadresse. Unter Einstellungen → System → Netzwerk eintragen."
     }
   },
   "entity": {

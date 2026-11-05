@@ -90,6 +90,12 @@ Average, first 9, checkout rate, rating, trend, badges, head to head and a ranki
 
 Four formats: **knockout** (3–32), **double KO** with winners and losers bracket (3–16), **groups + KO** (6–32) and a **league** (3–10). Play alone, as **teams of two** or with a **handicap** for beginners. The next match starts with one tap.
 
+## On the TV
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tv.png" alt="Scoreboard on the TV, rest screen with clock and ranking, TV settings on the phone" width="900"></p>
+
+Open **DartNest → TV**, tick your TV and tap **Show on TV** – the score appears big on **Fire TV, Google TV or Chromecast**, live with every dart. Between games the TV shows the clock, the ranking and the last games. Switch on **Show by itself when a game starts** and you never touch the remote. Any other screen works too: open the link in its browser.
+
 ## Board Manager inside Home Assistant
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
@@ -253,6 +259,17 @@ The lobby offers **Single game** and **Tournament** with four formats: **Knockou
 **Groups + KO** (6–32 players): 2 groups (up to 11 players), 4 (up to 23) or 8, filled by seeding. Everyone plays everyone in the group, the best two of each group go to the knockout stage, and two players of the same group do not meet in its first round. The card shows the group tables, the matches of the group being played, and the knockout bracket with placeholders such as "1 A" until the groups are done.
 
 
+#### TV
+
+Open **DartNest → TV** (or the **Settings** card → TV). The card shows a live preview of the TV screen.
+
+- **Which TV?** lists the TVs Home Assistant knows: Fire TV and Android TV from the **Android Debug Bridge** integration, Google TV from **Android TV Remote**, Chromecast and TVs with Chromecast built-in from **Google Cast**. Tick one or more.
+- **Show on TV** switches the TV on and opens the page; the button next to it takes it off again. The game card has the same TV button at the top once a TV is chosen.
+- **Show by itself when a game starts**: the TV opens the scoreboard at every new game.
+- **Link for any browser**: the page works on every screen in your home network (smart TV browser, old tablet, PC). It needs no login, so the link contains a secret key; **New link** makes a new one and the old one stops working.
+
+The page shows the players with rest, legs and sets, average, last visit and checkout, the current visit dart by dart, 180, bust and leg effects, the bull-off and the result. All game modes work (Cricket with marks, teams with the member who throws). Between games: clock, date, ranking and the last games. Fire TV opens the page in the **Silk browser** (install it from the Amazon app store if it is missing).
+
 #### Caller
 
 Open **DartNest → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
@@ -385,6 +402,14 @@ pc_restart: button.dartboard_pc_restart # adds a "Restart PC" button
 type: custom:autodarts-players-card
 ```
 
+```yaml
+type: custom:autodarts-settings-card   # one menu: Board, Light effects, Caller, TV
+```
+
+```yaml
+type: custom:autodarts-tv-card         # TV settings on their own
+```
+
 `back_button: false` hides the back arrow on the three page cards.
 
 </details>
@@ -433,6 +458,9 @@ While the board is off, connection and status show `Offline`; all other board en
 | `autodarts.ansager_pack_pruefen` | Find a spoken direction at the start of the sounds of a pack (`name`) and cut it off; `reparieren: false` only reports. Originals stay in `_original`. With `anhoeren: true` every score sound is listened to (speech recognition) and wrong ones are spoken again – the button **Check the sounds** in the pack menu. |
 | `autodarts.ansager_pack_loeschen` | Delete a sound pack (`name`). The caller card does this for you. |
 | `autodarts.ansager_pack_erzeugen` | Make a sound pack with the chosen voice (`name`, `sprecher` for Google AI, `nur` for single sounds). The caller card does this for you. |
+| `autodarts.fernseher_zeigen` | Open the scoreboard on the chosen TVs (or `geraete`). Fire TV/Android TV via the Android Debug Bridge integration (Silk browser), Google TV via Android TV Remote, Chromecast via Google Cast. |
+| `autodarts.fernseher_beenden` | Take the scoreboard off the TVs (back to the home screen; Chromecast stops). |
+| `autodarts.fernseher_setzen` | TV settings: `geraete` (media players), `auto` (show when a game starts), `neuer_link: true` makes a new link and the old one stops working. The TV card does this for you. |
 | `autodarts.turnier_weiter` | Start the next match of the tournament. |
 | `autodarts.turnier_abbrechen` | End the tournament (bracket is removed). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
@@ -683,6 +711,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck, jeder Punkte-Ton per Spracherkennung geprüft) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. (3–32 Spieler), Doppel-K.-o. mit Verliererrunde (3–16), Gruppen + K.-o. (6–32) oder Liga (3–10), auch als 2er-Teams oder mit Handicap.
+- **Fernseher:** Spielstand groß auf Fire TV, Google TV oder Chromecast, live mit jedem Dart; zwischen den Spielen Uhr, Rangliste und letzte Spiele. *DartNest → Fernseher*, Fernseher wählen, **Auf dem Fernseher zeigen** – oder von selbst bei jedem Spielstart.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.

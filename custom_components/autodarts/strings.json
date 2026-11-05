@@ -118,6 +118,18 @@
     },
     "player_twice": {
       "message": "A player can only take part once (also not in two teams)."
+    },
+    "no_tv": {
+      "message": "No TV chosen yet. Pick it under DartNest settings → TV."
+    },
+    "tv_unsupported": {
+      "message": "{entity} is not a Fire TV, Android/Google TV or Chromecast."
+    },
+    "tv_failed": {
+      "message": "The DartNest page could not be started on {entity}: {error}"
+    },
+    "tv_no_url": {
+      "message": "Home Assistant has no network address yet. Set it under Settings → System → Network."
     }
   },
   "entity": {

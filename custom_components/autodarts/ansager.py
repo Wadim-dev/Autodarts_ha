@@ -576,7 +576,7 @@ class Ansager:
     async def pack_pruefen(self, name: str, reparieren: bool = True) -> dict[str, Any]:
         """Look for a spoken direction in the sounds of a pack and cut it off (1.19 packs)."""
         ordner = self._basis.joinpath(*ORDNER, name)
-        if ordner.parent != self._basis.joinpath(*ORDNER) or not ordner.is_dir():
+        if ordner.parent != self._basis.joinpath(*ORDNER):
             return {"dateien": 0}
         bericht = await self.hass.async_add_executor_job(_pruefen, ordner, reparieren)
         _LOGGER.info("Caller pack %s checked: %s", name, bericht)

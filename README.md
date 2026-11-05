@@ -59,6 +59,7 @@
       <b>The game screen</b> is made for a tablet next to the board: big scores, average, checkout ways and every dart where it landed.<br><br>
       ✏️ Tap any visit to correct it – the score is recalculated.<br>
       📷 Show the straightened camera image instead of the drawn board.<br>
+      <img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/camera-view.png" alt="Camera image in the game screen" width="220"><br>
       🖐️ No cameras or board off? A keypad appears by itself.<br>
       🔒 The screen stays awake during a game.
     </td>
@@ -95,12 +96,14 @@
 
 <table>
   <tr>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
-    <td width="50%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/caller.png" alt="Caller"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/lights.png" alt="Light effects"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/light-editor.png" alt="New light effect"></td>
   </tr>
   <tr>
     <td><b>Caller</b> – speaker, voice and sound pack in three steps.</td>
     <td><b>Light effects</b> – one rule per moment, test with ▶.</td>
+    <td><b>New effect</b> – pick the moment, the effect and your lamps. No YAML.</td>
   </tr>
 </table>
 
@@ -143,6 +146,21 @@ Bots from beginner to pro (average adjustable) make every evening a match – ev
     </td>
   </tr>
 </table>
+
+<table>
+  <tr>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-off.png" alt="Board off"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-starting.png" alt="Board starting"></td>
+    <td width="33%"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/power-ready.png" alt="Board ready"></td>
+  </tr>
+  <tr>
+    <td><b>Off</b> – one tap on <i>Switch on</i>.</td>
+    <td><b>Starting</b> – the board lights up while the PC boots.</td>
+    <td><b>Ready</b> – throw. Darts, visit and today's average at a glance.</td>
+  </tr>
+</table>
+
+<sub>Screenshots in this section and the aim map, light editor and camera image come from a real board with the German interface.</sub>
 
 ## Everywhere
 

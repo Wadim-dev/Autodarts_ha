@@ -112,6 +112,12 @@
     },
     "invalid_score": {
       "message": "{score} cannot be thrown with three darts."
+    },
+    "team_size": {
+      "message": "A team needs at least two players."
+    },
+    "player_twice": {
+      "message": "A player can only take part once (also not in two teams)."
     }
   },
   "entity": {

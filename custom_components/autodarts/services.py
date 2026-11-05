@@ -34,6 +34,9 @@ START = {
     vol.Optional("legs"): vol.Coerce(int),
     vol.Optional("sets"): vol.Coerce(int),
     vol.Optional("bull_off"): cv.boolean,
+    vol.Optional("bull_5050"): cv.boolean,
+    vol.Optional("max_runden"): vol.All(vol.Coerce(int), vol.Range(0, 50)),
+    vol.Optional("handicap"): {cv.string: vol.Coerce(int)},
 }
 
 DIENSTE = {

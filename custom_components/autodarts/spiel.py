@@ -30,8 +30,12 @@ SPEICHER_VERSION = 1
 MAX_SPIELER = 8
 MAX_VERLAUF = 50
 STANDARD = {"spiel": "x01", "startwert": 501, "einwurf": "straight", "auswurf": "double", "legs": 1, "sets": 0, "bull_off": False,
-            "variante": "", "zahlen": "classic", "runden": 0, "leben": 3, "zielwert": 0}
-EINSTELLUNGEN = ("spiel", "startwert", "einwurf", "auswurf", "legs", "sets", "bull_off", "variante", "zahlen", "runden", "leben", "zielwert")
+            "variante": "", "zahlen": "classic", "runden": 0, "leben": 3, "zielwert": 0,
+            "bull_5050": False, "max_runden": 0, "handicap": {}}
+EINSTELLUNGEN = ("spiel", "startwert", "einwurf", "auswurf", "legs", "sets", "bull_off", "variante", "zahlen", "runden", "leben", "zielwert",
+                 "bull_5050", "max_runden", "handicap")
+STARTWERTE = (101, 170, 301, 501, 701, 901)
+MAX_TEAM = 4
 MODI = ("straight", "double", "master")
 STAT_FELDER = ("punkte", "darts", "f9p", "f9d", "versuche", "treffer", "n180", "n140", "n100", "legs", "sets")
 
@@ -199,7 +203,7 @@ class Spielleiter:
     def _neu_rechnen(self, speichern: bool = True) -> None:
         sp = self.spiel
         if sp and sp.get("phase") in ("laeuft", "beendet"):
-            self.stand = spielarten.auswerten(sp)
+            self.stand = self._auswerten(sp)
             if sp["phase"] == "laeuft" and self.stand["gewinner"] is not None:
                 self._spiel_abschliessen()
         else:
@@ -266,9 +270,9 @@ class Spielleiter:
             return False
         if sp["phase"] == "bulloff":
             k, w = len(sp["bulloff"]), self._bo_werfer(sp)
-            return k < len(w) and bool(sp["spieler"][w[k]].get("bot"))
+            return k < len(w) and bool(self._werfer(sp, None, w[k]).get("bot"))
         if sp["phase"] == "laeuft" and self.stand and self.stand["gewinner"] is None:
-            return bool(sp["spieler"][self.stand["am_zug"]].get("bot"))
+            return bool(self._werfer(sp, self.stand, self.stand["am_zug"]).get("bot"))
         return False
 
     def _dart_annehmen(self, dart: dict[str, Any], vom_board: bool) -> bool:
@@ -349,14 +353,14 @@ class Spielleiter:
         if not sp or not self._ist_bot_dran():
             return
         if sp["phase"] == "bulloff":
-            level = int(sp["spieler"][self._bo_werfer(sp)[len(sp["bulloff"])]]["bot"])
+            level = int(self._werfer(sp, None, self._bo_werfer(sp)[len(sp["bulloff"])])["bot"])
             dart = x01.bot_wurf("D25", await self._sigma_fuer(level), self._zufall)
             self._dart_annehmen(dart, vom_board=False)
             self._bot_aufgabe = None
             self._neu_rechnen()
             return
         p = self._stand["am_zug"]
-        level = int(sp["spieler"][p]["bot"])
+        level = int(self._werfer(sp, self._stand, p)["bot"])
         sigma = await self._sigma_fuer(level)
         e = sp["einstellungen"]
         while True:
@@ -381,7 +385,7 @@ class Spielleiter:
 
     def _neu_rechnen_ohne_bot(self) -> None:
         sp = self._laufend
-        self.stand = spielarten.auswerten(sp)
+        self.stand = self._auswerten(sp)
         if self.stand["gewinner"] is not None:
             self._spiel_abschliessen()
         self._speichern()
@@ -452,10 +456,10 @@ class Spielleiter:
 
     def _pruefen(self, einstellungen: dict[str, Any]) -> dict[str, Any]:
         """Einstellungen mit den letzten zusammenführen und prüfen."""
-        e = {**self.daten["letzte"], **{k: v for k, v in einstellungen.items() if v is not None}}
+        e = {**STANDARD, **self.daten["letzte"], **{k: v for k, v in einstellungen.items() if v is not None}}
         if e["spiel"] not in spielarten.GRUPPEN:
             raise _fehler("invalid_game")
-        if int(e["startwert"]) not in (101, 170, 301, 501, 701, 901):
+        if int(e["startwert"]) not in STARTWERTE:
             raise _fehler("invalid_start_value")
         if e["einwurf"] not in MODI or e["auswurf"] not in MODI:
             raise _fehler("invalid_mode")
@@ -467,30 +471,84 @@ class Spielleiter:
         e["variante"] = str(e.get("variante") or "")
         e["zahlen"] = str(e.get("zahlen") or "classic")
         e["zielwert"] = max(0, min(int(e.get("zielwert") or 0), 1001))
+        e["bull_5050"] = bool(e.get("bull_5050"))
+        e["max_runden"] = max(0, min(int(e.get("max_runden") or 0), 50))
+        hc = e.get("handicap") or {}
+        if not isinstance(hc, dict) or any(int(v) not in STARTWERTE for v in hc.values()):
+            raise _fehler("invalid_start_value")
+        e["handicap"] = {str(k): int(v) for k, v in hc.items() if int(v) != int(e["startwert"])}
         return e
 
-    def _spieler_aus(self, eintraege: list[str], anzahl: int) -> list[dict[str, Any]]:
+    def _einer(self, x: str) -> dict[str, Any] | None:
+        """A known player (id) or a bot ("bot:50")."""
+        if x.startswith("bot:"):
+            level = max(10, min(int(x[4:] or 50), 120))
+            return {"name": f"Bot {level}", "bot": level}
+        s = next((s for s in self.daten["spieler"] if s["id"] == x), None)
+        return {"id": x, "name": s["name"]} if s else None
+
+    def _spieler_aus(self, eintraege: list[str], anzahl: int, handicap: dict[str, int] | None = None) -> list[dict[str, Any]]:
+        """Players from entries: id, "bot:50" or a team "team:id1+id2" (players throw in turn)."""
         spieler = []
-        bekannt = {s["id"]: s for s in self.daten["spieler"]}
         for x in eintraege[:anzahl]:
             x = str(x)
-            if x.startswith("bot:"):
-                level = max(10, min(int(x[4:] or 50), 120))
-                spieler.append({"name": f"Bot {level}", "bot": level})
-            elif x in bekannt:
-                spieler.append({"id": x, "name": bekannt[x]["name"]})
+            if x.startswith("team:"):
+                mitglieder = [m for m in (self._einer(y) for y in x[5:].split("+")[:MAX_TEAM] if y) if m]
+                if len(mitglieder) < 2:
+                    raise _fehler("team_size")
+                s: dict[str, Any] | None = {"name": " & ".join(m["name"] for m in mitglieder), "team": mitglieder}
+            else:
+                s = self._einer(x)
+            if s:
+                s["eintrag"] = x
+                if (handicap or {}).get(x):
+                    s["start"] = int((handicap or {})[x])
+                spieler.append(s)
         if not spieler:
             raise _fehler("no_player")
+        ids = [m["id"] for s in spieler for m in (s.get("team") or [s]) if m.get("id")]
+        if len(ids) != len(set(ids)):
+            raise _fehler("player_twice")
         return spieler
+
+    @staticmethod
+    def _werfer(sp: dict[str, Any], st: dict[str, Any] | None, p: int) -> dict[str, Any]:
+        """Who of player p throws now: the player itself, or the team member whose turn it is."""
+        s: dict[str, Any] = sp["spieler"][p]
+        team = s.get("team")
+        if not team:
+            return s
+        if sp["phase"] == "bulloff" or not st:
+            return dict(team[0])
+        n = sum(1 for v in st.get("verlauf") or [] if v.get("s") == p)
+        if n and (st.get("verlauf") or [])[-1].get("s") == p and sp["aufnahmen"] and not sp["aufnahmen"][-1].get("zu"):
+            n -= 1  # the open visit is thrown by the current member
+        return dict(team[n % len(team)])
+
+    def _auswerten(self, sp: dict[str, Any]) -> dict[str, Any]:
+        """Score of the game; in team games every visit carries who threw it ("w") and every team who is up ("werfer")."""
+        st = spielarten.auswerten(sp)
+        if any(s.get("team") for s in sp["spieler"]):
+            zaehler = [0] * len(sp["spieler"])
+            for v in st.get("verlauf") or []:
+                team = sp["spieler"][v["s"]].get("team")
+                if team:
+                    v["w"] = team[zaehler[v["s"]] % len(team)]["name"]
+                    zaehler[v["s"]] += 1
+            for k, s in enumerate(st["spieler"]):
+                if sp["spieler"][k].get("team"):
+                    w = self._werfer(sp, st, k)
+                    s["werfer"], s["werfer_bot"] = w["name"], w.get("bot")
+        return st
 
     async def starten(self, eintraege: list[str] | None, einstellungen: dict[str, Any], turnier_ref: dict[str, Any] | None = None) -> None:
         e = self._pruefen(einstellungen)
-        spieler = self._spieler_aus(eintraege or e.get("spieler") or [], MAX_SPIELER)
+        spieler = self._spieler_aus(eintraege or e.get("spieler") or [], MAX_SPIELER, e["handicap"] if e["spiel"] == "x01" else None)
         lo, hi = spielarten.SPIELER_GRENZEN.get(e["spiel"], (1, MAX_SPIELER))
         if not lo <= len(spieler) <= hi:
             raise _fehler("player_count", min=str(lo), max=str(hi))
         if turnier_ref is None:
-            e["spieler"] = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
+            e["spieler"] = [s["eintrag"] for s in spieler]
             self.daten["letzte"] = e
         self._bot_stoppen()
         einst = {k: e[k] for k in EINSTELLUNGEN}
@@ -546,7 +604,7 @@ class Spielleiter:
         lo, hi = turnier.GRENZEN[modus]
         if not lo <= len(spieler) <= hi:
             raise _fehler("tournament_players", min=str(lo), max=str(hi))
-        teilnehmer = [s["id"] if s.get("id") else f"bot:{s['bot']}" for s in spieler]
+        teilnehmer = [s["eintrag"] for s in spieler]
         self.daten["letzte"] = {**e, "spieler": teilnehmer}
         self.daten["turnier"] = {
             "id": uuid.uuid4().hex[:8],
@@ -799,6 +857,7 @@ class Spielleiter:
                 j = w.index(i) if i in w else None
                 d = sp["bulloff"][j] if j is not None and j < k else None
                 liste.append({"name": s["name"], "bot": s.get("bot"), "dart": d, "raus": j is None,
+                              "werfer": s["team"][0]["name"] if s.get("team") else None,
                               "abstand": round(x01.bull_abstand(d) * 170) if d else None})
             a["bulloff"] = liste
             a["am_zug"] = w[min(k, len(w) - 1)]

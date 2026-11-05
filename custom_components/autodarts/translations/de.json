@@ -112,6 +112,12 @@
     },
     "invalid_score": {
       "message": "{score} kann man mit drei Darts nicht werfen."
+    },
+    "team_size": {
+      "message": "Ein Team braucht mindestens zwei Spieler."
+    },
+    "player_twice": {
+      "message": "Ein Spieler kann nur einmal mitspielen (auch nicht in zwei Teams)."
     }
   },
   "entity": {

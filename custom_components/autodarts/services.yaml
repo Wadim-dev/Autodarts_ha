@@ -43,7 +43,7 @@ spiel_starten:
           max: 1001
     spieler:
       name: Spieler
-      description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler) und Bots als bot:55 (Average). Höchstens 8.
+      description: Liste aus Spieler-IDs (siehe sensor.autodarts_board_spieler), Bots als bot:55 (Average) und Teams als team:id1+id2 (werfen abwechselnd). Höchstens 8.
       example: '["a1b2c3d4", "bot:55"]'
       selector:
         object:
@@ -79,6 +79,23 @@ spiel_starten:
       name: Bull-Off
       selector:
         boolean:
+    bull_5050:
+      name: 50/50 Bull (X01)
+      description: Das äußere Bull (25) zählt wie das Bullseye 50 Punkte.
+      selector:
+        boolean:
+    max_runden:
+      name: Rundenlimit (X01, 0 = ohne)
+      description: Nach so vielen Aufnahmen gewinnt das Leg, wer den niedrigsten Rest hat.
+      selector:
+        number:
+          min: 0
+          max: 50
+    handicap:
+      name: Handicap (X01)
+      description: "Eigener Startwert je Spieler, z. B. {\"<spieler-id>\": 301}. Der Schlüssel ist der Eintrag aus „spieler“."
+      selector:
+        object:
 turnier_starten:
   name: Turnier starten
   description: "Turnier mit Bots erlaubt. Gleiche Felder wie beim Spiel, dazu turnier_modus: ko (K.-o., 3–32 Spieler), doppel_ko (Doppel-K.-o., 3–16), gruppen (Gruppen + K.-o., 6–32) oder liga (jeder gegen jeden, 3–10). Jedes Match wird mit diesen Einstellungen gespielt, Freilose werden automatisch verteilt."

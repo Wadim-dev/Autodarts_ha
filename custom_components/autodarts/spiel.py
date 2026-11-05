@@ -768,8 +768,8 @@ class Spielleiter:
         if st.get("art", "x01") != "x01":
             raise _fehler("score_x01_only")
         wer = st["spieler"][st["am_zug"]]
-        if wer.get("bot") or (name and name.strip().lower() != str(wer["name"]).lower()):
-            raise _fehler("not_your_turn", player=str(wer["name"]))
+        if wer.get("bot") or wer.get("werfer_bot") or (name and name.strip().lower() not in (str(wer["name"]).lower(), str(wer.get("werfer") or "").lower())):
+            raise _fehler("not_your_turn", player=str(wer.get("werfer") or wer["name"]))
         rest = int(wer.get("rest") or 0)
         if punkte == rest:
             darts = x01.weg(punkte, 3, sp["einstellungen"]["auswurf"]) or x01.weg(punkte, 3, "straight")

@@ -61,7 +61,7 @@ Big scores, average, checkout ways and every dart where it landed. ✏️ Tap an
 
 | X01 | Cricket (8) | Training (8) | Party (12) |
 |---|---|---|---|
-| 101 – 901<br>double / master in and out<br>legs and sets | Cricket · Cut-Throat · No Score<br>Tactics · Random · Hidden<br>Wild Mouse · Mickey Mouse | Around the Clock · Doubles<br>Singles · Bob's 27<br>121 Checkout · Checkout Training<br>Catch 40 · JDC Challenge | Count-Up · Shanghai · Killer<br>Halve-It · Bermuda · Golf<br>Baseball · Round the World<br>Gotcha · Nine Lives · Football · Scram |
+| 101 – 901<br>double / master in and out<br>legs and sets<br>teams · handicap<br>50/50 bull · round limit | Cricket · Cut-Throat · No Score<br>Tactics · Random · Hidden<br>Wild Mouse · Mickey Mouse | Around the Clock · Doubles<br>Singles · Bob's 27<br>121 Checkout · Checkout Training<br>Catch 40 · JDC Challenge | Count-Up · Shanghai · Killer<br>Halve-It · Bermuda · Golf<br>Baseball · Round the World<br>Gotcha · Nine Lives · Football · Scram |
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/new-games.png" alt="Gotcha, Wild Mouse, Football and Scram" width="900"></p>
 
@@ -86,9 +86,9 @@ Average, first 9, checkout rate, rating, trend, badges, head to head and a ranki
 
 ## Tournaments
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tournaments.png" alt="Starting a tournament, knockout bracket and league table" width="900"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/tournaments.png" alt="Tournament formats, double KO bracket and group stage" width="900"></p>
 
-**Knockout** for 3–32 players with bracket, byes and a champion celebration, or a **league** for 3–10 players with table. The next match starts with one tap.
+Four formats: **knockout** (3–32), **double KO** with winners and losers bracket (3–16), **groups + KO** (6–32) and a **league** (3–10). Play alone, as **teams of two** or with a **handicap** for beginners. The next match starts with one tap.
 
 ## Board Manager inside Home Assistant
 
@@ -179,7 +179,7 @@ All games run completely inside Home Assistant, for 1–8 players, people and bo
 
 | Game | `spiel` | Rules in short | Options |
 |------|---------|----------------|---------|
-| X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets |
+| X01 | `x01` | 101 … 901, see below | start value, in/out, legs, sets, 50/50 bull, round limit, handicap |
 | Cricket | `cricket` | Close 15–20 and bull with three marks; extra marks score while an opponent has the number open | `variante`: `standard`, `cut_throat` (points go to the opponents, lowest wins), `no_score`; `zahlen`: `classic` (15–20), `tactics` (10–20), `random` (6 random numbers), `hidden` (6 random numbers, shown when someone hits them) |
 | Wild Mouse | `wild_mouse` | Cricket on 20–15 and bull plus three extra targets: any double, any treble and 3 in a bed (three darts in the same field). A dart marks its own number first, then the double or treble | `variante`: `ohne_3b` (without 3 in a bed) |
 | Mickey Mouse | `mickey` | Close 20–12, any double, any treble and bull; no points, first to close everything wins | – |
@@ -244,9 +244,13 @@ The integration registers sentences in German, English and Russian, nothing to s
 
 #### Tournament
 
-The lobby offers **Single game**, **Knockout** and **League**. Knockout is for 3–32 players (bots too): a bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
+The lobby offers **Single game** and **Tournament** with four formats: **Knockout**, **Double KO**, **Groups + KO** and **League**. Teams and handicap work in every format. Knockout is for 3–32 players (bots too): a bracket with byes for the top seeds, every match played with the same game and settings. The card shows the round above the match ("Semi-final · Match 1 of 2"), the bracket after each match with a button for the next one, and a champion celebration at the end. Undo after a match takes its result back. The tournament is stored, so it survives restarts; it can be cancelled any time. The event `tournament_won` fires with the champion.
 
 **League** (3–10 players): everyone plays everyone once. The card shows the table (played, wins, points, legs) and all matches; a win gives 2 points, then the leg difference counts.
+
+**Double KO** (3–16 players): a loss in the winners bracket moves you to the losers bracket, the second loss ends the tournament. The winner of the losers bracket meets the winners-bracket champion in the grand final and has to win twice (a decider is played only if needed).
+
+**Groups + KO** (6–32 players): 2 groups (up to 11 players), 4 (up to 23) or 8, filled by seeding. Everyone plays everyone in the group, the best two of each group go to the knockout stage, and two players of the same group do not meet in its first round. The card shows the group tables, the matches of the group being played, and the knockout bracket with placeholders such as "1 A" until the groups are done.
 
 
 #### Caller
@@ -278,6 +282,10 @@ The game runs completely inside Home Assistant and is stored in `.storage/autoda
 - **Players**: up to 8 per game, any mix of people and bots. Bots throw with a realistic scatter for the chosen average (20–120).
 - **Modes**: start value 101, 170, 301, 501, 701, 901; check-in and check-out `straight`, `double` or `master`; first to N legs or N sets of M legs.
 - **Bull-off**: closest dart to the bull starts; ties throw again.
+- **Teams**: tap **Teams** in the player list – players 1 + 2, 3 + 4 … form a team and throw in turn (works in every game and in tournaments). The card shows who of the team throws next. Team games do not count in personal statistics.
+- **Handicap**: own start value per player (or team), set with − / + next to the name. Under *More settings*.
+- **50/50 bull**: the outer bull counts 50 like the bullseye (and finishes like it). Under *More settings*.
+- **Round limit**: after 10, 15 or 20 visits the leg goes to the lowest rest; on a tie the player who threw first in the leg. Under *More settings*.
 - **Darts from the board** are counted automatically. Pulling the darts finishes the visit. Without the board (or for corrections) darts can be entered by hand.
 - **Checkout suggestions** for up to three darts, respecting the check-out mode.
 - **Statistics** are added to each player when a game ends; undo after the end takes them back again.
@@ -415,9 +423,9 @@ While the board is off, connection and status show `Offline`; all other board en
 
 | Action | Description |
 |--------|-------------|
-| `autodarts.spiel_starten` | Start a game. Fields: `spiel` (see table above, default `x01`), `variante`, `zahlen`, `runden`, `leben`, `spieler` (list of player IDs, bots as `bot:55`, up to 8), `startwert`, `einwurf`, `auswurf` (`straight`/`double`/`master`), `legs`, `sets`, `bull_off`. Without fields the last settings and players are used (rematch). |
+| `autodarts.spiel_starten` | Start a game. Fields: `spiel` (see table above, default `x01`), `variante`, `zahlen`, `runden`, `leben`, `spieler` (list of player IDs, bots as `bot:55`, teams as `team:id1+id2`, up to 8), `startwert`, `einwurf`, `auswurf` (`straight`/`double`/`master`), `legs`, `sets`, `bull_off`, `bull_5050`, `max_runden` (0 = off), `handicap` (`{"<entry from spieler>": 301}`). Without fields the last settings and players are used (rematch). |
 | `autodarts.spiel_abbrechen` | Cancel the running game (not counted). |
-| `autodarts.turnier_starten` | Start a tournament: `turnier_modus` `ko` (3–32 `spieler`) or `liga` (3–10); same fields as `spiel_starten`, used for every match. Starts the first match. |
+| `autodarts.turnier_starten` | Start a tournament: `turnier_modus` `ko` (3–32 `spieler`), `doppel_ko` (3–16), `gruppen` (6–32) or `liga` (3–10); same fields as `spiel_starten` (teams and handicap included), used for every match. Starts the first match. |
 | `autodarts.aufnahme_eintragen` | Enter the score of a whole X01 visit (`punkte` 0–180, optional `spieler` = name of the player whose turn it is). |
 | `autodarts.ansager_setzen` | Save the caller settings (`einstellungen`). The caller card does this for you. |
 | `autodarts.ansager_testen` | Speak a test sentence (`text`); without text an example visit "140 · <player>, you require 92" from the chosen pack. `sprecher` plays a sample of a Google AI speaker. |
@@ -671,10 +679,10 @@ Private project, no outside contributions. The code meets all rules of the Home 
 
 **Was drin ist**
 
-- **Spielen:** 29 Spiele: X01, 8 Cricket-Spiele (u. a. Tactics, Verdeckt, Wild Mouse, Mickey Mouse), 8 Trainings (u. a. Catch 40, JDC, Checkout-Training) und 12 Partyspiele (u. a. Gotcha, Fußball, Scram, Nine Lives, Bermuda) für 1–8 Spieler und Bots, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
+- **Spielen:** 29 Spiele: X01, 8 Cricket-Spiele (u. a. Tactics, Verdeckt, Wild Mouse, Mickey Mouse), 8 Trainings (u. a. Catch 40, JDC, Checkout-Training) und 12 Partyspiele (u. a. Gotcha, Fußball, Scram, Nine Lives, Bermuda) für 1–8 Spieler, Bots und 2er-Teams, mit Regeltext, Ziel auf der Scheibe, Korrektur per Antippen und Bull-Off. Ohne Kameras erscheint von selbst ein Tastenfeld.
 - **Feiern:** Stadion-Effekte bei 180, Checkout und Matchgewinn; Ansager in allen Spielarten mit Einlaufmusik je Spieler über Lautsprecher, Handy oder beides, mit Meisterschafts-Pack (Bühnen-Ansager-Stimme per Knopfdruck, jeder Punkte-Ton per Spracherkennung geprüft) oder eigenen Tönen; 18 Lichteffekte plus WLED-Effekte und -Presets per Klick.
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
-- **Turniere:** K.-o. für 3–32 Spieler mit Turnierbaum oder Liga für 3–10 Spieler mit Tabelle.
+- **Turniere:** K.-o. (3–32 Spieler), Doppel-K.-o. mit Verliererrunde (3–16), Gruppen + K.-o. (6–32) oder Liga (3–10), auch als 2er-Teams oder mit Handicap.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.

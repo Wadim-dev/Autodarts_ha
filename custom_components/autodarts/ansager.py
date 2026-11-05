@@ -518,9 +518,10 @@ class Ansager:
             spieler = st.get("spieler") or []
             zug = st.get("am_zug")
             wer = spieler[zug] if isinstance(zug, int) and zug < len(spieler) else {}
-            if wer and not wer.get("bot") and 1 < int(wer.get("rest") or 0) <= 170 and st.get("weg"):
-                teile.append(tx["rest"].format(n=wer.get("name", ""), r=wer["rest"]))
-                keys += [_slug(wer.get("name", "")), "require", str(wer["rest"])]
+            name = wer.get("werfer") or wer.get("name", "")  # in team games the one who throws now
+            if wer and not wer.get("bot") and not wer.get("werfer_bot") and 1 < int(wer.get("rest") or 0) <= 170 and st.get("weg"):
+                teile.append(tx["rest"].format(n=name, r=wer["rest"]))
+                keys += [_slug(name), "require", str(wer["rest"])]
                 if len(teile) > 1:
                     schluessel = ""  # a single file would leave out the rest
         return (schluessel, ". ".join(teile), keys) if teile else None

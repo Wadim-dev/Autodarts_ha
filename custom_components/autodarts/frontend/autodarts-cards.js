@@ -158,6 +158,18 @@
   // texts of tournaments up to 32 and the league (1.16)
   Object.assign(TEXTE.en, { tour_ko: 'Knockout', tour_liga: 'League', tour_hint: 'Knockout for 3–32 players, byes are drawn automatically. Every match uses the settings below.', liga_hint: 'League for 3–10 players: everyone plays everyone once. Win = 2 points, then leg difference.', of16: '{n} of {m}', t_last32: 'Round of 32', liga: 'League', liga_match: 'Match {n} of {m}', table: 'Table', fixtures: 'Matches', t_pl: 'P', t_w: 'W', t_pts: 'Pts', t_legs: 'Legs' });
   Object.assign(TEXTE.de, { tour_ko: 'K.-o.', tour_liga: 'Liga', tour_hint: 'K.-o. für 3–32 Spieler, Freilose werden automatisch verteilt. Jedes Match nutzt die Einstellungen unten.', liga_hint: 'Liga für 3–10 Spieler: jeder spielt einmal gegen jeden. Sieg = 2 Punkte, danach zählt die Leg-Differenz.', of16: '{n} von {m}', t_last32: 'Sechzehntelfinale', liga: 'Liga', liga_match: 'Spiel {n} von {m}', table: 'Tabelle', fixtures: 'Spiele', t_pl: 'Sp', t_w: 'S', t_pts: 'Pkt', t_legs: 'Legs' });
+  Object.assign(TEXTE.en, { tour_mode: 'Tournament', tour_dko: 'Double KO', tour_gr: 'Groups + KO', s_tko: 'Lose once and you are out', s_tdko: 'Out after two losses', s_tgr: 'Groups first, then knockout', s_tliga: 'Everyone plays everyone',
+    dko_hint: 'Double KO for 3–16 players: a loss in the winners bracket sends you to the losers bracket, the second loss ends the tournament. In the grand final the losers-bracket winner has to win twice.',
+    gr_hint: 'Groups + KO for 6–32 players: 2, 4 or 8 groups, everyone plays everyone in the group. The best two of each group go on to the knockout stage, and players of the same group do not meet in its first round.',
+    needs_tour: '{f} needs {a}–{b} players', t_winners: 'Winners bracket', t_losers: 'Losers bracket', t_grand: 'Grand final', t_decider: 'Decider', t_group: 'Group {g}', t_groups: 'Groups', t_ko_stage: 'Knockout stage',
+    teams: 'Teams', n_teams: '{n} teams', team_n: 'Team {n}', teams_odd: 'For teams, add an even number of players.', teams_hint: 'Players 1 + 2, 3 + 4 … form a team and throw in turn. Shuffle for random teams. Team games do not count in personal statistics.',
+    handicap: 'Handicap', handicap_hint: 'Own start value per player: tap − or + next to the name. Weaker players start lower.', bull5050: '50/50 bull', bull5050_hint: 'Outer bull counts 50', round_limit: 'Round limit', rl_short: '{n} rounds' });
+  Object.assign(TEXTE.de, { tour_mode: 'Turnier', tour_dko: 'Doppel-K.-o.', tour_gr: 'Gruppen + K.-o.', s_tko: 'Wer verliert, ist raus', s_tdko: 'Raus nach zwei Niederlagen', s_tgr: 'Erst Gruppen, dann K.-o.', s_tliga: 'Jeder gegen jeden',
+    dko_hint: 'Doppel-K.-o. für 3–16 Spieler: Wer in der Gewinnerrunde verliert, spielt in der Verliererrunde weiter, erst die zweite Niederlage beendet das Turnier. Im großen Finale muss der Sieger der Verliererrunde zweimal gewinnen.',
+    gr_hint: 'Gruppen + K.-o. für 6–32 Spieler: 2, 4 oder 8 Gruppen, in der Gruppe spielt jeder gegen jeden. Die besten zwei jeder Gruppe kommen in die K.-o.-Runde, Spieler derselben Gruppe treffen dort nicht gleich aufeinander.',
+    needs_tour: '{f} braucht {a}–{b} Spieler', t_winners: 'Gewinnerrunde', t_losers: 'Verliererrunde', t_grand: 'Großes Finale', t_decider: 'Entscheidungsspiel', t_group: 'Gruppe {g}', t_groups: 'Gruppen', t_ko_stage: 'K.-o.-Runde',
+    teams: 'Teams', n_teams: '{n} Teams', team_n: 'Team {n}', teams_odd: 'Für Teams eine gerade Anzahl Spieler hinzufügen.', teams_hint: 'Spieler 1 + 2, 3 + 4 … bilden ein Team und werfen abwechselnd. Mischen ergibt zufällige Teams. Team-Spiele zählen nicht in der persönlichen Statistik.',
+    handicap: 'Handicap', handicap_hint: 'Eigener Startwert je Spieler: − oder + neben dem Namen tippen. Schwächere starten niedriger.', bull5050: '50/50 Bull', bull5050_hint: 'Äußeres Bull zählt 50', round_limit: 'Rundenlimit', rl_short: '{n} Runden' });
   // keypad (1.17)
   // 1.25.0: more games
   Object.assign(TEXTE.en, {
@@ -1275,6 +1287,14 @@ ha-card{padding:14px 14px 16px;container-type:inline-size}
 .liga>small{display:block;font-size:11.5px;font-weight:700;color:var(--secondary-text-color);text-transform:uppercase;letter-spacing:.04em;margin:6px 2px}
 .ltab{width:100%;border-collapse:collapse;font-size:13.5px}.ltab th{font-size:11px;color:var(--secondary-text-color);font-weight:700;text-align:right;padding:4px 6px}.ltab td{padding:6px;text-align:right;border-top:1px solid color-mix(in srgb,var(--primary-text-color) 8%,transparent)}
 .ltab td:nth-child(2){text-align:left;font-weight:600;width:100%}.ltab td:first-child{color:var(--secondary-text-color);text-align:left}.ltab tr.w td{color:var(--green-color,#43a047)}
+.tarten{grid-template-columns:repeat(auto-fill,minmax(230px,1fr));margin:0 0 10px}.tarten .an1 b{padding-right:48px}
+.baum.fin{justify-content:center}.baum.fin .brd{flex:0 1 300px}
+.tsek{display:block;font-size:11.5px;font-weight:700;color:var(--secondary-text-color);text-transform:uppercase;letter-spacing:.04em;margin:10px 2px 4px}.tsek:first-child{margin-top:2px}
+.grps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px}.grp{border-radius:14px;padding:8px 10px}.grp>small{font-weight:800;font-size:12.5px}.grp.akt{box-shadow:0 0 0 2px color-mix(in srgb,var(--amber-color,#ffc107) 35%,transparent)}.grp .lsl{margin-top:8px;grid-template-columns:1fr}
+.tkopf{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;color:var(--secondary-text-color);text-transform:uppercase;letter-spacing:.04em;margin:8px 2px 2px}.tkopf:first-child{margin-top:0}.tkopf .hc{margin-left:auto}
+.hc{display:inline-flex;align-items:center;gap:2px;flex:none}.hc button{width:28px;height:28px;border-radius:9px;font-size:15px;font-weight:700}.hc b{min-width:34px;text-align:center;font-size:13px}
+.reihe small.rk{display:block;font-size:11.5px;font-weight:500;color:var(--secondary-text-color)}
+.sk>.wf{font-size:12px;font-weight:600;color:var(--secondary-text-color);margin:1px 0 -2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lsl{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}.lsp{display:flex;align-items:center;gap:8px;border-radius:12px;padding:7px 10px;font-size:13px}.lsp span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lsp span:last-child{text-align:right}
 .lsp b{min-width:34px;text-align:center}.lsp .w{font-weight:700}.lsp .l{opacity:.55}.lsp.akt{border-color:var(--primary-color)}
 .brd>small{font-size:11.5px;font-weight:700;color:var(--secondary-text-color);text-align:center;text-transform:uppercase;letter-spacing:.04em}
@@ -1454,14 +1474,19 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     } catch (e) {}
   };
 
+  const werferZeile = p => p.werfer ? '<div class="wf">▸ ' + esc(p.werfer) + '</div>' : '';
+  const TUR_GRENZEN = { ko: [3, 32], doppel_ko: [3, 16], gruppen: [6, 32], liga: [3, 10] };
+  const TUR_ARTEN = [['ko', 'mdi:tournament', 'tour_ko', 's_tko', 'tour_hint'], ['doppel_ko', 'mdi:sitemap-outline', 'tour_dko', 's_tdko', 'dko_hint'],
+    ['gruppen', 'mdi:table-large', 'tour_gr', 's_tgr', 'gr_hint'], ['liga', 'mdi:format-list-numbered', 'tour_liga', 's_tliga', 'liga_hint']];
   class AutodartsGameCard extends DartsSeite {
     static get CSS() { return SPIEL_CSS + FX_CSS; }
     get _spiel() { return E(this._h, 'sensor.game'); }
     get _spieler() { return E(this._h, 'sensor.players'); }
     _lobbyStart() {
-      const l = att(this._h, this._spieler).letzte || {};
+      const l = att(this._h, this._spieler).letzte || {}, roh = l.spieler || [], teams = roh.some(x => String(x).startsWith('team:'));
       this._lob = {
-        spieler: (l.spieler || []).slice(0, 16), startwert: l.startwert || 501, legs: l.legs || 1, sets: l.sets || 0,
+        spieler: (teams ? roh.flatMap(x => String(x).startsWith('team:') ? String(x).slice(5).split('+') : [x]) : roh).slice(0, 64), teams,
+        bull_5050: !!l.bull_5050, max_runden: l.max_runden || 0, handicap: { ...(l.handicap || {}) }, hc: !!Object.keys(l.handicap || {}).length, startwert: l.startwert || 501, legs: l.legs || 1, sets: l.sets || 0,
         einwurf: l.einwurf || 'straight', auswurf: l.auswurf || 'double', bull_off: !!l.bull_off,
         spiel: l.spiel || 'x01', variante: l.variante || '', zahlen: l.zahlen || 'classic', runden: l.runden || 0, leben: l.leben || 3, zielwert: l.zielwert || 0
       };
@@ -1752,30 +1777,66 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const rest = gesamt - r;
       return rest === 1 ? t('t_final') : rest === 2 ? t('t_semi') : rest === 3 ? t('t_quarter') : rest === 4 ? t('t_last16') : rest === 5 ? t('t_last32') : t('t_round', { n: r + 1 });
     }
-    _max() { return this._turMod === 'ko' ? 32 : this._turMod === 'liga' ? 10 : 8; }
+    _max() { const m = (TUR_GRENZEN[this._turMod] || [1, 8])[1]; return this._lob && this._lob.teams ? m * 2 : m; }
+    // what is sent: player ids and bots, or teams "team:a+b" of two players each
+    _eintraege(L) {
+      if (!L.teams) return L.spieler.slice();
+      const out = []; for (let i = 0; i + 1 < L.spieler.length; i += 2) out.push('team:' + L.spieler[i] + '+' + L.spieler[i + 1]); return out;
+    }
     _turBanner(a) {
       const tu = a.turnier, n = tu && tu.match_nr; if (!n) return '';
+      const ban = (ic, x, klein) => '<div class="tban"><ha-icon icon="' + ic + '"></ha-icon>' + x + (klein ? ' <small>· ' + klein + '</small>' : '') + '</div>';
+      const von = n[2] > 1 ? t('match_of', { n: n[1], m: n[2] }) : '';
+      if (tu.phase === 'gruppe') return ban('mdi:table-large', t('t_group', { g: tu.gruppe }), t('liga_match', { n: n[1], m: n[2] }));
+      if (tu.phase === 'oben') return ban('mdi:sitemap-outline', t('t_winners'), [t('t_round', { n: n[0] + 1 }), von].filter(Boolean).join(' · '));
+      if (tu.phase === 'unten') return ban('mdi:sitemap-outline', t('t_losers'), [t('t_round', { n: n[0] + 1 }), von].filter(Boolean).join(' · '));
+      if (tu.phase === 'finale') return ban('mdi:trophy-outline', t('t_grand'));
+      if (tu.phase === 'entscheidung') return ban('mdi:trophy-outline', t('t_decider'));
       if (tu.modus === 'liga') return '<div class="tban"><ha-icon icon="mdi:format-list-numbered"></ha-icon>' + t('liga') + ' <small>· ' + t('liga_match', { n: n[1], m: n[2] }) + '</small></div>';
       return '<div class="tban"><ha-icon icon="mdi:tournament"></ha-icon>' + this._rundeName(n[0], n[3]) + (n[2] > 1 ? ' <small>· ' + t('match_of', { n: n[1], m: n[2] }) + '</small>' : '') + '</div>';
     }
     _liga(tu) {
-      const tab = '<table class="ltab"><tr><th></th><th></th><th>' + t('t_pl') + '</th><th>' + t('t_w') + '</th><th>' + t('t_legs') + '</th><th>' + t('t_pts') + '</th></tr>' +
-        tu.tabelle.map((z, i) => '<tr' + (i === 0 && tu.sieger ? ' class="w"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(z.name) + '</td><td>' + z.spiele + '</td><td>' + z.siege + '</td><td>' + z.legs + ':' + z.gegen + '</td><td><b>' + z.punkte + '</b></td></tr>').join('') + '</table>';
-      const spiele = tu.spiele.map(m => '<div class="lsp feld' + (m.aktiv ? ' akt' : '') + '"><span class="' + (m.sieger === 0 ? 'w' : m.sieger === 1 ? 'l' : '') + '">' + esc(m.a) + '</span><b>' + (m.legs ? m.legs[0] + ':' + m.legs[1] : m.sieger == null ? '–' : '✓') + '</b><span class="' + (m.sieger === 1 ? 'w' : m.sieger === 0 ? 'l' : '') + '">' + esc(m.b) + '</span></div>').join('');
-      return '<div class="liga"><small>' + t('table') + '</small>' + tab + '<small>' + t('fixtures') + '</small><div class="lsl">' + spiele + '</div></div>';
+      return '<div class="liga"><small>' + t('table') + '</small>' + this._ltab(tu.tabelle, i => i === 0 && tu.sieger) + '<small>' + t('fixtures') + '</small>' + this._lspiele(tu.spiele) + '</div>';
+    }
+    _ltab(zeilen, sieger) {
+      return '<table class="ltab"><tr><th></th><th></th><th>' + t('t_pl') + '</th><th>' + t('t_w') + '</th><th>' + t('t_legs') + '</th><th>' + t('t_pts') + '</th></tr>' +
+        zeilen.map((z, i) => '<tr' + (sieger && sieger(i) ? ' class="w"' : '') + '><td>' + (i + 1) + '</td><td>' + esc(z.name) + '</td><td>' + z.spiele + '</td><td>' + z.siege + '</td><td>' + z.legs + ':' + z.gegen + '</td><td><b>' + z.punkte + '</b></td></tr>').join('') + '</table>';
+    }
+    _lspiele(spiele) {
+      return '<div class="lsl">' + spiele.map(m => '<div class="lsp feld' + (m.aktiv ? ' akt' : '') + '"><span class="' + (m.sieger === 0 ? 'w' : m.sieger === 1 ? 'l' : '') + '">' + esc(m.a) + '</span><b>' + (m.legs ? m.legs[0] + ':' + m.legs[1] : m.sieger == null ? '–' : '✓') + '</b><span class="' + (m.sieger === 1 ? 'w' : m.sieger === 0 ? 'l' : '') + '">' + esc(m.b) + '</span></div>').join('') + '</div>';
     }
     _baum(tu) {
       if (tu.modus === 'liga') return this._liga(tu);
-      const zeile = (m, k) => {
+      const champ = tu.sieger ? '<div class="brd"><small>' + t('champion') + '</small><div><div class="bm feld akt"><div class="w">🏆 ' + esc(tu.sieger) + '</div></div></div></div>' : '';
+      if (tu.modus === 'doppel_ko') {
+        const fin = (tu.finale || []).map((m, i) => '<div class="brd"><small>' + t(i ? 't_decider' : 't_grand') + '</small><div>' + this._bm(m) + '</div></div>').join('');
+        return '<small class="tsek">' + t('t_winners') + '</small>' + this._klammer(tu.runden, r => t('t_round', { n: r + 1 }), '') +
+          '<small class="tsek">' + t('t_losers') + '</small>' + this._klammer(tu.unten || [], r => t('t_round', { n: r + 1 }), '') +
+          (fin || champ ? '<div class="baum fin">' + fin + champ + '</div>' : '');
+      }
+      if (tu.modus === 'gruppen') {
+        const n = tu.naechstes, offen = !tu.gruppen_fertig;
+        const gr = tu.gruppen.map(g => {
+          const hier = offen && n && g.spiele.some(m => m.k === n.k || m.aktiv);
+          return '<div class="grp feld' + (hier ? ' akt' : '') + '"><small>' + t('t_group', { g: g.name }) + '</small>' + this._ltab(g.tabelle, i => i < 2 && !offen) +
+            (hier ? this._lspiele(g.spiele) : '') + '</div>';
+        }).join('');
+        return '<small class="tsek">' + t('t_groups') + '</small><div class="grps">' + gr + '</div><small class="tsek">' + t('t_ko_stage') + '</small>' + this._klammer(tu.runden, r => this._rundeName(r, tu.runden.length), champ);
+      }
+      return this._klammer(tu.runden, r => this._rundeName(r, tu.runden.length), champ);
+    }
+    _bm(m) {
+      const zeile = k => {
         const nm = k ? m.b : m.a;
         if (nm === '') return '<div class="o">' + t('bye') + '</div>';
-        if (nm == null) return '<div class="o">–</div>';
+        if (nm == null) return '<div class="o">' + (m.pa ? esc(k ? m.pb : m.pa) : '–') + '</div>';
         const c = m.sieger == null || m.freilos ? (m.freilos ? ' class="w"' : '') : m.sieger === k ? ' class="w"' : ' class="l"';
         return '<div' + c + '>' + (m.sieger === k && !m.freilos ? '✓ ' : '') + esc(nm) + '</div>';
       };
-      return '<div class="baum">' + tu.runden.map((runde, r) => '<div class="brd"><small>' + this._rundeName(r, tu.runden.length) + '</small><div>' +
-        runde.map(m => '<div class="bm feld' + (m.aktiv ? ' akt' : '') + '">' + zeile(m, 0) + zeile(m, 1) + '</div>').join('') + '</div></div>').join('') +
-        (tu.sieger ? '<div class="brd"><small>' + t('champion') + '</small><div><div class="bm feld akt"><div class="w">🏆 ' + esc(tu.sieger) + '</div></div></div></div>' : '') + '</div>';
+      return '<div class="bm feld' + (m.aktiv ? ' akt' : '') + '">' + zeile(0) + zeile(1) + '</div>';
+    }
+    _klammer(runden, titel, ende) {
+      return '<div class="baum">' + runden.map((runde, r) => '<div class="brd"><small>' + titel(r) + '</small><div>' + runde.map(m => this._bm(m)).join('') + '</div></div>').join('') + ende + '</div>';
     }
     _turKnoepfe(tu) {
       if (tu.sieger) return '<button class="start" data-act="turende"><ha-icon icon="mdi:flag-checkered"></ha-icon>' + t('end_tour') + '</button>';
@@ -1795,29 +1856,47 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (tu) return '<div class="lobby"><div class="blk feld"><div class="bt"><ha-icon icon="mdi:tournament"></ha-icon>' + (tu.sieger ? t('champion') + ': ' + esc(tu.sieger) : t('tour_running')) + '</div>' + this._baum(tu) + '</div>' + this._turKnoepfe(tu) + '</div>';
       const h = this._h, L = this._lob, alle = att(h, this._spieler).spieler || [], name = id => (alle.find(s => s.id === id) || {}).name;
       L.spieler = L.spieler.filter(x => x.startsWith('bot:') || name(x));
-      if (this._wartName) { const n = alle.find(s => s.name.toLowerCase() === this._wartName); if (n) { this._wartName = null; if (!L.spieler.includes(n.id) && L.spieler.length < 8) L.spieler.push(n.id); } }
+      if (this._wartName) { const n = alle.find(s => s.name.toLowerCase() === this._wartName); if (n) { this._wartName = null; if (!L.spieler.includes(n.id) && L.spieler.length < this._max()) L.spieler.push(n.id); } }
+      const x01 = L.spiel === 'x01', hcAn = x01 && L.hc, eintr = this._eintraege(L);
+      const hc = e => { const v = L.handicap[e] || L.startwert; return '<span class="hc"><button class="feld" data-act="hc" data-e="' + esc(e) + '" data-d="-1">−</button><b>' + v + '</b><button class="feld" data-act="hc" data-e="' + esc(e) + '" data-d="1">+</button></span>'; };
       const liste = L.spieler.map((x, i) => {
         const bot = x.startsWith('bot:');
-        return '<div class="sp feld"><span class="nr">' + (i + 1) + '</span><span class="nm">' + (bot ? t('bot') + ' <small>' + t('average') + ' ' + x.slice(4) + '</small>' : esc(name(x))) + '</span>' +
+        const kopf = L.teams && i % 2 === 0 ? '<div class="tkopf">' + t('team_n', { n: i / 2 + 1 }) + (hcAn && eintr[i / 2] ? hc(eintr[i / 2]) : '') + '</div>' : '';
+        return kopf + '<div class="sp feld"><span class="nr">' + (i + 1) + '</span><span class="nm">' + (bot ? t('bot') + ' <small>' + t('average') + ' ' + x.slice(4) + '</small>' : esc(name(x))) + '</span>' +
+          (hcAn && !L.teams ? hc(x) : '') +
           (i ? '<button data-act="hoch" data-i="' + i + '" title="' + t('move_up') + '"><ha-icon icon="mdi:arrow-up"></ha-icon></button>' : '') +
           '<button data-act="weg" data-i="' + i + '" title="' + t('remove') + '"><ha-icon icon="mdi:close"></ha-icon></button></div>';
       }).join('') || '<div class="leer">' + t('nobody') + '</div>';
       const frei = alle.filter(s => !L.spieler.includes(s.id));
-      const tur = this._turMod && L.spieler.length >= 3, max = this._turMod === 'ko' ? 32 : this._turMod === 'liga' ? 10 : 8, voll = L.spieler.length >= max;
-      let s = '<div class="lobby">' + (L.spieler.length >= 3 ? '<div class="seg breit">' + [['', 'mdi:account-multiple', t('single_game')], ['ko', 'mdi:tournament', t('tour_ko')], ['liga', 'mdi:format-list-numbered', t('tour_liga')]].map(([v, ic, x]) =>
-        '<button class="feld' + ((this._turMod || '') === v ? ' an' : '') + '" data-act="turmod" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon> ' + x + '</button>').join('') + '</div>' : '') +
-        (tur ? '<div class="regel" style="margin:0 0 10px"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t(this._turMod === 'liga' ? 'liga_hint' : 'tour_hint') + '</span></div>' : '') +
-        '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:account-group"></ha-icon>' + t('players') + '<span class="rechts">' + t(this._turMod ? 'of16' : 'of6', { n: L.spieler.length, m: max }) + '</span>' +
+      const einh = eintr.length, ungerade = L.teams && L.spieler.length % 2 === 1, max = this._max(), voll = L.spieler.length >= max;
+      const tur = !!this._turMod && einh >= 3, gz = TUR_GRENZEN[this._turMod] || [3, 32], turFalsch = tur && (einh < gz[0] || einh > gz[1]);
+      let s = '<div class="lobby">';
+      if (einh >= 3) {
+        s += '<div class="seg breit">' + [['', 'mdi:account-multiple', t('single_game')], ['t', 'mdi:tournament', t('tour_mode')]].map(([v, ic, x]) =>
+          '<button class="feld' + ((this._turMod ? 't' : '') === v ? ' an' : '') + '" data-act="turmod" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon> ' + x + '</button>').join('') + '</div>';
+        if (tur) {
+          s += '<div class="atiles tarten">' + TUR_ARTEN.map(([v, ic, nm, kurz]) => {
+            const g = TUR_GRENZEN[v], passt = einh >= g[0] && einh <= g[1];
+            return '<button class="feld' + (this._turMod === v ? ' an' : '') + (passt ? '' : ' passtnicht') + '" data-act="turart" data-v="' + v + '"><ha-icon icon="' + ic + '"></ha-icon>' +
+              '<span class="an1"><b>' + t(nm) + '</b><small>' + t(kurz) + '</small></span><span class="spz">' + g[0] + '–' + g[1] + ' <ha-icon icon="mdi:account"></ha-icon></span></button>';
+          }).join('') + '</div><div class="regel" style="margin:0 0 10px"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t(TUR_ARTEN.find(x => x[0] === this._turMod)[4]) + '</span></div>';
+        }
+      }
+      s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:account-group"></ha-icon>' + t('players') + '<span class="rechts">' + (L.teams ? t('n_teams', { n: einh }) : this._turMod ? t('of16', { n: L.spieler.length, m: max }) : L.spieler.length + ' / ' + max) + '</span>' +
         '<button class="ik" data-act="mischen" title="' + t('shuffle') + '"' + (L.spieler.length < 2 ? ' disabled' : '') + '><ha-icon icon="mdi:shuffle-variant"></ha-icon></button></div>' +
         '<div class="sliste">' + liste + '</div><div class="chips">' +
         frei.map(p => '<button class="chip feld" data-act="dazu" data-id="' + p.id + '"' + (voll ? ' disabled' : '') + '><ha-icon icon="mdi:plus"></ha-icon>' + esc(p.name) + '</button>').join('') +
         '<button class="chip feld" data-act="neu"' + (voll ? ' disabled' : '') + '><ha-icon icon="mdi:account-plus"></ha-icon>' + t('new_player') + '</button>' +
-        '<button class="chip feld' + (this._auf.bot ? ' an' : '') + '" data-act="tgl" data-x="bot"' + (voll ? ' disabled' : '') + '><ha-icon icon="mdi:robot-outline"></ha-icon>' + t('bot') + '</button></div>';
+        '<button class="chip feld' + (this._auf.bot ? ' an' : '') + '" data-act="tgl" data-x="bot"' + (voll ? ' disabled' : '') + '><ha-icon icon="mdi:robot-outline"></ha-icon>' + t('bot') + '</button>' +
+        (L.spieler.length >= 2 || L.teams ? '<button class="chip feld' + (L.teams ? ' an' : '') + '" data-act="teams"><ha-icon icon="mdi:account-multiple-outline"></ha-icon>' + t('teams') + '</button>' : '') + '</div>';
+      if (L.teams) s += '<div class="regel" style="margin:12px 0 0"><ha-icon icon="mdi:information-outline"></ha-icon><span>' + t('teams_hint') + '</span></div>';
+      if (hcAn) s += '<div class="regel" style="margin:12px 0 0"><ha-icon icon="mdi:scale-balance"></ha-icon><span>' + t('handicap_hint') + '</span></div>';
       if (this._auf.bot && !voll) s += '<div class="reihe" style="padding-top:12px"><span>' + t('bot_level') + '</span><div class="seg">' + BOTS.map(b => '<button class="feld" data-act="bot" data-l="' + b + '">' + b + '</button>').join('') + '</div></div>';
       s += '</div>';
       const seg = (k, opts) => '<div class="seg">' + opts.map(([v, x]) => '<button class="feld' + (String(L[k]) === String(v) ? ' an' : '') + '" data-act="set" data-k="' + k + '" data-v="' + v + '">' + x + '</button>').join('') + '</div>';
       const legs = n => n + ' Leg' + (n > 1 ? 's' : '');
-      const mehrText = (L.sets ? t('sets_to', { n: L.sets }) : t('no_sets')) + ' · ' + MODUS.find(m => m[0] === L.einwurf)[1] + ' In · ' + t('bulloff_onoff', { v: L.bull_off ? t('on_w') : t('off_w') });
+      const mehrText = [L.sets ? t('sets_to', { n: L.sets }) : t('no_sets'), MODUS.find(m => m[0] === L.einwurf)[1] + ' In', t('bulloff_onoff', { v: L.bull_off ? t('on_w') : t('off_w') }),
+        L.bull_5050 ? t('bull5050') : '', L.max_runden ? t('rl_short', { n: L.max_runden }) : '', L.hc ? t('handicap') : ''].filter(Boolean).join(' · ');
       s += this._artWahl(L, seg, legs);
       if (L.spiel === 'x01') {
         s += '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:tune-variant"></ha-icon>' + t('game') + '</div>' +
@@ -1828,20 +1907,25 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         if (this._auf.mehr) s += '<div class="aufinhalt">' +
           '<div class="reihe"><span>' + t('sets_first') + '</span><div class="stepper"><button class="feld" data-act="minus" data-k="sets">−</button><b>' + (L.sets ? L.sets + ' Set' + (L.sets > 1 ? 's' : '') : t('no_sets')) + '</b><button class="feld" data-act="plus" data-k="sets">+</button></div></div>' +
           '<div class="reihe"><span>' + t('checkin') + '</span>' + seg('einwurf', MODUS) + '</div>' +
-          '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
+          '<div class="reihe"><span>' + t('bulloff_who') + '</span>' + seg('bull_off', [[false, t('off_w')], [true, t('on_w')]]) + '</div>' +
+          '<div class="reihe"><span>' + t('bull5050') + '<small class="rk">' + t('bull5050_hint') + '</small></span>' + seg('bull_5050', [[false, t('off_w')], [true, t('on_w')]]) + '</div>' +
+          '<div class="reihe"><span>' + t('round_limit') + '</span>' + seg('max_runden', [[0, t('off_w')], [10, '10'], [15, '15'], [20, '20']]) + '</div>' +
+          '<div class="reihe"><span>' + t('handicap') + '</span>' + seg('hc', [[false, t('off_w')], [true, t('on_w')]]) + '</div></div>';
         s += '</div>';
       }
       if (!boardOnline(this._h) && !L.spieler.every(x => x.startsWith('bot:')))
         s += '<div class="warn"><ha-icon icon="mdi:power-plug-off-outline"></ha-icon><span>' + t('board_off_hint') + '</span>' + ((this._c.power_on || stromCfg(this._h).power_on) ? '<button data-act="pcein">' + t('on') + '</button>' : '') + '</div>';
-      const gr = !tur && ART_SPIELER[L.spiel], falsch = gr && L.spieler.length && (L.spieler.length < gr[0] || L.spieler.length > gr[1]);
+      const gr = !tur && ART_SPIELER[L.spiel], falsch = gr && einh && (einh < gr[0] || einh > gr[1]);
       if (falsch) s += '<div class="warn"><ha-icon icon="mdi:account-alert-outline"></ha-icon><span>' + t(gr[0] === gr[1] ? 'needs_exact' : 'needs_min', { g: t('a_' + L.spiel), n: gr[0] }) + '</span></div>';
-      s += tur ? '<button class="start" data-act="turstart"><ha-icon icon="mdi:tournament"></ha-icon>' + t('start_tour') + '</button></div>'
-        : '<button class="start" data-act="start"' + (L.spieler.length && L.spieler.length <= 8 && !falsch ? '' : ' disabled') + '><ha-icon icon="mdi:play"></ha-icon>' + t('start_game') + '</button></div>';
+      if (ungerade) s += '<div class="warn"><ha-icon icon="mdi:account-alert-outline"></ha-icon><span>' + t('teams_odd') + '</span></div>';
+      if (turFalsch) s += '<div class="warn"><ha-icon icon="mdi:account-alert-outline"></ha-icon><span>' + t('needs_tour', { f: t(TUR_ARTEN.find(x => x[0] === this._turMod)[2]), a: gz[0], b: gz[1] }) + '</span></div>';
+      s += tur ? '<button class="start" data-act="turstart"' + (turFalsch || ungerade ? ' disabled' : '') + '><ha-icon icon="mdi:tournament"></ha-icon>' + t('start_tour') + '</button></div>'
+        : '<button class="start" data-act="start"' + (einh && einh <= 8 && !falsch && !ungerade ? '' : ' disabled') + '><ha-icon icon="mdi:play"></ha-icon>' + t('start_game') + '</button></div>';
       return s;
     }
     _bulloff(a) {
       const bo = a.bulloff || [];
-      const z = bo.map((p, i) => '<div class="boz feld' + (i === a.am_zug && !p.dart && !p.raus ? ' aktiv' : '') + '"' + (p.raus ? ' style="opacity:.45"' : '') + '><ha-icon icon="' + (p.bot ? 'mdi:robot-outline' : 'mdi:account') + '"></ha-icon><b>' + esc(p.name) + '</b><span>' +
+      const z = bo.map((p, i) => '<div class="boz feld' + (i === a.am_zug && !p.dart && !p.raus ? ' aktiv' : '') + '"' + (p.raus ? ' style="opacity:.45"' : '') + '><ha-icon icon="' + (p.bot ? 'mdi:robot-outline' : 'mdi:account') + '"></ha-icon><b>' + esc(p.name) + (p.werfer ? ' <small>▸ ' + esc(p.werfer) + '</small>' : '') + '</b><span>' +
         (p.raus ? t('out') : p.dart ? ft(p.dart.f) + ' · ' + p.abstand + ' mm' : (i === a.am_zug ? t('aims_bull') : t('waits'))) + '</span></div>').join('');
       return '<div class="blk feld"><div class="bt"><ha-icon icon="mdi:bullseye"></ha-icon>' + (a.gleichstand ? t('tie') : t('bulloff_title')) + '<span class="rechts">' + t('one_dart') + '</span></div><div class="bo">' + z + '</div></div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + bo.filter(p => p.dart && !p.raus).length + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
@@ -1852,20 +1936,20 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (a.art && a.art !== 'x01') return this._matchArt(a);
       const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, wer = sp[am] || {};
       const tiles = sp.map((p, i) => '<div class="sk feld' + (i === am ? ' aktiv' : '') + '"><div class="sn">' + (p.bot ? '<ha-icon icon="mdi:robot-outline"></ha-icon>' : '') + esc(p.name) +
-        '<span class="lg">' + (e.sets ? p.sets + ' S · ' : '') + p.legs + ' L</span></div><div class="sr">' + p.rest + '</div>' +
+        '<span class="lg">' + (e.sets ? p.sets + ' S · ' : '') + p.legs + ' L</span></div>' + werferZeile(p) + '<div class="sr">' + p.rest + '</div>' +
         '<div class="sa">Ø ' + z1(p.avg) + ' · ' + t('n_darts', { n: p.leg_darts }) + (p.letzte != null ? ' · ' + t('last') + ' <b>' + p.letzte + '</b>' : '') + '</div>' +
         (i !== am && p.weg ? '<div class="sw">' + p.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '') + '</div>').join('');
       let hinw, cls = '';
       if (a.leg_gewinner != null) { hinw = '<ha-icon icon="mdi:check-decagram"></ha-icon>' + t('leg_won', { n: esc(sp[a.leg_gewinner].name) }); cls = ' check'; }
       else if (au.bust) { hinw = '<ha-icon icon="mdi:close-octagon"></ha-icon>' + t('bust'); cls = ' bust'; }
       else if (au.fertig) hinw = '<ha-icon icon="mdi:hand-back-left-outline"></ha-icon>' + t('remove_darts');
-      else if (wer.bot) hinw = '<ha-icon icon="mdi:robot-outline"></ha-icon>' + t('throws_now', { n: esc(wer.name) });
-      else if (!wer.offen && e.einwurf !== 'straight') hinw = t(e.einwurf === 'double' ? 'to_start_d' : 'to_start_m', { n: esc(wer.name) });
-      else hinw = '<ha-icon icon="mdi:target"></ha-icon>' + t('your_turn', { n: esc(wer.name) });
+      else if (wer.bot || wer.werfer_bot) hinw = '<ha-icon icon="mdi:robot-outline"></ha-icon>' + t('throws_now', { n: esc(wer.werfer || wer.name) });
+      else if (!wer.offen && e.einwurf !== 'straight') hinw = t(e.einwurf === 'double' ? 'to_start_d' : 'to_start_m', { n: esc(wer.werfer || wer.name) });
+      else hinw = '<ha-icon icon="mdi:target"></ha-icon>' + t('your_turn', { n: esc(wer.werfer || wer.name) });
       const dz = [0, 1, 2].map(i => { const d = au.darts[i]; return '<button class="dz feld' + (d ? '' : ' leer') + '" data-act="dart" data-i="' + i + '"><b>' + (d ? ft(d.f) : '–') + '</b><small>' + (d ? pkt(d.f) + ' ' + t('pts') : t('dart') + ' ' + (i + 1)) + '</small></button>'; }).join('');
       const weg = a.weg ? '<div class="weg">' + a.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</div>' : '';
       let s = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + tiles + '</div><div class="mitte"><div class="aufn feld' + cls + '"><div class="hinw">' + hinw + '</div><div class="dartsz">' + dz + '</div>' +
-        '<div class="summe"><b>' + au.summe + '</b><span>' + t('rest', { n: wer.rest }) + '</span></div>' + weg + this._vorige(a) + '</div>' +
+        '<div class="summe"><b>' + au.summe + '</b><span>' + t('rest', { n: wer.rest }) + (a.runden ? ' · ' + this._rundeText(a, wer) : '') + '</span></div>' + weg + this._vorige(a) + '</div>' +
         this._brettHtml(au.darts, undefined, true) + '</div>' +
         '<div class="leiste"><button class="lk feld" data-act="undo"><ha-icon icon="mdi:undo"></ha-icon>' + t('undo') + '</button><button class="lk feld" data-act="dart" data-i="' + Math.min(au.darts.length, 2) + '"><ha-icon icon="mdi:pencil"></ha-icon>' + t('enter') + '</button>' +
         '<button class="lk weiter" data-act="weiter"><ha-icon icon="mdi:skip-next"></ha-icon>' + t('next') + '</button></div>';
@@ -1884,7 +1968,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         ['x01', 'cricket', 'training', 'party'].map(x => '<button class="feld' + (g === x ? ' an' : '') + '" data-act="gruppe" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' + t('g_' + x) + '</button>').join('') + '</div>';
       if (g !== 'x01') {
         // tiles: name, one line of what it is, players if limited
-        const n = L.spieler.length;
+        const n = this._eintraege(L).length;
         s += '<div class="atiles">' + Object.keys(GRUPPE).filter(x => GRUPPE[x] === g).map(x => {
           const gr = ART_SPIELER[x], passt = !gr || !n || (n >= gr[0] && n <= gr[1]);
           return '<button class="feld' + (L.spiel === x ? ' an' : '') + (passt ? '' : ' passtnicht') + '" data-act="art" data-v="' + x + '"><ha-icon icon="' + ART_ICON[x] + '"></ha-icon>' +
@@ -1919,7 +2003,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       return t(a.art === 'golf' ? 'hole_of' : a.art === 'baseball' ? 'inning_of' : 'round_of', { n, m });
     }
     _matchArt(a) {
-      const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, wer = sp[am] || {}, art = a.art;
+      const sp = a.spieler || [], am = a.am_zug, e = a.einstellungen || {}, au = a.aufnahme || { darts: [] }, art = a.art;
+      const wer = sp[am] ? { ...sp[am], name: sp[am].werfer || sp[am].name, bot: sp[am].bot || sp[am].werfer_bot } : {};
       const cricket = CRICKETARTIG.includes(art), check = CHECKARTIG.includes(art);
       const herzen = p => '<span class="herz">' + '❤'.repeat(Math.max(0, p.leben || 0)) + '</span> ' + t('lives') + ' <b>' + (p.leben || 0) + '</b>';
       let oben;
@@ -1949,7 +2034,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         const zielImTile = ['atc', 'nine_lives', 'rtw', 'football', 'scram'].includes(art) || check;
         oben = '<div class="spieler' + (sp.length > 3 ? ' viele' : '') + '">' + sp.map((p, i) => '<div class="sk feld' + (i === am ? ' aktiv' : '') + (p.raus ? ' raus' : '') + '"><div class="sn">' +
           (p.bot ? '<ha-icon icon="mdi:robot-outline"></ha-icon>' : '') + esc(p.name) + (p.killer ? '<span class="kil">' + t('killer_w') + '</span>' : '') +
-          (p.raus || p.fertig || +e.legs > 1 ? '<span class="lg">' + (p.raus ? t('out_w') : p.fertig ? t('done_w') : p.legs + ' L') + '</span>' : '') + '</div>' +
+          (p.raus || p.fertig || +e.legs > 1 ? '<span class="lg">' + (p.raus ? t('out_w') : p.fertig ? t('done_w') : p.legs + ' L') + '</span>' : '') + '</div>' + werferZeile(p) +
           '<div class="sr">' + gross(p) + '</div><div class="sa">' + neben(p) + '</div>' +
           (i !== am && p.ziel && !p.raus && !zielImTile ? '<span class="zk">' + t('target') + ' ' + esc(this._zielText(p.ziel)) + '</span>' : '') + '</div>').join('') + '</div>';
         if (art === 'scram') oben += this._zahlenLeiste(a.zahlen || [], (sp[0] || {}).marks || []);
@@ -2079,7 +2164,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     _verlauf(a) {
       const sp = a.spieler || [], v = (a.verlauf || []).slice().reverse();
       if (!v.length) return '<div class="leer">' + t('no_visit') + '</div>';
-      return '<div class="vl">' + v.map(z => '<div class="vz' + (z.b ? ' bu' : '') + (z.c ? ' co' : '') + '" data-act="vz" data-i="' + z.i + '"><span>' + esc((sp[z.s] || {}).name) + '</span><span>' +
+      return '<div class="vl">' + v.map(z => '<div class="vz' + (z.b ? ' bu' : '') + (z.c ? ' co' : '') + '" data-act="vz" data-i="' + z.i + '"><span>' + esc(z.w || (sp[z.s] || {}).name) + '</span><span>' +
         (z.d.length ? z.d.map(ft).join(' · ') : '–') + '</span><b>' + (CRICKETARTIG.includes(a.art) ? (z.m || 0) + ' M' : (z.b && (!a.art || a.art === 'x01' || a.art === 'gotcha') ? 'Bust' : z.p)) + '</b><span class="r">' + z.r + '</span></div>').join('') + '</div>' +
         '<div class="klein">' + t('tap_fix') + '</div>';
     }
@@ -2150,14 +2235,20 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           setTimeout(() => { this._kxAlt = null; this._zeichnen(); }, 300); break;
         case 'dazu': if (L.spieler.length < this._max()) L.spieler.push(b.dataset.id); neu(); break;
         case 'bot': if (L.spieler.length < this._max()) L.spieler.push('bot:' + b.dataset.l); this._auf.bot = false; neu(); break;
-        case 'turmod': this._turMod = b.dataset.v || false; L.spieler = L.spieler.slice(0, this._max()); neu(); break;
+        case 'turmod': this._turMod = b.dataset.v ? (this._turMod || 'ko') : false; L.spieler = L.spieler.slice(0, this._max()); neu(); break;
+        case 'turart': this._turMod = b.dataset.v; L.spieler = L.spieler.slice(0, this._max()); neu(); break;
+        case 'teams': L.teams = !L.teams; L.spieler = L.spieler.slice(0, this._max()); neu(); break;
+        case 'hc': {
+          const k = b.dataset.e, i = STARTWERTE.indexOf(L.handicap[k] || L.startwert), v = STARTWERTE[Math.max(0, Math.min(STARTWERTE.length - 1, i + +b.dataset.d))];
+          if (v === L.startwert) delete L.handicap[k]; else L.handicap[k] = v; neu(); break;
+        }
         case 'turweiter': this._dienst('turnier_weiter'); this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
         case 'turabbr': zweimal(this, b, t('really_tour'), () => this._dienst('turnier_abbrechen')); break;
         case 'turende': this._dienst('turnier_abbrechen'); if (phase(a) === 'finished') this._dienst('spiel_abbrechen'); break;
         case 'weg': L.spieler.splice(+b.dataset.i, 1); neu(); break;
         case 'hoch': { const i = +b.dataset.i; [L.spieler[i - 1], L.spieler[i]] = [L.spieler[i], L.spieler[i - 1]]; neu(); break; }
         case 'mischen': for (let i = L.spieler.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [L.spieler[i], L.spieler[j]] = [L.spieler[j], L.spieler[i]]; } neu(); break;
-        case 'set': { const v = b.dataset.v, k = b.dataset.k; L[k] = ['startwert', 'runden', 'leben', 'zielwert'].includes(k) ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
+        case 'set': { const v = b.dataset.v, k = b.dataset.k; L[k] = ['startwert', 'runden', 'leben', 'zielwert', 'max_runden'].includes(k) ? +v : v === 'true' ? true : v === 'false' ? false : v; neu(); break; }
         case 'gruppe': { const g = b.dataset.v; if (g !== GRUPPE[L.spiel]) { L.spiel = g === 'training' ? 'atc' : g === 'party' ? 'shanghai' : g; L.variante = ''; L.runden = 0; L.zielwert = 0; } neu(); break; }
         case 'art': if (L.spiel !== b.dataset.v) { L.spiel = b.dataset.v; L.variante = ''; L.runden = 0; L.zielwert = 0; } neu(); break;
         case 'plus': case 'minus': { const k = b.dataset.k, d = act === 'plus' ? 1 : -1; L[k] = Math.max(k === 'legs' ? 1 : 0, Math.min(k === 'legs' ? 21 : 13, L[k] + d)); neu(); break; }
@@ -2172,10 +2263,13 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
           break;
         }
         case 'pcein': { const ein = this._c.power_on || stromCfg(h).power_on; if (ein) ausloesen(h, ein, false); break; }
-        case 'start': case 'turstart':
-          this._dienst(act === 'turstart' ? 'turnier_starten' : 'spiel_starten', { spieler: L.spieler, spiel: L.spiel, startwert: L.startwert, legs: L.legs, sets: L.spiel === 'x01' ? L.sets : 0, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off,
+        case 'start': case 'turstart': {
+          const x01 = L.spiel === 'x01', eintr = this._eintraege(L), hcw = {};
+          if (x01 && L.hc) eintr.forEach(e => { if (L.handicap[e] && L.handicap[e] !== L.startwert) hcw[e] = L.handicap[e]; });
+          this._dienst(act === 'turstart' ? 'turnier_starten' : 'spiel_starten', { spieler: eintr, handicap: hcw, bull_5050: x01 && L.bull_5050, max_runden: x01 ? L.max_runden || 0 : 0, spiel: L.spiel, startwert: L.startwert, legs: L.legs, sets: L.spiel === 'x01' ? L.sets : 0, einwurf: L.einwurf, auswurf: L.auswurf, bull_off: L.bull_off,
             variante: L.variante || '', zahlen: L.zahlen, runden: L.runden || 0, leben: L.leben, zielwert: L.zielwert || 0, ...(act === 'turstart' ? { turnier_modus: this._turMod || 'ko' } : {}) });
           this._auf.verlauf = this._auf.stat = this._auf.opt = false; break;
+        }
         case 'undo': this._dienst('rueckgaengig'); break;
         case 'weiter': this._dienst('weiter'); break;
         case 'abbr': zweimal(this, b, t('really_cancel'), () => this._dienst('spiel_abbrechen')); break;

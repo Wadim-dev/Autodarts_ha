@@ -270,3 +270,14 @@ async def test_handicap_dienst(hass: HomeAssistant, geladen) -> None:
     assert letzte["handicap"] == {ben: 301} and letzte["bull_5050"] and letzte["max_runden"] == 10
     with pytest.raises(ServiceValidationError):
         await _dienst(hass, "spiel_starten", spieler=[anna, ben], handicap={ben: 333})
+
+
+async def test_turnier_mit_teams_und_handicap(hass: HomeAssistant, geladen) -> None:
+    ids = await _spieler(hass, "A", "B", "C", "D", "E", "F")
+    teams = [f"team:{ids[i]}+{ids[i + 1]}" for i in (0, 2, 4)]
+    await _dienst(hass, "turnier_starten", spieler=teams, turnier_modus="doppel_ko", startwert=501, handicap={teams[2]: 301})
+    tu = _attr(hass, "turnier")
+    assert tu["modus"] == "doppel_ko" and tu["phase"] == "oben"
+    namen = {s["name"]: s for s in _attr(hass, "spieler")}
+    assert set(namen) <= {"A & B", "C & D", "E & F"}
+    assert all(s["rest"] == (301 if n == "E & F" else 501) for n, s in namen.items())

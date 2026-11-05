@@ -3,6 +3,24 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.26.0
+
+- **Tournaments in four formats.** New: **Double KO** for 3–16 players (winners and losers bracket, grand final where the losers-bracket winner has to win twice) and **Groups + KO** for 6–32 players (2, 4 or 8 groups, the best two of each go on, players of the same group do not meet in the first KO round). Knockout and league stay. The lobby has **Single game / Tournament** and four format tiles with player ranges and a short rule.
+- **Teams of two.** Tap **Teams** in the player list: players 1 + 2, 3 + 4 … throw in turn, in every game and in tournaments. The card and the caller name the team member whose turn it is, bots can be team members. Team games do not count in personal statistics.
+- **Handicap** for X01: own start value per player or team, set with − / + next to the name.
+- **50/50 bull** for X01: the outer bull counts 50 and finishes like the bullseye.
+- **Round limit** for X01 (10, 15 or 20 visits): then the lowest rest wins the leg.
+- New bracket views for the losers bracket, the grand final and the group stage, and the match banner shows the phase ("Losers bracket · Round 2", "Group B · Match 3 of 6", "Grand final").
+
+**Deutsch**
+
+- **Turniere in vier Formaten.** Neu: **Doppel-K.-o.** für 3–16 Spieler (Gewinner- und Verliererrunde, großes Finale, in dem der Sieger der Verliererrunde zweimal gewinnen muss) und **Gruppen + K.-o.** für 6–32 Spieler (2, 4 oder 8 Gruppen, die besten zwei kommen weiter, Spieler derselben Gruppe treffen in der ersten K.-o.-Runde nicht aufeinander). K.-o. und Liga bleiben. Die Neues-Spiel-Seite hat **Einzelspiel / Turnier** und vier Format-Kacheln mit Spielerzahl und kurzer Regel.
+- **2er-Teams.** In der Spielerliste **Teams** antippen: Spieler 1 + 2, 3 + 4 … werfen abwechselnd, in jedem Spiel und im Turnier. Karte und Ansager nennen, wer im Team dran ist, Bots können mitspielen. Team-Spiele zählen nicht in der persönlichen Statistik.
+- **Handicap** bei X01: eigener Startwert je Spieler oder Team, mit − / + neben dem Namen.
+- **50/50 Bull** bei X01: Das äußere Bull zählt 50 und checkt wie das Bullseye.
+- **Rundenlimit** bei X01 (10, 15 oder 20 Aufnahmen): danach gewinnt der niedrigste Rest das Leg.
+- Neue Turnierbaum-Ansichten für Verliererrunde, großes Finale und Gruppenphase; das Banner über dem Match zeigt die Phase („Verliererrunde · Runde 2“, „Gruppe B · Spiel 3 von 6“, „Großes Finale“).
+
 ## 1.25.1
 
 - The power button now also appears in the DartNest sidebar. Pick the plug of the board PC once under **Board Manager → Board PC power plug** (optionally with its power meter, a shut-down script and a "PC running" sensor); every DartNest card uses it. Cards with their own `power_on` keep it. New action `autodarts.strom_setzen`.

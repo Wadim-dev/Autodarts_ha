@@ -11,6 +11,7 @@ import asyncio
 from collections.abc import Callable
 import logging
 import random
+import time
 from typing import Any
 import uuid
 
@@ -45,6 +46,9 @@ def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
     return ServiceValidationError(translation_domain=DOMAIN, translation_key=schluessel, translation_placeholders=platzhalter or None)
 
 
+WACH_MINUTEN = 45  # keep the detection awake this long after the last change in a running game
+
+
 class Spielleiter:
     def __init__(self, hass: HomeAssistant, board: AutodartsBoard, zustand: ZustandKoordinator) -> None:
         self.hass = hass
@@ -54,6 +58,8 @@ class Spielleiter:
         self.daten: dict[str, Any] = {"spieler": [], "statistik": {}, "verlauf": [], "letzte": dict(STANDARD), "spiel": None}
         self.stand: dict[str, Any] | None = None
         self._hoerer: list[Callable[[], None]] = []
+        self._aktiv = 0.0  # last change in the game (dart, undo, new game …)
+        self._geweckt = 0.0  # last time the detection was woken from the standby
         self._ereignis_hoerer: list[Callable[[str, dict[str, Any]], None]] = []
         self.tv_url: Callable[[], str] | None = None  # set by the TV page (fernseher.py)
         self.clips_info: Callable[[], dict[str, Any]] | None = None  # set by the highlight clips (clips.py)
@@ -103,6 +109,7 @@ class Spielleiter:
         self._store.async_delay_save(lambda: self.daten, 2)
 
     def _melden(self) -> None:
+        self._aktiv = time.monotonic()
         self._ereignisse_pruefen()
         for f in list(self._hoerer):
             f()
@@ -227,6 +234,7 @@ class Spielleiter:
         d = self.zustand.data or {}
         if d.get("verbindung") != "Online":
             return
+        self._wach_halten(d)
         wuerfe = d.get("wuerfe") or []
         anzahl = len(wuerfe)
         felder = [x01.feld_aus(w["zahl"], w["faktor"]) for w in wuerfe]
@@ -575,10 +583,24 @@ class Spielleiter:
         self._neu_rechnen()
         self._ereignis("game_started", {"players": [s["name"] for s in spieler], "player_ids": [s.get("id") for s in spieler]})
 
+    def _wach_halten(self, d: dict[str, Any]) -> None:
+        """A game is on but the board went into camera standby (pause): wake it again.
+
+        Only while somebody played in the last WACH_MINUTEN, so a forgotten game does not keep
+        the board PC busy for ever; a new game or the next dart typed in wakes it anyway."""
+        sp, jetzt = self.spiel, time.monotonic()
+        if d.get("status") != "standby" or not sp or sp.get("phase") not in ("bulloff", "laeuft"):
+            return
+        if jetzt - self._aktiv > WACH_MINUTEN * 60 or jetzt - self._geweckt < 30:
+            return
+        self._geweckt = jetzt
+        self.hass.async_create_task(self._erkennung_an())
+
     async def _erkennung_an(self) -> None:
         """Board an, aber Erkennung gestoppt (z. B. Stop gedrückt): zum Spielstart wieder starten."""
         if not self.zustand.online or (self.zustand.data or {}).get("laeuft"):
             return
+        self.zustand.manuell_gestoppt = False
         try:
             await self.board.start()
         except AutodartsError as err:

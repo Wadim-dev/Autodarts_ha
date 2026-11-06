@@ -15,11 +15,10 @@ from pathlib import Path
 import secrets
 from typing import TYPE_CHECKING, Any
 
-from aiohttp import ClientTimeout, web
+from aiohttp import web
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_web, async_get_clientsession
 from homeassistant.helpers.http import HomeAssistantView
 from homeassistant.helpers.network import NoURLAvailableError, get_url
 
@@ -362,9 +361,7 @@ class TvKamera(HomeAssistantView):
         kamera = f.kamera() if f is not None else None
         if f is None or f.daten is None or kamera is None or nr != str(kamera + 1):
             return web.Response(status=404)
-        session = async_get_clientsession(hass)
-        strom = session.get(f.daten.board.stream_url(_STROEME[int(nr) - 1]), timeout=ClientTimeout(total=None, sock_connect=5))
-        return await async_aiohttp_proxy_web(hass, request, strom)
+        return await f.daten.bilder.mjpeg(request, _STROEME[int(nr) - 1])
 
 
 async def async_setup_tv(hass: HomeAssistant) -> None:

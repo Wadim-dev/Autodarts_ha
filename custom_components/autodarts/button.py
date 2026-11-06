@@ -46,6 +46,8 @@ class Knopf(DartsEntitaet, ButtonEntity):
             await befehl(self.daten.board.start())
             await asyncio.sleep(4)
         await befehl(getattr(self.daten.board, self._pfad)())
+        if self.schluessel in ("start", "stop", "kalibrieren"):
+            self.daten.zustand.manuell_gestoppt = self.schluessel == "stop"
         await self.daten.zustand.async_request_refresh()
         if self.schluessel in ("kalibrieren", "neustart"):
             await self.daten.system.async_request_refresh()

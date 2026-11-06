@@ -14,7 +14,7 @@
   const TEXTE = {
     en: {
       dart: 'Dart', visit: 'Visit', on: 'Turn on', off: 'Turn off', off_q: 'Really turn off?', play: 'Play', manager: 'Board Manager', players: 'Players',
-      sc_off: 'Board off', sc_starting: 'Starting …', sc_stopping: 'Shutting down …', sc_ready: 'Ready – throw!', sc_takeout: 'Remove darts', sc_calib: 'Calibrating …', sc_stopped: 'Detection stopped', sc_lost: 'Connection lost',
+      sc_off: 'Board off', sc_starting: 'Starting …', sc_stopping: 'Shutting down …', sc_ready: 'Ready – throw!', sc_takeout: 'Remove darts', sc_calib: 'Calibrating …', sc_stopped: 'Detection stopped', sc_standby: 'Standby – wakes up with the next game', sc_lost: 'Connection lost',
       dart_of: 'Dart {n} of 3 · {s} so far', visit_pts: 'Visit {s} points', pc_running: 'PC is running, Autodarts is starting', about_minute: 'Takes about a minute', plug_after: 'The plug switches off afterwards',
       plug_on: 'Plug on', ready_hint: 'Throw a dart to start', game_running: 'Game running', back: 'Back', missing: 'DartNest integration not found',
       new_game: 'New game', game_over: 'Game over', darts: 'Darts', local: 'Local in Home Assistant', cancel_game: 'Cancel game', caller: 'Caller', fullscreen: 'Full screen',
@@ -37,10 +37,10 @@
       online: 'Online', offline: 'Offline', connection: 'Connection', detection: 'Detection', running: 'running', stopped: 'stopped', fps: 'Frame rate', cameras: 'Cameras', cpu: 'CPU', memory: 'Memory',
       calibrated: 'Calibrated', yes: 'yes', no: 'no', controls: 'Controls', start: 'Start', stop: 'Stop', reset: 'Reset', calibrate: 'Calibrate', calibrate_q: 'Calibrate now?',
       restart_sw: 'Restart software', restart_pc: 'Restart PC', sure: 'Sure?', extra_imgs: 'Detection & live image', detection_img: 'Detection', live_img: 'Live image', cam_settings: 'Camera settings',
-      resolution: 'Resolution', standby: 'Standby after', minutes: '{n} min', standby_hint: 'Cameras sleep after the standby time without motion and wake up with the next throw.',
+      resolution: 'Resolution', standby: 'Standby after', minutes: '{n} min', standby_hint: 'Without a throw the board stops the detection after this time and saves power and computing time. DartNest wakes it by itself when a game starts, and during a game that is still being played.',
       software: 'Software & updates', board_sw: 'Board software', vision: 'Detection (vision)', host: 'Computer', kernel: 'Kernel', install: 'Install', open_orig: 'Open original Board Manager', home_only: 'Only in your home network.',
       tap_cam: 'Tap a camera = large and live', calib_grid: 'Calibration grid', cams_start: 'Cameras off – start detection',
-      st_throw: 'ready', st_takeout: 'remove darts', st_calibrating: 'calibrating', st_starting: 'starting', st_stopped: 'stopped',
+      st_throw: 'ready', st_takeout: 'remove darts', st_calibrating: 'calibrating', st_starting: 'starting', st_stopped: 'stopped', st_standby: 'standby',
       players_stats: 'Players & statistics', n_players: '{p} players · {g} games saved', no_players: 'No players yet. Add yourself and your opponents – every game then counts towards the statistics.',
       games_wins: '{g} games · {w} wins', best_avg: 'Best avg', n180: '180s', legs: 'Legs', rename: 'Rename', del_stats: 'Delete statistics', del_player: 'Delete player', really_del: 'Really delete?',
       recent: 'Recent games', no_game_yet: 'No finished game yet.', reset_all: 'Reset everything', del_all: 'Delete statistics of all players and game history', del_all_q: 'Sure? This cannot be undone',
@@ -82,7 +82,7 @@
     },
     de: {
       dart: 'Dart', visit: 'Aufnahme', on: 'Einschalten', off: 'Ausschalten', off_q: 'Wirklich aus?', play: 'Spielen', manager: 'Board Manager', players: 'Spieler',
-      sc_off: 'Board aus', sc_starting: 'Startet …', sc_stopping: 'Fährt herunter …', sc_ready: 'Bereit – wirf!', sc_takeout: 'Darts ziehen', sc_calib: 'Kalibriert …', sc_stopped: 'Erkennung gestoppt', sc_lost: 'Verbindung kurz weg',
+      sc_off: 'Board aus', sc_starting: 'Startet …', sc_stopping: 'Fährt herunter …', sc_ready: 'Bereit – wirf!', sc_takeout: 'Darts ziehen', sc_calib: 'Kalibriert …', sc_stopped: 'Erkennung gestoppt', sc_standby: 'Standby – wacht beim nächsten Spiel auf', sc_lost: 'Verbindung kurz weg',
       dart_of: 'Dart {n} von 3 · bisher {s}', visit_pts: 'Aufnahme {s} Punkte', pc_running: 'PC läuft, Autodarts startet', about_minute: 'Dauert etwa eine Minute', plug_after: 'Steckdose geht danach aus',
       plug_on: 'Steckdose an', ready_hint: 'Wirf einen Dart zum Start', game_running: 'Spiel läuft', back: 'Zurück', missing: 'Integration „DartNest“ nicht gefunden',
       new_game: 'Neues Spiel', game_over: 'Spielende', darts: 'Darts', local: 'Lokal in Home Assistant', cancel_game: 'Spiel abbrechen', caller: 'Ansage', fullscreen: 'Vollbild',
@@ -105,10 +105,10 @@
       online: 'Online', offline: 'Offline', connection: 'Verbindung', detection: 'Erkennung', running: 'läuft', stopped: 'gestoppt', fps: 'Bildrate', cameras: 'Kameras', cpu: 'CPU', memory: 'Speicher',
       calibrated: 'Kalibriert', yes: 'ja', no: 'nein', controls: 'Steuerung', start: 'Start', stop: 'Stop', reset: 'Reset', calibrate: 'Kalibrieren', calibrate_q: 'Jetzt kalibrieren?',
       restart_sw: 'Software neu starten', restart_pc: 'PC neu starten', sure: 'Sicher?', extra_imgs: 'Erkennungsbild & Live-Bild', detection_img: 'Erkennung', live_img: 'Live-Bild', cam_settings: 'Kamera-Einstellungen',
-      resolution: 'Auflösung', standby: 'Standby nach', minutes: '{n} Minuten', standby_hint: 'Kameras gehen nach der Standby-Zeit ohne Bewegung schlafen und wachen beim nächsten Wurf auf.',
+      resolution: 'Auflösung', standby: 'Standby nach', minutes: '{n} Minuten', standby_hint: 'Ohne Wurf stoppt das Board nach dieser Zeit die Erkennung und spart Strom und Rechenleistung. DartNest weckt sie von selbst, wenn ein Spiel startet, und während eines Spiels, das noch gespielt wird.',
       software: 'Software & Updates', board_sw: 'Board-Software', vision: 'Erkennung (Vision)', host: 'Rechner', kernel: 'Kernel', install: 'Installieren', open_orig: 'Original Board Manager öffnen', home_only: 'Nur im Heimnetz.',
       tap_cam: 'Kamera antippen = groß und live', calib_grid: 'Kalibriernetz', cams_start: 'Kameras aus – Erkennung starten',
-      st_throw: 'bereit', st_takeout: 'Darts ziehen', st_calibrating: 'kalibriert', st_starting: 'startet', st_stopped: 'gestoppt',
+      st_throw: 'bereit', st_takeout: 'Darts ziehen', st_calibrating: 'kalibriert', st_starting: 'startet', st_stopped: 'gestoppt', st_standby: 'Standby',
       players_stats: 'Spieler & Statistik', n_players: '{p} Spieler · {g} Spiele gespeichert', no_players: 'Noch keine Spieler. Lege dich und deine Mitspieler an – danach zählt jedes Spiel in die Statistik.',
       games_wins: '{g} Spiele · {w} Siege', best_avg: 'Bester Avg', n180: '180er', legs: 'Legs', rename: 'Umbenennen', del_stats: 'Statistik löschen', del_player: 'Spieler löschen', really_del: 'Wirklich löschen?',
       recent: 'Letzte Spiele', no_game_yet: 'Noch kein Spiel beendet.', reset_all: 'Alles zurücksetzen', del_all: 'Statistik aller Spieler und Spielverlauf löschen', del_all_q: 'Sicher? Lässt sich nicht rückgängig machen',
@@ -370,7 +370,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
   const G = 'var(--green-color,#43a047)', A = 'var(--amber-color,#ffc107)', R = 'var(--red-color,#e53935)', GR = 'var(--disabled-color,#9e9e9e)', B = 'var(--blue-color,#2196f3)';
   const SZ = {
     aus: ['sc_off', 'mdi:power-sleep'], startet: ['sc_starting', 'mdi:timer-sand'], runter: ['sc_stopping', 'mdi:power'], bereit: ['sc_ready', 'mdi:target'],
-    ziehen: ['sc_takeout', 'mdi:hand-back-left-outline'], kalib: ['sc_calib', 'mdi:crosshairs-gps'], gestoppt: ['sc_stopped', 'mdi:stop-circle-outline'], weg: ['sc_lost', 'mdi:wifi-alert']
+    ziehen: ['sc_takeout', 'mdi:hand-back-left-outline'], kalib: ['sc_calib', 'mdi:crosshairs-gps'], gestoppt: ['sc_stopped', 'mdi:stop-circle-outline'], standby: ['sc_standby', 'mdi:sleep'], weg: ['sc_lost', 'mdi:wifi-alert']
   };
   const ORDER = [20, 1, 18, 4, 13, 6, 10, 15, 2, 17, 3, 19, 7, 16, 8, 11, 14, 9, 12, 5];
   const CX = 166, CY = 78, K = 50 / 170;
@@ -464,8 +464,8 @@ button:disabled{opacity:.38;cursor:default;transform:none}
 :host([sz=ziehen]) .d.an{animation:ad-blink 1.1s ease-in-out infinite}
 :host([sz=kalib]) .szene{--ring:#4dd0c4}
 :host([sz=kalib]) .scan{opacity:.9;animation:ad-dreh 1.4s linear infinite}
-:host([sz=gestoppt]) .szene{--ring:#64b5f6}
-:host([sz=gestoppt]) .schein{opacity:.35}
+:host([sz=gestoppt]) .szene,:host([sz=standby]) .szene{--ring:#64b5f6}
+:host([sz=gestoppt]) .schein,:host([sz=standby]) .schein{opacity:.35}
 :host([sz=weg]) .szene{--ring:#ffb300}
 :host([sz=weg]) .ring{animation:ad-blink 1.2s ease-in-out infinite}
 :host([still]) *{animation-play-state:paused!important}
@@ -551,6 +551,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
         if (s === 'takeout' || s === 'takeoutInProgress') return 'ziehen';
         if (s === 'calibrating') return 'kalib';
         if (s === 'starting') return 'startet';
+        if (s === 'standby') return 'standby';
         if (s === 'stopped' || s === 'stopping') return 'gestoppt';
         return 'weg';
       }
@@ -568,7 +569,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
       const h = this._h, r = this._r, c = this._c;
       const sz = this._szene(), [name, icon] = SZ[sz];
       if (this.getAttribute('sz') !== sz) this.setAttribute('sz', sz);
-      const online = ['bereit', 'ziehen', 'kalib', 'gestoppt', 'weg'].includes(sz) || (sz === 'startet' && zst(h, E(h, 'sensor.status')) === 'starting');
+      const online = ['bereit', 'ziehen', 'kalib', 'gestoppt', 'standby', 'weg'].includes(sz) || (sz === 'startet' && zst(h, E(h, 'sensor.status')) === 'starting');
       this.toggleAttribute('online', online);
       const ic = r.querySelector('.zt ha-icon'); if (ic.getAttribute('icon') !== icon) ic.setAttribute('icon', icon);
       r.querySelector('.zn').textContent = t(name);
@@ -628,7 +629,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
     plug_hint: 'Die Steckdose, an der der Board-PC hängt. Alle DartNest-Karten – auch in der Seitenleiste – zeigen dann den Ein/Aus-Knopf. Mit Leistungsmesser erkennt DartNest, wann der PC wirklich aus ist. Du hast ein Skript, das den PC erst herunterfährt? Dann wähle es bei „Herunterfahren mit“, sonst wird einfach die Steckdose ausgeschaltet.' });
   Object.assign(TEXTE.en, { d_tile: 'One compact row with the board scene behind it; tap opens a window with live darts, power, shortcuts and today', tile_tap: 'Tap for play, power and settings', today: 'Today', t_close: 'Close' });
   Object.assign(TEXTE.de, { d_tile: 'Eine kompakte Zeile mit der Board-Szene dahinter; Tippen öffnet ein Fenster mit Live-Würfen, Ein/Aus, Abkürzungen und Heute', tile_tap: 'Antippen für Spielen, Ein/Aus und Einstellungen', today: 'Heute', t_close: 'Schließen' });
-  const SZ_F = { aus: GR, startet: A, runter: A, bereit: G, ziehen: A, kalib: '#26a69a', gestoppt: B, weg: A };
+  const SZ_F = { aus: GR, startet: A, runter: A, bereit: G, ziehen: A, kalib: '#26a69a', gestoppt: B, standby: B, weg: A };
   const K_CSS = `
 ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;overflow:hidden;padding:14px;box-sizing:border-box}
 .ic,.tx,.ak,.pf{position:relative;z-index:1}
@@ -766,7 +767,7 @@ dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5))}
       const h = this._h, r = this._r, c = this._c;
       const sz = this._szene(), [name, icon] = SZ[sz];
       if (this.getAttribute('sz') !== sz) this.setAttribute('sz', sz);
-      const online = ['bereit', 'ziehen', 'kalib', 'gestoppt', 'weg'].includes(sz);
+      const online = ['bereit', 'ziehen', 'kalib', 'gestoppt', 'standby', 'weg'].includes(sz);
       this.style.setProperty('--f', SZ_F[sz]);
       const ic = r.querySelector('.ic ha-icon'); if (ic.getAttribute('icon') !== icon) ic.setAttribute('icon', icon);
       let n = 0;
@@ -2395,14 +2396,14 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const h = this._h, on = boardOnline(h), c = this._c;
       const S = k => E(h, 'sensor.' + k);
       const status = zst(h, S('status')), ver = zst(h, S('software_version'));
-      this._kopf(t('manager'), on ? 'Autodarts ' + (ver || '') + ' · ' + (({ throw: t('st_throw'), takeout: t('st_takeout'), takeoutInProgress: t('st_takeout'), calibrating: t('st_calibrating'), starting: t('st_starting'), stopped: t('st_stopped') })[status] || status) : t('sc_off'));
+      this._kopf(t('manager'), on ? 'Autodarts ' + (ver || '') + ' · ' + (({ throw: t('st_throw'), takeout: t('st_takeout'), takeoutInProgress: t('st_takeout'), calibrating: t('st_calibrating'), starting: t('st_starting'), stopped: t('st_stopped'), standby: t('st_standby') })[status] || status) : t('sc_off'));
       const nk = this._r.querySelector('.netzk');
       if (nk.firstChild.textContent !== t('tap_cam')) { nk.firstChild.textContent = t('tap_cam'); nk.lastChild.textContent = t('calib_grid'); }
       this._kams.querySelectorAll('.kam span').forEach((s, i) => { const x = t('cam', { n: i + 1 }); if (s.textContent !== x) s.textContent = x; });
       const w = (id, x, wert, kl) => '<div class="wt feld ' + (kl || '') + '" data-e="' + id + '"><small>' + x + '</small><b>' + wert + '</b></div>';
       const n = id => { const v = parseFloat(zst(h, id)); return isNaN(v) ? '–' : zahl(v, v % 1 ? 1 : 0); };
       const kalId = E(h, 'binary_sensor.calibrated'), erkId = E(h, 'binary_sensor.detection_running'), kal = zst(h, kalId), erk = zst(h, erkId);
-      const werte = on ? w(S('connection'), t('connection'), t('online'), 'gut') + w(erkId, t('detection'), erk === 'on' ? t('running') : t('stopped'), erk === 'on' ? 'gut' : 'schlecht') +
+      const werte = on ? w(S('connection'), t('connection'), t('online'), 'gut') + w(erkId, t('detection'), erk === 'on' ? t('running') : status === 'standby' ? t('st_standby') : t('stopped'), erk === 'on' ? 'gut' : status === 'standby' ? '' : 'schlecht') +
         w(S('fps'), t('fps'), n(S('fps')) + ' fps') + w(S('camera_fps'), t('cameras'), n(S('camera_fps')) + ' fps') +
         w(S('cpu_load'), t('cpu'), n(S('cpu_load')) + ' %') + w(S('memory'), t('memory'), n(S('memory')) + ' MB') +
         w(kalId, t('calibrated'), kal === 'on' ? t('yes') + (n(S('calibration_error')) === '–' ? '' : ' · ' + n(S('calibration_error')) + ' px') : t('no'), kal === 'on' ? 'gut' : 'schlecht')

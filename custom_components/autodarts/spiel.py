@@ -911,7 +911,8 @@ class Spielleiter:
         tv = self.daten.get("tv") or {}
         return {"spieler": liste, "verlauf": self.daten.get("verlauf", [])[:20], "letzte": self.daten.get("letzte"),
                 "strom": self.daten.get("strom") or {},
-                "tv": {"geraete": tv.get("geraete") or [], "auto": bool(tv.get("auto")), "url": self.tv_url() if self.tv_url else ""}}
+                "tv": {"geraete": tv.get("geraete") or [], "auto": bool(tv.get("auto")), "url": self.tv_url() if self.tv_url else "",
+                       "brett": bool(tv.get("brett")), "ansicht": tv.get("ansicht") or "camera_1"}}
 
     def einstellung_gespeichert(self) -> None:
         """A setting of another part (e.g. the TV page) changed: store it and update the sensors."""

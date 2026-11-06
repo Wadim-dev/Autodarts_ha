@@ -96,6 +96,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     fernseher = Fernseher(hass, spiel)
     spiel.tv_url = fernseher.url
     entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher)
+    fernseher.daten = entry.runtime_data
     entry.async_on_unload(spiel.ereignis_hoerer(fernseher.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(ansager.ereignis))

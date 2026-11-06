@@ -170,7 +170,7 @@ class SpielSensor(_SpielBasis):
 class SpielerSensor(_SpielBasis):
     """Angelegte Spieler mit Gesamtstatistik und den letzten Spielen."""
 
-    _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte", "turnier", "strom", "tv", "clips"})
+    _unrecorded_attributes = frozenset({"spieler", "verlauf", "letzte", "turnier", "strom", "tv", "clips", "pixel"})
 
     def __init__(self, d: DartsDaten) -> None:
         super().__init__(d, "spieler", "players")

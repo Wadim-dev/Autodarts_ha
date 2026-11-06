@@ -139,6 +139,24 @@
     },
     "clips_no_image": {
       "message": "Gerade kein Kamerabild: Clips gibt es nur während eines Spiels, solange das Board Darts erkennt."
+    },
+    "pixel_bad_address": {
+      "message": "Das ist keine Adresse. Gib die IP-Adresse der Anzeige ein, zum Beispiel 192.168.178.50."
+    },
+    "pixel_exists": {
+      "message": "{host} ist schon hinzugefügt."
+    },
+    "pixel_too_many": {
+      "message": "Es lassen sich bis zu 6 Pixel-Anzeigen hinzufügen."
+    },
+    "pixel_not_found": {
+      "message": "Unter {host} antwortet keine AWTRIX-3- oder PixelIt-Anzeige. Prüfe die Adresse (zeigt die Anzeige beim Start oder dein Router) und ob sie eingeschaltet ist."
+    },
+    "pixel_none": {
+      "message": "Noch keine Pixel-Anzeige hinzugefügt."
+    },
+    "pixel_offline": {
+      "message": "Anzeige nicht erreichbar: {host}."
     }
   },
   "entity": {

@@ -26,6 +26,7 @@ from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
 from .fernseher import Fernseher, async_setup_tv
 from .lichter import Lichtshow
+from .pixel import PixelAnzeigen
 from .services import async_setup_services
 from .spiel import Spielleiter
 
@@ -98,10 +99,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     fernseher = Fernseher(hass, spiel)
     spiel.tv_url = fernseher.url
     clips = Clips(hass)
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher, clips)
-    fernseher.daten = clips.daten = entry.runtime_data
+    pixel = PixelAnzeigen(hass)
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher, clips, pixel)
+    fernseher.daten = clips.daten = pixel.daten = entry.runtime_data
     spiel.clips_info = clips.attribute
+    spiel.pixel_info = pixel.attribute
     clips.starten()
+    pixel.starten()
     entry.async_on_unload(spiel.ereignis_hoerer(fernseher.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(ansager.ereignis))
@@ -120,4 +124,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
         await entry.runtime_data.lichter.beenden()
         await entry.runtime_data.ansager.beenden()
         await entry.runtime_data.clips.beenden()
+        await entry.runtime_data.pixel.beenden()
     return ok

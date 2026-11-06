@@ -139,6 +139,24 @@
     },
     "clips_no_image": {
       "message": "No camera image right now: clips are only recorded during a game while the board detects darts."
+    },
+    "pixel_bad_address": {
+      "message": "This is not an address. Type the IP address of the display, for example 192.168.178.50."
+    },
+    "pixel_exists": {
+      "message": "{host} is already added."
+    },
+    "pixel_too_many": {
+      "message": "Up to 6 pixel displays can be added."
+    },
+    "pixel_not_found": {
+      "message": "No AWTRIX 3 or PixelIt display answers at {host}. Check the address (shown on the display at start or in your router) and that it is switched on."
+    },
+    "pixel_none": {
+      "message": "No pixel display added yet."
+    },
+    "pixel_offline": {
+      "message": "Display not reachable: {host}."
     }
   },
   "entity": {

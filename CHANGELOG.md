@@ -3,6 +3,16 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.30.0
+
+- **Score on the LED clock.** New tab **DartNest → Pixel display** for **AWTRIX 3** (Ulanzi TC001 and self-built) and **PixelIt**: tap **Add display**, type the IP address – DartNest finds out which one it is and greets with DARTNEST. While a game runs the clock shows the name and the rest of the player at the oche, live with every dart. 180 (rainbow), checkout, bust, leg and the win flash as a short effect. After the game the winner stays for a minute, then the clock goes back to its own apps. Local HTTP, no MQTT or automation needed.
+- The card shows a live preview of the matrix, the displays with online dot, **Test** and **Remove**. Settings menu card: new button **Pixel display**. New actions `autodarts.pixel_hinzufuegen`, `pixel_entfernen`, `pixel_setzen`, `pixel_testen`.
+
+**Deutsch**
+
+- **Spielstand auf der LED-Uhr.** Neuer Reiter **DartNest → Pixel-Anzeige** für **AWTRIX 3** (Ulanzi TC001 und Eigenbau) und **PixelIt**: **Anzeige hinzufügen** tippen, IP-Adresse eingeben – DartNest erkennt selbst, welche es ist, und grüßt mit DARTNEST. Während eines Spiels zeigt die Uhr Name und Rest des Spielers am Oche, live mit jedem Dart. 180 (Regenbogen), Checkout, Bust, Leg und der Sieg blinken als kurzer Effekt. Nach dem Spiel bleibt der Sieger eine Minute, danach zeigt die Uhr wieder ihre eigenen Apps. Lokal über HTTP, ohne MQTT oder Automation.
+- Die Karte zeigt eine Live-Vorschau der Matrix, die Anzeigen mit Online-Punkt, **Test** und **Entfernen**. Einstellungs-Menükarte: neuer Knopf **Pixel-Anzeige**. Neue Aktionen `autodarts.pixel_hinzufuegen`, `pixel_entfernen`, `pixel_setzen`, `pixel_testen`.
+
 ## 1.29.1
 
 - A busy board no longer drops out: when the board PC is at full load (for example at the start of a game) and misses an answer, DartNest now asks again right away and only counts the board as off after three missed answers in a row. Before, a single late answer showed the board as off for 30 seconds with black cameras.

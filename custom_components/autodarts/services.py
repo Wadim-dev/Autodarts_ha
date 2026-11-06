@@ -87,6 +87,10 @@ DIENSTE = {
     }),
     "clip_loeschen": vol.Schema({vol.Optional("id"): cv.string, vol.Optional("alle", default=False): cv.boolean}),
     "clip_speichern": vol.Schema({}),
+    "pixel_setzen": vol.Schema({vol.Optional("an"): cv.boolean, vol.Optional("effekte"): cv.boolean}),
+    "pixel_hinzufuegen": vol.Schema({vol.Required("adresse"): cv.string}),
+    "pixel_entfernen": vol.Schema({vol.Required("adresse"): cv.string}),
+    "pixel_testen": vol.Schema({vol.Optional("adresse"): cv.string}),
     "aufnahme_eintragen": vol.Schema({
         vol.Optional("spieler"): cv.string,
         vol.Required("punkte"): vol.All(vol.Coerce(int), vol.Range(0, 180)),
@@ -247,6 +251,17 @@ def async_setup_services(hass: HomeAssistant) -> None:
                 await clips.jetzt_speichern()
             elif d.get("id") or d["alle"]:
                 await clips.loeschen(None if d["alle"] else d["id"])
+        elif name.startswith("pixel_"):
+            px = _eintrag(hass).runtime_data.pixel
+            if name == "pixel_setzen":
+                await px.setzen(d.get("an"), d.get("effekte"))
+            elif name == "pixel_hinzufuegen":
+                g = await px.hinzufuegen(d["adresse"])
+                return g if call.return_response else None
+            elif name == "pixel_entfernen":
+                await px.entfernen(d["adresse"])
+            else:
+                await px.testen(d.get("adresse"))
         elif name.startswith("fernseher_"):
             tv = _eintrag(hass).runtime_data.fernseher
             if name == "fernseher_zeigen":
@@ -265,7 +280,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
     for name, schema in DIENSTE.items():
         hass.services.async_register(
             DOMAIN, name, ausfuehren, schema=schema,
-            supports_response=SupportsResponse.OPTIONAL if name in ("spieler_anlegen", "ansager_pack_pruefen") else SupportsResponse.NONE,
+            supports_response=SupportsResponse.OPTIONAL if name in ("spieler_anlegen", "ansager_pack_pruefen", "pixel_hinzufuegen") else SupportsResponse.NONE,
         )
 
 

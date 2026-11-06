@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from .clips import Clips
     from .fernseher import Fernseher
     from .lichter import Lichtshow
+    from .pixel import PixelAnzeigen
     from .spiel import Spielleiter
 
 _LOGGER = logging.getLogger(__name__)
@@ -183,6 +184,7 @@ class DartsDaten:
     ansager: Ansager
     fernseher: Fernseher
     clips: Clips
+    pixel: PixelAnzeigen
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

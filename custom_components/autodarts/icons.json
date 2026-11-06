@@ -210,6 +210,18 @@
     },
     "clip_loeschen": {
       "service": "mdi:movie-remove"
+    },
+    "pixel_setzen": {
+      "service": "mdi:dots-grid"
+    },
+    "pixel_hinzufuegen": {
+      "service": "mdi:plus-box-multiple"
+    },
+    "pixel_entfernen": {
+      "service": "mdi:minus-box-multiple"
+    },
+    "pixel_testen": {
+      "service": "mdi:message-flash"
     }
   }
 }

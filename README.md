@@ -102,6 +102,12 @@ Open **DartNest → TV**, tick your TV and tap **Show on TV** – the score appe
 
 Streaming your games? Add the **overlay link** from the TV card as a browser source in **OBS or Streamlabs** – a see-through scoreboard sits on top of your camera. Switch on **Highlights** and every **180, high finish and match dart** is saved as a short, straightened video from the board camera. Watch, download or delete them in the card; right after the dart they play once as a replay on the TV and in the overlay.
 
+## On the LED clock
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/pixel.png" alt="Score and 180 effect on an AWTRIX 3 LED clock, pixel display card on the phone" width="900"></p>
+
+Got an **AWTRIX 3** (Ulanzi TC001) or a **PixelIt** clock? Open **DartNest → Pixel display**, tap **Add display** and type its IP address – DartNest finds out which one it is. While you play, the clock shows who is at the oche and what is left; a **180, checkout, bust, leg or win** flashes as a short effect. After the game the clock goes back to its own apps. No MQTT, no add-on, no automation.
+
 ## Board Manager inside Home Assistant
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
@@ -293,6 +299,18 @@ Open **DartNest → Highlights** (or the **Settings** card → Highlights).
 
 Needs ffmpeg, which every Home Assistant installation has.
 
+#### Pixel display (AWTRIX 3, PixelIt)
+
+Open **DartNest → Pixel display** (or the **Settings** card → Pixel display).
+
+- **Add display**: type the IP address (AWTRIX shows it at start and in its menu under *Network*; otherwise look in your router). DartNest asks the display what it is (AWTRIX 3: `/api/stats`, PixelIt: `/api/matrixinfo`) and greets you with *DARTNEST*. Up to 6 displays.
+- **Show the score**: while a game runs the display shows the name and the rest of the player at the oche (Cricket and other games: their big number, as on the TV), live with every dart. On AWTRIX it is its own app *dartnest* that DartNest switches to; it disappears by itself 15 minutes after the last update, so nothing stays behind if Home Assistant is off. PixelIt shows the text and goes back to its clock after the game.
+- **Effects**: 180 (rainbow), checkout, high finish, 140+, bust, leg, set, nine-darter, bullseye and the winner flash for 5 seconds; one effect per visit, the most important one.
+- After the game the winner stays for a minute, then the display is given back.
+- **Test** greets on that display, **Remove** (tap twice) gives it back and removes it. The dot shows whether it answered the last time.
+
+The card shows a live preview of the matrix. Everything runs over the local HTTP API of the clock; the **Awtrix display** blueprint (MQTT) below still works if you prefer it.
+
 #### Caller
 
 Open **DartNest → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
@@ -360,7 +378,7 @@ Ready-made automations. Click the button, confirm in Home Assistant, then fill i
 
 | Blueprint | What it does | |
 |---|---|---|
-| **Awtrix display** | Shows 180, checkout, bust, leg won … on an Awtrix 3 clock (Ulanzi TC001) via MQTT, rainbow for a 180. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fawtrix.yaml) |
+| **Awtrix display** | Shows 180, checkout, bust, leg won … on an Awtrix 3 clock (Ulanzi TC001) via MQTT, rainbow for a 180. Not needed any more: the **Pixel display** card does this and shows the score too. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fawtrix.yaml) |
 | **Caller on a speaker** | Announces the events on any speaker with text to speech ("One hundred and eighty!"). Sentences can be changed in the form. | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fcaller.yaml) |
 | **Push on wins** | Push notification to your phone for match wins, tournament wins, nine-darters … | [![Import blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FWadim-dev%2FDartNest_ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Fautodarts%2Fnotify.yaml) |
 
@@ -426,7 +444,7 @@ type: custom:autodarts-players-card
 ```
 
 ```yaml
-type: custom:autodarts-settings-card   # one menu: Board, Light effects, Caller, TV, Highlights
+type: custom:autodarts-settings-card   # one menu: Board, Light effects, Caller, TV, Highlights, Pixel display
 ```
 
 ```yaml
@@ -435,6 +453,10 @@ type: custom:autodarts-tv-card         # TV settings on their own
 
 ```yaml
 type: custom:autodarts-clips-card      # highlights: settings and clips
+```
+
+```yaml
+type: custom:autodarts-pixel-card      # AWTRIX 3 / PixelIt LED clocks
 ```
 
 `back_button: false` hides the back arrow on the three page cards.
@@ -491,6 +513,10 @@ While the board is off, connection and status show `Offline`; all other board en
 | `autodarts.clips_setzen` | Highlight settings: `an`, `kamera` (`camera_1`–`camera_3`), `anlaesse` (`one_eighty`, `high_finish`, `match_won`, `leg_won`, `nine_darter`, `ton_forty`, `checkout`, `bullseye`, `three_in_a_bed`), `anzahl` (1–200 clips kept), `wiederholung` (replay on the TV and the overlay). The highlights card does this for you. |
 | `autodarts.clip_speichern` | Save the last seconds of the board camera now (highlights must be on). |
 | `autodarts.clip_loeschen` | Delete a clip (`id`) or all clips (`alle: true`). |
+| `autodarts.pixel_hinzufuegen` | Add an AWTRIX 3 or PixelIt display by `adresse` (IP or host name); the type is found out; returns `{host, typ, name, version}`. |
+| `autodarts.pixel_entfernen` | Remove a display (`adresse`) and give it back. |
+| `autodarts.pixel_setzen` | `an` (show the score), `effekte` (180, checkout, bust, win …). The pixel display card does this for you. |
+| `autodarts.pixel_testen` | Greet on one display (`adresse`) or all. |
 | `autodarts.turnier_weiter` | Start the next match of the tournament. |
 | `autodarts.turnier_abbrechen` | End the tournament (bracket is removed). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
@@ -743,6 +769,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Turniere:** K.-o. (3–32 Spieler), Doppel-K.-o. mit Verliererrunde (3–16), Gruppen + K.-o. (6–32) oder Liga (3–10), auch als 2er-Teams oder mit Handicap.
 - **Fernseher:** Spielstand groß auf Fire TV, Google TV oder Chromecast, live mit jedem Dart, auf Wunsch mit deiner Dartscheibe live aus der Kamera daneben; zwischen den Spielen Uhr, Rangliste und letzte Spiele. *DartNest → Fernseher*, Fernseher wählen, **Auf dem Fernseher zeigen** – oder von selbst bei jedem Spielstart.
 - **Stream und Highlights:** Overlay-Link aus der Fernseher-Karte als Browser-Quelle in OBS oder Streamlabs – durchsichtiger Spielstand über deinem Kamerabild. **Highlights** speichert jede 180, jedes Finish ab 100 und den Match-Dart als kurzes, gerade gerücktes Video der Board-Kamera; ansehen, herunterladen oder löschen in der Karte *DartNest → Highlights*, auf Wunsch sofort als Wiederholung am Fernseher und im Overlay.
+- **LED-Uhr:** AWTRIX 3 (Ulanzi TC001) oder PixelIt unter *DartNest → Pixel-Anzeige* mit der IP-Adresse hinzufügen – während des Spiels zeigt sie Name und Rest des Spielers am Oche, bei 180, Checkout, Bust und Sieg einen kurzen Effekt, danach wieder ihre eigenen Apps.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.

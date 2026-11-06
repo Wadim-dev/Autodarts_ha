@@ -477,3 +477,43 @@ aufnahme_eintragen:
         number:
           min: 0
           max: 180
+pixel_setzen:
+  name: Pixel-Anzeigen einstellen
+  description: Spielstand und Effekte auf AWTRIX-3- und PixelIt-Anzeigen. Die Karte „DartNest Pixel-Anzeige“ macht das per Klick.
+  fields:
+    an:
+      name: Spielstand zeigen
+      selector:
+        boolean:
+    effekte:
+      name: Effekte (180, Checkout, Bust, Sieg)
+      selector:
+        boolean:
+pixel_hinzufuegen:
+  name: Pixel-Anzeige hinzufügen
+  description: AWTRIX 3 oder PixelIt über die IP-Adresse hinzufügen; die Art wird selbst erkannt.
+  fields:
+    adresse:
+      name: Adresse
+      required: true
+      example: 192.168.178.50
+      selector:
+        text:
+pixel_entfernen:
+  name: Pixel-Anzeige entfernen
+  fields:
+    adresse:
+      name: Adresse
+      required: true
+      example: 192.168.178.50
+      selector:
+        text:
+pixel_testen:
+  name: Pixel-Anzeige testen
+  description: Zeigt einen Gruß auf einer Anzeige (Adresse) oder allen.
+  fields:
+    adresse:
+      name: Adresse
+      example: 192.168.178.50
+      selector:
+        text:

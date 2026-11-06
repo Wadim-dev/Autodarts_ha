@@ -25,7 +25,7 @@
   "issue_tracker": "https://github.com/Wadim-dev/DartNest_ha/issues",
   "loggers": [],
   "requirements": [],
-  "version": "1.29.1",
+  "version": "1.30.0",
   "zeroconf": [
     "_autodarts-board._tcp.local."
   ]

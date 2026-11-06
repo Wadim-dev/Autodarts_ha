@@ -3150,13 +3150,129 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-clips-card', AutodartsClipsCard);
 
+  /* ---------- Pixel displays (AWTRIX 3, PixelIt): score and effects on a small LED matrix ---------- */
+  Object.assign(TEXTE.en, { pixel_title: 'Pixel display', d_pixel: 'Score and effects on AWTRIX 3 and PixelIt LED displays', m_pixel_s: 'AWTRIX 3, PixelIt: score on the LED clock',
+    pixel_on: 'Show the score', pixel_on_s: 'Name and rest of the player at the oche, while a game runs', pixel_fx: 'Effects', pixel_fx_s: '180, checkout, bust, leg and the winner flash on the display',
+    pixel_devs: 'Displays', pixel_none: 'No display yet. Add one with its IP address.', pixel_add: 'Add display', pixel_addr: 'IP address of the display', pixel_find: 'Find',
+    pixel_add_s: 'The address is shown on the display when it starts (AWTRIX: in the menu under Network), or in your router. DartNest finds out by itself whether it is an AWTRIX 3 or a PixelIt.',
+    pixel_found: '{name} added – it says DARTNEST now', pixel_test: 'Test', pixel_test_ok: 'Sent – the display says hello', pixel_del: 'Remove', pixel_del_q: 'Tap again to remove',
+    pixel_live: 'Preview', pixel_idle: 'No game: the display shows its own apps or the clock', pixel_off_s: 'off', n_pixel: '{n} displays', n_pixel1: '1 display', pixel_online: 'online', pixel_offline: 'not reachable',
+    pixel_hint: 'Works with AWTRIX 3 (Ulanzi TC001 and self-built ones) and PixelIt in your home network, no cloud and no extra add-on. While a game runs DartNest shows its own app; afterwards the display goes back to what it showed before.' });
+  Object.assign(TEXTE.de, { pixel_title: 'Pixel-Anzeige', d_pixel: 'Spielstand und Effekte auf AWTRIX-3- und PixelIt-LED-Anzeigen', m_pixel_s: 'AWTRIX 3, PixelIt: Spielstand auf der LED-Uhr',
+    pixel_on: 'Spielstand zeigen', pixel_on_s: 'Name und Rest des Spielers am Oche, während ein Spiel läuft', pixel_fx: 'Effekte', pixel_fx_s: '180, Checkout, Bust, Leg und der Sieger blinken auf der Anzeige',
+    pixel_devs: 'Anzeigen', pixel_none: 'Noch keine Anzeige. Füge eine mit ihrer IP-Adresse hinzu.', pixel_add: 'Anzeige hinzufügen', pixel_addr: 'IP-Adresse der Anzeige', pixel_find: 'Suchen',
+    pixel_add_s: 'Die Adresse zeigt die Anzeige beim Start (AWTRIX: im Menü unter Network) oder dein Router. DartNest erkennt selbst, ob es eine AWTRIX 3 oder eine PixelIt ist.',
+    pixel_found: '{name} hinzugefügt – sie zeigt jetzt DARTNEST', pixel_test: 'Test', pixel_test_ok: 'Gesendet – die Anzeige grüßt', pixel_del: 'Entfernen', pixel_del_q: 'Zum Entfernen nochmal tippen',
+    pixel_live: 'Vorschau', pixel_idle: 'Kein Spiel: die Anzeige zeigt ihre eigenen Apps oder die Uhr', pixel_off_s: 'aus', n_pixel: '{n} Anzeigen', n_pixel1: '1 Anzeige', pixel_online: 'online', pixel_offline: 'nicht erreichbar',
+    pixel_hint: 'Geht mit AWTRIX 3 (Ulanzi TC001 und Eigenbau) und PixelIt im Heimnetz, ohne Cloud und ohne Zusatz-App. Während eines Spiels zeigt DartNest seine eigene App; danach zeigt die Anzeige wieder, was sie vorher zeigte.' });
+  const pixelInfo = h => att(h, E(h, 'sensor.players')).pixel || { an: true, effekte: true, geraete: [], vorschau: null };
+  // 3×5 pixel font like the small LED clocks
+  const PIXEL_FONT = { A: '111101111101101', B: '110101110101110', C: '011100100100011', D: '110101101101110', E: '111100110100111', F: '111100110100100', G: '011100101101011',
+    H: '101101111101101', I: '111010010010111', J: '001001001101010', K: '101101110101101', L: '100100100100111', M: '101111111101101', N: '110101101101101', O: '010101101101010',
+    P: '110101110100100', Q: '010101101110011', R: '110101110101101', S: '011100010001110', T: '111010010010010', U: '101101101101111', V: '101101101101010', W: '101101111111101',
+    X: '101101010101101', Y: '101101010010010', Z: '111001010100111', 0: '111101101101111', 1: '010110010010111', 2: '110001010100111', 3: '110001010001110', 4: '101101111001001',
+    5: '111100110001110', 6: '011100111101111', 7: '111001010010010', 8: '111101111101111', 9: '111101111001110', '-': '000000111000000', '!': '010010010000010', '.': '000000000000010',
+    ':': '000010000010000', "'": '010010000000000', '/': '001001010100100', '?': '110001010000010', '+': '000010111010000' };
+  function pixelSvg(teile) {
+    // the text as lit dots on a 32 × 8 matrix; longer texts scroll like on the display
+    const an = [];
+    let x = 0;
+    (teile || []).forEach(p => {
+      for (const roh of String(p.t || '').toUpperCase()) {
+        const z = ({ 'Ä': 'A', 'Ö': 'O', 'Ü': 'U' })[roh] || roh;
+        if (z === ' ') { x += 2; continue; }
+        const g = PIXEL_FONT[z] || PIXEL_FONT['?'];
+        for (let i = 0; i < 15; i++) if (g[i] === '1') an.push([x + i % 3, 1 + Math.floor(i / 3), p.c || '#fff']);
+        x += 4;
+      }
+    });
+    const breite = Math.max(0, x - 1), lauf = breite > 32, w = lauf ? breite + 34 : 32, dx = lauf ? 32 : Math.floor((32 - breite) / 2);
+    let punkte = '';
+    for (let yy = 0; yy < 8; yy++) for (let xx = 0; xx < 32; xx++) punkte += '<circle cx="' + (xx + .5) + '" cy="' + (yy + .5) + '" r=".36" fill="#1d1f24"/>';
+    const leuchten = an.map(([px, py, c]) => '<circle cx="' + (px + dx + .5) + '" cy="' + (py + .5) + '" r=".4" fill="' + c + '"/>').join('');
+    return '<svg class="mx" viewBox="0 0 32 8" preserveAspectRatio="xMidYMid meet" aria-hidden="true">' + punkte +
+      '<g class="lt"' + (lauf ? ' style="--w:' + w + ';animation-duration:' + (w * 0.09).toFixed(1) + 's"' : '') + '>' + leuchten + '</g></svg>';
+  }
+  const PIXEL_CSS = `
+.matrix{border-radius:18px;background:#0b0c0f;padding:14px 14px 10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)}
+.mx{display:block;width:100%;height:auto;overflow:hidden}
+.mx .lt{filter:drop-shadow(0 0 .35px currentColor)}
+.mx .lt[style]{animation:pxlauf linear infinite}
+@keyframes pxlauf{from{transform:translateX(0)}to{transform:translateX(calc(var(--w) * -1px))}}
+.matrix small{display:block;color:#9a9ea7;font-size:12px;margin-top:8px;text-align:center}
+.pg{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-radius:16px;padding:12px;margin-top:8px}
+.pg .pk{flex:1 0 100%;display:flex;gap:8px;justify-content:flex-end}
+.pg>ha-icon{--mdc-icon-size:26px;color:#29b6f6;flex:none}
+.pg>span:not(.pk){flex:1;min-width:0}.pg b{display:block;font-size:14.5px}.pg small{display:block;font-size:12px;color:var(--secondary-text-color);margin-top:2px}
+.pg i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--disabled-color,#9e9e9e)}
+.pg i.ok{background:var(--green-color,#43a047)}.pg i.weg{background:var(--red-color,#e53935)}
+.pg button{display:inline-flex;align-items:center;gap:5px;border-radius:12px;padding:7px 10px;font-size:12.5px;font-weight:600;flex:none}
+.pg button ha-icon{--mdc-icon-size:16px}
+.mbox p{font-size:13px;color:var(--secondary-text-color);line-height:1.45;margin:8px 0 0}
+.mbox p.fehler{color:var(--error-color,#db4437);font-weight:600}.mbox p.fehler:empty{display:none}`;
+  class AutodartsPixelCard extends DartsSeite {
+    static get CSS() { return PIXEL_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;box-sizing:border-box;text-align:left;margin-top:8px}.schalter>ha-icon{--mdc-icon-size:28px;flex:none}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter.an>ha-icon{color:var(--primary-color)}.schalter span{flex:1}.schalter b{display:block;font-size:15px}.schalter small{display:block;font-size:12.5px;color:var(--secondary-text-color);font-weight:500;margin-top:2px}.neuer{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:8px 12px;margin-top:10px;font-size:13px;font-weight:600}'; }
+    getCardSize() { return 6; }
+    _w() { return Object.assign({}, pixelInfo(this._h), this._neu || {}); }
+    _zeichnen() {
+      if (this._fehlt()) return;
+      const p = this._w(), echt = pixelInfo(this._h), g = p.geraete || [];
+      if (this._neu && Object.keys(this._neu).every(k => this._neu[k] === echt[k])) this._neu = null;
+      this._kopf(t('pixel_title'), !g.length ? t('pixel_add') : p.an ? (g.length === 1 ? t('n_pixel1') : t('n_pixel', { n: g.length })) : t('pixel_off_s'));
+      const jetzt = p.an && p.vorschau;
+      let s = '<div class="titel"><ha-icon icon="mdi:dots-grid"></ha-icon>' + t('pixel_live') + '</div><div class="matrix">' +
+        pixelSvg(jetzt ? p.vorschau : [{ t: new Date().toTimeString().slice(0, 5), c: '#8e8e93' }]) + (jetzt ? '' : '<small>' + t('pixel_idle') + '</small>') + '</div>';
+      s += '<button class="schalter feld' + (p.an ? ' an' : '') + '" data-act="an"><ha-icon icon="' + (p.an ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon><span><b>' + t('pixel_on') + '</b><small>' + t('pixel_on_s') + '</small></span></button>' +
+        '<button class="schalter feld' + (p.effekte ? ' an' : '') + '" data-act="fx"><ha-icon icon="' + (p.effekte ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon><span><b>' + t('pixel_fx') + '</b><small>' + t('pixel_fx_s') + '</small></span></button>';
+      s += '<div class="titel"><ha-icon icon="mdi:led-strip-variant"></ha-icon>' + t('pixel_devs') + '</div>';
+      if (!g.length) s += '<div class="leer">' + t('pixel_none') + '</div>';
+      s += g.map(d => '<div class="pg feld"><ha-icon icon="mdi:dots-grid"></ha-icon><span><b>' + esc(d.name || d.host) + '</b><small><i class="' + (d.online === true ? 'ok' : d.online === false ? 'weg' : '') + '"></i>' + esc(d.host) +
+        (d.online === false ? ' · ' + t('pixel_offline') : d.online ? ' · ' + t('pixel_online') : '') + (d.version ? ' · v' + esc(d.version) : '') + '</small></span>' +
+        '<span class="pk"><button class="feld" data-act="test" data-h="' + esc(d.host) + '"><ha-icon icon="mdi:message-flash-outline"></ha-icon>' + t('pixel_test') + '</button>' +
+        '<button class="feld" data-act="weg" data-h="' + esc(d.host) + '" data-lbl="' + t('pixel_del') + '" style="--sr-f:var(--red-color,#e53935)"><ha-icon icon="mdi:delete-outline"></ha-icon><span class="lbl">' + t('pixel_del') + '</span></button></span></div>').join('');
+      s += '<button class="neuer feld" data-act="neu"><ha-icon icon="mdi:plus" style="--mdc-icon-size:16px"></ha-icon>' + t('pixel_add') + '</button>';
+      s += '<div class="klein">' + t('pixel_hint') + '</div>';
+      this._setze(s);
+    }
+    _setzen(daten) {
+      this._neu = Object.assign(this._neu || {}, daten); this._alt = null; this._zeichnen();
+      this._h.callService('autodarts', 'pixel_setzen', daten).catch(e => { this._neu = null; meldung(this, (e && e.message) || String(e)); this._alt = null; this._zeichnen(); });
+    }
+    _klick(act, b) {
+      const h = this._h, p = this._w();
+      if (act === 'an') return this._setzen({ an: !p.an });
+      if (act === 'fx') return this._setzen({ effekte: !p.effekte });
+      if (act === 'test') { h.callService('autodarts', 'pixel_testen', { adresse: b.dataset.h }).then(() => meldung(this, t('pixel_test_ok')), e => meldung(this, (e && e.message) || String(e))); return; }
+      if (act === 'weg') { zweimal(this, b, t('pixel_del_q'), () => h.callService('autodarts', 'pixel_entfernen', { adresse: b.dataset.h })); return; }
+      if (act === 'neu') {
+        this._modal('<h3>' + t('pixel_add') + '</h3><input inputmode="decimal" autocomplete="off" placeholder="' + t('pixel_addr') + ' · 192.168.178.50"><p class="fehler"></p><p>' + t('pixel_add_s') + '</p><div class="mknoepfe"><button class="feld" data-act="mzu">' + t('cancel') + '</button><button class="ja" data-act="neuok">' + t('pixel_find') + '</button></div>');
+        this._r.querySelector('.modal input').addEventListener('keydown', e => { if (e.key === 'Enter') this._klick('neuok', {}); });
+        return;
+      }
+      if (act === 'neuok') {
+        const feld = this._r.querySelector('.modal input'), knopf = this._r.querySelector('.modal .ja'), adresse = ((feld || {}).value || '').trim();
+        if (!adresse || (knopf && knopf.disabled)) return;
+        if (knopf) { knopf.disabled = true; knopf.textContent = '…'; }
+        const fz = this._r.querySelector('.modal .fehler'); if (fz) fz.textContent = '';
+        h.callWS({ type: 'call_service', domain: 'autodarts', service: 'pixel_hinzufuegen', service_data: { adresse }, return_response: true })
+          .then(r => { this._modal(null); meldung(this, t('pixel_found', { name: ((r && r.response) || {}).name || adresse })); },
+            e => {
+              if (knopf) { knopf.disabled = false; knopf.textContent = t('pixel_find'); }
+              const f = this._r.querySelector('.modal .fehler'); if (f) f.textContent = ((e && e.message) || String(e)).replace(/^Validation error:\s*/, ''); else meldung(this, (e && e.message) || String(e));
+            });
+      }
+    }
+  }
+  customElements.define('autodarts-pixel-card', AutodartsPixelCard);
+
   /* ---------- Settings card: one menu with big buttons, each opens the matching card ---------- */
   const MENUE = [
     ['board', 'autodarts-manager-card', 'mdi:camera-iris', 'm_board', 'm_board_s', '#26a69a'],
     ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title', 'm_lights_s', '#ffb300'],
     ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title', 'm_caller_s', '#7e57c2'],
     ['tv', 'autodarts-tv-card', 'mdi:television-play', 'tv_title', 'm_tv_s', '#ef5350'],
-    ['clips', 'autodarts-clips-card', 'mdi:movie-star-outline', 'clips_title', 'm_clips_s', '#ec407a']
+    ['clips', 'autodarts-clips-card', 'mdi:movie-star-outline', 'clips_title', 'm_clips_s', '#ec407a'],
+    ['pixel', 'autodarts-pixel-card', 'mdi:dots-grid', 'pixel_title', 'm_pixel_s', '#29b6f6']
   ];
   const MENUE_CSS = `
 .menue{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
@@ -3175,6 +3291,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const h = this._h;
       if (k === 'board') { const on = boardOnline(h); return ['<i class="st' + (on ? ' gut' : '') + '">' + t(on ? 'online' : 'offline') + '</i>', on]; }
       if (k === 'tv') { const n = (tvInfo(h).geraete || []).length; return n ? ['<i class="st gut">' + t('n_tv', { n }) + '</i>', true] : ['', false]; }
+      if (k === 'pixel') { const p = pixelInfo(h), n = (p.geraete || []).length; return n ? ['<i class="st' + (p.an ? ' gut' : '') + '">' + (p.an ? (n === 1 ? t('n_pixel1') : t('n_pixel', { n })) : t('pixel_off_s')) + '</i>', p.an] : ['', false]; }
       if (k === 'clips') { const c = clipsInfo(h); return c.an ? ['<i class="st gut">' + t('n_clips', { n: (c.liste || []).length }) + '</i>', true] : ['<i class="st">' + t('clips_off_s') + '</i>', false]; }
       return ['', false];
     }
@@ -3213,6 +3330,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title'],
     ['fernseher', 'autodarts-tv-card', 'mdi:television-play', 'tv_title'],
     ['highlights', 'autodarts-clips-card', 'mdi:movie-star-outline', 'clips_title'],
+    ['pixel', 'autodarts-pixel-card', 'mdi:dots-grid', 'pixel_title'],
     ['manager', 'autodarts-manager-card', 'mdi:camera-iris', 'manager']
   ];
   const PANEL_CSS = `
@@ -3280,7 +3398,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     { type: 'autodarts-caller-card', name: 'DartNest Caller', description: t('d_caller') },
     { type: 'autodarts-tv-card', name: 'DartNest TV', description: t('d_tv') },
     { type: 'autodarts-settings-card', name: 'DartNest Settings', description: t('d_settings') },
-    { type: 'autodarts-clips-card', name: 'DartNest Highlights', description: t('d_clips') }
+    { type: 'autodarts-clips-card', name: 'DartNest Highlights', description: t('d_clips') },
+    { type: 'autodarts-pixel-card', name: 'DartNest Pixel display', description: t('d_pixel') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

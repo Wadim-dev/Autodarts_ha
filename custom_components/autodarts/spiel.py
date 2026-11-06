@@ -57,6 +57,7 @@ class Spielleiter:
         self._ereignis_hoerer: list[Callable[[str, dict[str, Any]], None]] = []
         self.tv_url: Callable[[], str] | None = None  # set by the TV page (fernseher.py)
         self.clips_info: Callable[[], dict[str, Any]] | None = None  # set by the highlight clips (clips.py)
+        self.pixel_info: Callable[[], dict[str, Any]] | None = None  # set by the pixel displays (pixel.py)
         self._ev_spiel: str | None = None
         self._ev_offen: tuple[int, int] = (-1, 0)
         self._ev_visit = -1
@@ -914,7 +915,8 @@ class Spielleiter:
                 "strom": self.daten.get("strom") or {},
                 "tv": {"geraete": tv.get("geraete") or [], "auto": bool(tv.get("auto")), "url": self.tv_url() if self.tv_url else "",
                        "brett": bool(tv.get("brett")), "ansicht": tv.get("ansicht") or "camera_1"},
-                "clips": self.clips_info() if self.clips_info else {}}
+                "clips": self.clips_info() if self.clips_info else {},
+                "pixel": self.pixel_info() if self.pixel_info else {}}
 
     def einstellung_gespeichert(self) -> None:
         """A setting of another part (e.g. the TV page) changed: store it and update the sensors."""

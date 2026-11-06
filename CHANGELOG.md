@@ -3,6 +3,20 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.29.0
+
+- **Highlights.** New tab **DartNest → Highlights**: switch on **Record highlights** and every 180, finish of 100 or more and the match dart is saved as a short video (about 8 s before and 1.5 s after the dart) from the board camera, straightened with the calibration. Choose the camera and more occasions (leg won, nine-darter, 140+, every finish, bullseye, three in a bed). Clips appear as tiles: tap to play, download or delete; the newest 30 are kept, the files are also in **Media → dartnest/clips**.
+- **Instant replay:** right after the effect the new clip plays once on the TV and in the stream overlay (can be switched off).
+- **Stream overlay for OBS and Streamlabs:** the TV card has a second link – add it as a browser source (1920 × 1080). The background is see-through, a compact scoreboard sits at the bottom left, replays at the top right.
+- Game card: new button to save the last seconds as a clip by hand. Settings menu card: new button **Highlights**. New actions `autodarts.clips_setzen`, `clip_speichern`, `clip_loeschen`.
+
+**Deutsch**
+
+- **Highlights.** Neuer Reiter **DartNest → Highlights**: **Highlights aufnehmen** einschalten, und jede 180, jedes Finish ab 100 und der Match-Dart wird als kurzes Video (etwa 8 s vor und 1,5 s nach dem Dart) der Board-Kamera gespeichert, gerade gerückt mit der Kalibrierung. Kamera und weitere Anlässe wählbar (Leg gewonnen, Neun-Darter, 140+, jedes Finish, Bullseye, Three in a Bed). Die Clips erscheinen als Kacheln: antippen zum Abspielen, Herunterladen oder Löschen; die neuesten 30 bleiben, die Dateien liegen auch unter **Medien → dartnest/clips**.
+- **Sofort-Wiederholung:** Direkt nach dem Effekt läuft der neue Clip einmal am Fernseher und im Stream-Overlay (abschaltbar).
+- **Stream-Overlay für OBS und Streamlabs:** Die Fernseher-Karte hat einen zweiten Link – als Browser-Quelle einfügen (1920 × 1080). Der Hintergrund ist durchsichtig, unten links ein kompakter Spielstand, oben rechts die Wiederholungen.
+- Spielkarte: neuer Knopf, um die letzten Sekunden von Hand als Clip zu speichern. Einstellungs-Menükarte: neuer Knopf **Highlights**. Neue Aktionen `autodarts.clips_setzen`, `clip_speichern`, `clip_loeschen`.
+
 ## 1.28.0
 
 - **Your dartboard on the TV.** Switch on **Show the dartboard** in the TV card: the TV shows the board next to the score, with the darts of the current visit marked. Choose **Camera 1–3** for the live camera image, straightened like in the game card (rings mark the darts, so you still see the real ones), or **Drawn** for the drawn board. While the board does not detect (off, detection stopped) the TV shows the drawn board by itself and switches back to the camera when it runs again.

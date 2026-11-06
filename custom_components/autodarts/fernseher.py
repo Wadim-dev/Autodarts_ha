@@ -25,6 +25,7 @@ from homeassistant.helpers.network import NoURLAvailableError, get_url
 
 from . import auswertung
 from .board import Stream
+from .clips import clip_antwort
 from .const import DOMAIN
 from .spiel import Spielleiter
 
@@ -258,6 +259,7 @@ class Fernseher:
             ],
             "sprache": self.hass.config.language,
             "brett": self._brett(),
+            "clip": self.daten.clips.neuester() if self.daten is not None else None,
         }
 
 
@@ -283,6 +285,27 @@ class TvSeite(HomeAssistantView):
         if _fernseher_fuer(request.app["hass"], token) is None:
             return web.Response(status=404)
         return web.Response(text=self._html, content_type="text/html", headers={"Cache-Control": "no-store"})
+
+
+class TvOverlay(TvSeite):
+    """Same page as a see-through overlay for OBS or Streamlabs (browser source)."""
+
+    url = TV_URL + "/{token}/overlay"
+    name = "autodarts:tv:overlay"
+
+
+class TvClip(HomeAssistantView):
+    """A highlight clip for the replay on the page."""
+
+    url = TV_URL + "/{token}/clip/{name}"
+    name = "autodarts:tv:clip"
+    requires_auth = False
+
+    async def get(self, request: web.Request, token: str, name: str) -> web.StreamResponse:
+        f = _fernseher_fuer(request.app["hass"], token)
+        if f is None or f.daten is None:
+            return web.Response(status=404)
+        return await clip_antwort([f.daten.clips], name)
 
 
 class TvLive(HomeAssistantView):
@@ -351,5 +374,7 @@ async def async_setup_tv(hass: HomeAssistant) -> None:
     datei = Path(__file__).parent / "frontend" / "tv.html"
     html = await hass.async_add_executor_job(datei.read_text, "utf-8")
     hass.http.register_view(TvSeite(html))
+    hass.http.register_view(TvOverlay(html))
+    hass.http.register_view(TvClip())
     hass.http.register_view(TvLive())
     hass.http.register_view(TvKamera())

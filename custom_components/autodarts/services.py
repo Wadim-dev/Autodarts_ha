@@ -13,6 +13,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 import voluptuous as vol
 
+from .clips import ANLAESSE, KAMERAS as CLIP_KAMERAS
 from .const import DOMAIN, EREIGNISSE
 from .coordinator import DartsEntry
 from .fernseher import ANSICHTEN
@@ -77,6 +78,15 @@ DIENSTE = {
         vol.Optional("brett"): cv.boolean,
         vol.Optional("ansicht"): vol.In(ANSICHTEN),
     }),
+    "clips_setzen": vol.Schema({
+        vol.Optional("an"): cv.boolean,
+        vol.Optional("kamera"): vol.In(CLIP_KAMERAS),
+        vol.Optional("anlaesse"): [vol.In(ANLAESSE)],
+        vol.Optional("anzahl"): vol.All(vol.Coerce(int), vol.Range(1, 200)),
+        vol.Optional("wiederholung"): cv.boolean,
+    }),
+    "clip_loeschen": vol.Schema({vol.Optional("id"): cv.string, vol.Optional("alle", default=False): cv.boolean}),
+    "clip_speichern": vol.Schema({}),
     "aufnahme_eintragen": vol.Schema({
         vol.Optional("spieler"): cv.string,
         vol.Required("punkte"): vol.All(vol.Coerce(int), vol.Range(0, 180)),
@@ -229,6 +239,14 @@ def async_setup_services(hass: HomeAssistant) -> None:
             await s.statistik_loeschen(d.get("id"), d["verlauf"])
         elif name == "strom_setzen":
             await s.strom_setzen({k: d[k] for k in ("schalter", "leistung", "einschalten", "ausschalten", "pc_online")})
+        elif name in ("clips_setzen", "clip_loeschen", "clip_speichern"):
+            clips = _eintrag(hass).runtime_data.clips
+            if name == "clips_setzen":
+                await clips.setzen(d)
+            elif name == "clip_speichern":
+                await clips.jetzt_speichern()
+            elif d.get("id") or d["alle"]:
+                await clips.loeschen(None if d["alle"] else d["id"])
         elif name.startswith("fernseher_"):
             tv = _eintrag(hass).runtime_data.fernseher
             if name == "fernseher_zeigen":

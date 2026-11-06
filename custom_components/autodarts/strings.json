@@ -133,6 +133,12 @@
     },
     "tv_silk_off": {
       "message": "The Silk browser is switched off on {entity}. Switch it on under Settings → Applications → Manage installed applications → Silk Browser → Enable, then try again."
+    },
+    "clips_off": {
+      "message": "Highlight clips are switched off. Switch them on in the \"DartNest Highlights\" card."
+    },
+    "clips_no_image": {
+      "message": "No camera image right now: clips are only recorded during a game while the board detects darts."
     }
   },
   "entity": {

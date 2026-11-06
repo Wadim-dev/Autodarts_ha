@@ -96,6 +96,12 @@ Four formats: **knockout** (3–32), **double KO** with winners and losers brack
 
 Open **DartNest → TV**, tick your TV and tap **Show on TV** – the score appears big on **Fire TV, Google TV or Chromecast**, live with every dart. Between games the TV shows the clock, the ranking and the last games. Switch on **Show by itself when a game starts** and you never touch the remote. **Show the dartboard** puts your board next to the score – live from the camera, straightened, with the darts of the visit marked. Any other screen works too: open the link in its browser.
 
+## Stream and highlights
+
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/stream.png" alt="Stream overlay with score and replay, highlights card on the phone" width="900"></p>
+
+Streaming your games? Add the **overlay link** from the TV card as a browser source in **OBS or Streamlabs** – a see-through scoreboard sits on top of your camera. Switch on **Highlights** and every **180, high finish and match dart** is saved as a short, straightened video from the board camera. Watch, download or delete them in the card; right after the dart they play once as a replay on the TV and in the overlay.
+
 ## Board Manager inside Home Assistant
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
@@ -271,6 +277,22 @@ Open **DartNest → TV** (or the **Settings** card → TV). The card shows a liv
 
 The page shows the players with rest, legs and sets, average, last visit and checkout, the current visit dart by dart, 180, bust and leg effects, the bull-off and the result. All game modes work (Cricket with marks, teams with the member who throws). Between games: clock, date, ranking and the last games. Fire TV opens the page in the **Silk browser** (install it from the Amazon app store if it is missing; if it was switched off, the card says so – switch it on under *Settings → Applications → Manage installed applications → Silk Browser*).
 
+#### Stream overlay
+
+The TV card has a section **Stream overlay (OBS, Streamlabs)** with its own link (same secret key as the TV page). In OBS or Streamlabs add a source → **Browser**, paste the link, size **1920 × 1080**. The background is transparent: a compact scoreboard sits at the bottom left (players, rest, legs/sets, the current visit), and highlight replays appear at the top right. Bull-off and the result are shown too; between games the overlay is empty.
+
+#### Highlights
+
+Open **DartNest → Highlights** (or the **Settings** card → Highlights).
+
+- **Record highlights**: while a game runs and the board detects, DartNest keeps the last seconds of the chosen **camera** (1–3). At a highlight it saves about 8 s before and 1.5 s after the dart as an MP4, straightened with the calibration (720 × 720; without calibration the plain camera image).
+- **When**: 180, finish 100+ and match dart are on by default; leg won, nine-darter, 140+, every finish, bullseye and three in a bed can be added. One clip per visit, named after the best highlight.
+- **Replay on the TV and the overlay**: the new clip plays once right after the effect.
+- Tap a clip to play it, **Download** saves the MP4, **Delete** (tap twice) removes it. **Delete all clips** clears the list. The newest 30 are kept (`anzahl` up to 200); files are in **Media → dartnest/clips**.
+- The game card has a button to save the last seconds by hand.
+
+Needs ffmpeg, which every Home Assistant installation has.
+
 #### Caller
 
 Open **DartNest → Caller**. The card goes from top to bottom in three steps; the big **Listen to a sample** button at the top plays an example visit ("140 · <player>, you require 92") at any time.
@@ -404,11 +426,15 @@ type: custom:autodarts-players-card
 ```
 
 ```yaml
-type: custom:autodarts-settings-card   # one menu: Board, Light effects, Caller, TV
+type: custom:autodarts-settings-card   # one menu: Board, Light effects, Caller, TV, Highlights
 ```
 
 ```yaml
 type: custom:autodarts-tv-card         # TV settings on their own
+```
+
+```yaml
+type: custom:autodarts-clips-card      # highlights: settings and clips
 ```
 
 `back_button: false` hides the back arrow on the three page cards.
@@ -462,6 +488,9 @@ While the board is off, connection and status show `Offline`; all other board en
 | `autodarts.fernseher_zeigen` | Open the scoreboard on the chosen TVs (or `geraete`). Fire TV/Android TV via the Android Debug Bridge integration (Silk browser), Google TV via Android TV Remote, Chromecast via Google Cast. |
 | `autodarts.fernseher_beenden` | Take the scoreboard off the TVs (back to the home screen; Chromecast stops). |
 | `autodarts.fernseher_setzen` | TV settings: `geraete` (media players), `auto` (show when a game starts), `brett` (dartboard next to the score), `ansicht` (`graphic`, `camera_1`, `camera_2`, `camera_3`), `neuer_link: true` makes a new link and the old one stops working. The TV card does this for you. |
+| `autodarts.clips_setzen` | Highlight settings: `an`, `kamera` (`camera_1`–`camera_3`), `anlaesse` (`one_eighty`, `high_finish`, `match_won`, `leg_won`, `nine_darter`, `ton_forty`, `checkout`, `bullseye`, `three_in_a_bed`), `anzahl` (1–200 clips kept), `wiederholung` (replay on the TV and the overlay). The highlights card does this for you. |
+| `autodarts.clip_speichern` | Save the last seconds of the board camera now (highlights must be on). |
+| `autodarts.clip_loeschen` | Delete a clip (`id`) or all clips (`alle: true`). |
 | `autodarts.turnier_weiter` | Start the next match of the tournament. |
 | `autodarts.turnier_abbrechen` | End the tournament (bracket is removed). |
 | `autodarts.weiter` | Finish the current visit; missing darts count as miss. |
@@ -713,6 +742,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Besser werden:** Average, First 9, Checkout-Quote, Wertung, Trend, Abzeichen, direkter Vergleich, Rangliste und die **Zielhilfe** – wo du mit deiner Streuung am meisten triffst.
 - **Turniere:** K.-o. (3–32 Spieler), Doppel-K.-o. mit Verliererrunde (3–16), Gruppen + K.-o. (6–32) oder Liga (3–10), auch als 2er-Teams oder mit Handicap.
 - **Fernseher:** Spielstand groß auf Fire TV, Google TV oder Chromecast, live mit jedem Dart, auf Wunsch mit deiner Dartscheibe live aus der Kamera daneben; zwischen den Spielen Uhr, Rangliste und letzte Spiele. *DartNest → Fernseher*, Fernseher wählen, **Auf dem Fernseher zeigen** – oder von selbst bei jedem Spielstart.
+- **Stream und Highlights:** Overlay-Link aus der Fernseher-Karte als Browser-Quelle in OBS oder Streamlabs – durchsichtiger Spielstand über deinem Kamerabild. **Highlights** speichert jede 180, jedes Finish ab 100 und den Match-Dart als kurzes, gerade gerücktes Video der Board-Kamera; ansehen, herunterladen oder löschen in der Karte *DartNest → Highlights*, auf Wunsch sofort als Wiederholung am Fernseher und im Overlay.
 - **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.

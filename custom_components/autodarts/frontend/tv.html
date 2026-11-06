@@ -105,6 +105,41 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
 .fx .g180{background:linear-gradient(90deg,#ffd23d,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
 .fx .bust{color:var(--rot)}.fx .leg{color:var(--gr);font-size:13vh}
 .blitz{position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle,rgba(255,170,70,.28),rgba(8,8,12,.78) 65%);animation:blitz 2.4s ease-out both}
+/* instant replay of a highlight clip */
+#rp{position:absolute;left:50%;top:50%;width:min(72vh,60vw);transform:translate(-50%,-50%) scale(.9);opacity:0;transition:opacity .4s,transform .4s;z-index:6;pointer-events:none;
+  border-radius:3vh;overflow:hidden;background:#000;box-shadow:0 0 0 .4vh rgba(255,138,61,.7),0 0 0 100vmax rgba(8,8,12,.6)}
+#rp.an{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#rp video{display:block;width:100%;aspect-ratio:1;object-fit:cover;background:#000}
+#rp .rl{position:absolute;left:0;right:0;top:0;padding:1.6vh 2vh;display:flex;align-items:center;gap:1.2vh;font-size:2.6vh;font-weight:800;background:linear-gradient(rgba(0,0,0,.75),transparent)}
+#rp .rl i{width:1.4vh;height:1.4vh;border-radius:50%;background:var(--rot);animation:blink 1s steps(2) infinite}
+#rp .rl b{margin-left:auto;background:linear-gradient(90deg,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes blink{50%{opacity:.2}}
+/* overlay for OBS / Streamlabs: see-through, scoreboard at the bottom left */
+body.ov{background:transparent!important;cursor:none}
+.ov .app{display:none}
+#ov{position:absolute;left:3vw;bottom:5vh;min-width:30vw;max-width:46vw;border-radius:1.6vh;overflow:hidden;background:rgba(13,15,20,.88);border:.2vh solid rgba(255,255,255,.12);box-shadow:0 2vh 6vh rgba(0,0,0,.45);display:none;font-variant-numeric:tabular-nums}
+.ov #ov.da{display:block}
+#ov .oh{display:flex;align-items:center;gap:1vh;padding:1vh 1.6vh;font-size:1.7vh;color:var(--sub);background:rgba(255,255,255,.05)}
+#ov .oh i{width:1.8vh;height:1.8vh;border-radius:50%;flex:none;background:radial-gradient(circle,var(--rot) 0 18%,#fff 19% 30%,var(--or) 31% 52%,#fff 53% 63%,var(--rot) 64% 100%)}
+#ov .oh b{color:var(--txt);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ov .oh span{margin-left:auto;display:flex;gap:0;white-space:nowrap}#ov .oh span em{font-style:normal;width:5.2vh;text-align:center}#ov .oh span em:last-child{width:9vh}
+#ov .or{display:flex;align-items:center;padding:.9vh 1.6vh;border-top:.15vh solid rgba(255,255,255,.07);font-size:2.6vh;font-weight:700;position:relative}
+#ov .or.an{background:linear-gradient(90deg,rgba(255,138,61,.28),rgba(255,138,61,.04))}
+#ov .or.an:before{content:'';position:absolute;left:0;top:0;bottom:0;width:.6vh;background:var(--or)}
+#ov .or.raus{opacity:.45}
+#ov .on{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#ov .on small{font-size:1.7vh;color:var(--or);margin-left:1vh;font-weight:600}
+#ov .os,#ov .ol{width:5.2vh;text-align:center;color:var(--sub)}#ov .ol{color:var(--txt)}
+#ov .og{width:9vh;text-align:center;font-size:3.4vh;font-weight:800}
+#ov .or.an .og{color:var(--or)}
+#ov .of{display:flex;align-items:center;gap:.8vh;padding:1vh 1.6vh;border-top:.15vh solid rgba(255,255,255,.07);font-size:2.2vh}
+#ov .of .od{min-width:6.4vh;text-align:center;border-radius:.8vh;padding:.4vh .6vh;background:rgba(255,255,255,.08);font-weight:800}
+#ov .of .od.leer{color:rgba(255,255,255,.25)}
+#ov .of .os2{margin-left:auto;font-size:2.8vh;font-weight:800}
+#ov .of .hw{font-weight:700;color:var(--or);font-size:1.9vh}#ov .of .hw.bust{color:var(--rot)}#ov .of .hw.ok{color:var(--gr)}
+#ov .of .co{display:flex;gap:.5vh}#ov .of .co span{border-radius:.7vh;padding:.3vh .7vh;background:var(--or);color:#1b0f08;font-weight:800;font-size:1.8vh}
+#ov .sieg{padding:1.2vh 1.6vh;border-top:.15vh solid rgba(255,255,255,.07);font-size:2.6vh;font-weight:800}#ov .sieg span{background:linear-gradient(90deg,var(--or),var(--rot));-webkit-background-clip:text;background-clip:text;color:transparent}
+.ov .fx .t{font-size:13vh}.ov .fx .t small{font-size:4vh}.ov .fx .leg{font-size:9vh}.ov .blitz{display:none}
+.ov #rp{left:auto;right:3vw;top:5vh;width:28vw;transform:scale(.9);transform-origin:top right;box-shadow:0 0 0 .3vh rgba(255,138,61,.7),0 2vh 6vh rgba(0,0,0,.5)}.ov #rp.an{transform:none}
 @keyframes fx{0%{opacity:0;transform:scale(.4)}15%{opacity:1;transform:scale(1.08)}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
 @keyframes blitz{0%{opacity:0}12%{opacity:1}80%{opacity:1}100%{opacity:0}}
 @keyframes rein{0%{transform:scale(.6);opacity:0}100%{transform:none;opacity:1}}
@@ -116,6 +151,8 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
   <div class="top"><div class="logo"><i></i>DartNest</div><div class="mitte" id="mitte"></div><div class="punkt" id="punkt"></div><div class="uhr" id="uhr"></div></div>
   <main id="main"><div id="inhalt"></div><div id="brett"><svg class="gz" viewBox="-225 -225 450 450"></svg><div class="lv"><img alt=""></div><svg class="pf" viewBox="-225 -225 450 450"></svg><div class="bk"></div></div></main>
 </div>
+<div id="ov"></div>
+<div id="rp"><div class="rl"><i></i><span class="rt"></span><b class="rw"></b></div><video muted playsinline preload="auto"></video></div>
 <div class="fx" id="fx"></div>
 <script>
 (function () {
@@ -124,11 +161,11 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
     de: { rest: 'Rest', legs: 'Legs', sets: 'Sets', avg: 'Ø', darts: 'Darts', to_throw: 'ist dran', throws: 'wirft', ranking: 'Rangliste', last: 'Letzte Spiele',
       none: 'Noch keine Spiele', start: 'Neues Spiel in der <b>DartNest</b>-App starten', bulloff: 'Bull-Off – wer ist näher am Bull?', wins: 'gewinnt!', checkout: 'Checkout', bust: 'BUST', remove: 'Darts ziehen',
       leg: 'Leg', set: 'Satz', game: 'Spiel', next: 'Nächstes Match', champion: 'Turniersieger', round: 'Runde {n} von {m}', games: 'Spiele', w: 'Siege', elo: 'Wertung', highest: 'Höchste', finish: 'Finish',
-      days: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'], first_leg: 'Erster bis {n} Leg', first_legs: 'Erster bis {n} Legs', sets_legs: 'Erster bis {s} Sets à {l} Legs', lost: 'Verbindung …', out: 'raus', aims: 'wirft auf Bull …', tour: 'Turnier läuft', cam: 'Kamera {n}', cam_off: 'Kamera aus' },
+      days: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'], first_leg: 'Erster bis {n} Leg', first_legs: 'Erster bis {n} Legs', sets_legs: 'Erster bis {s} Sets à {l} Legs', lost: 'Verbindung …', out: 'raus', aims: 'wirft auf Bull …', tour: 'Turnier läuft', cam: 'Kamera {n}', cam_off: 'Kamera aus', replay: 'Wiederholung', manual: 'Clip', one_eighty: '180', high_finish: 'Finish', match_won: 'Matchdart', leg_won: 'Leg', nine_darter: '9-Darter', ton_forty: 'Aufnahme', checkout: 'Finish', bullseye: 'Bullseye', three_in_a_bed: 'Drei in einem Feld' },
     en: { rest: 'Rest', legs: 'Legs', sets: 'Sets', avg: 'Avg', darts: 'Darts', to_throw: 'to throw', throws: 'throws', ranking: 'Ranking', last: 'Last games',
       none: 'No games yet', start: 'Start a new game in the <b>DartNest</b> app', bulloff: 'Bull-off – who is closest to the bull?', wins: 'wins!', checkout: 'Checkout', bust: 'BUST', remove: 'Pull the darts',
       leg: 'Leg', set: 'Set', game: 'Game', next: 'Next match', champion: 'Champion', round: 'Round {n} of {m}', games: 'Games', w: 'Wins', elo: 'Rating', highest: 'Highest', finish: 'Finish',
-      days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], first_leg: 'First to {n} leg', first_legs: 'First to {n} legs', sets_legs: 'First to {s} sets of {l} legs', lost: 'Connecting …', out: 'out', aims: 'throws at bull …', tour: 'Tournament running', cam: 'Camera {n}', cam_off: 'Camera off' }
+      days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], first_leg: 'First to {n} leg', first_legs: 'First to {n} legs', sets_legs: 'First to {s} sets of {l} legs', lost: 'Connecting …', out: 'out', aims: 'throws at bull …', tour: 'Tournament running', cam: 'Camera {n}', cam_off: 'Camera off', replay: 'Replay', manual: 'Clip', one_eighty: '180', high_finish: 'Finish', match_won: 'Match dart', leg_won: 'Leg', nine_darter: 'Nine-darter', ton_forty: 'Visit', checkout: 'Finish', bullseye: 'Bullseye', three_in_a_bed: 'Three in a bed' }
   };
   let S = T.de;
   const t = (k, v) => String(S[k] == null ? k : S[k]).replace(/\{(\w+)\}/g, (_, x) => v && v[x] != null ? v[x] : '');
@@ -136,6 +173,9 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
   const ft = f => !f ? '' : f === 'D25' ? 'Bull' : f === 'S25' ? '25' : f === 'M' ? 'Miss' : f[0] === 'S' ? f.slice(1) : f;
   const $ = id => document.getElementById(id);
   let D = null, altHtml = '', altAnsage = null, altDarts = 0, erst = true;
+  // the same page is the overlay for OBS / Streamlabs at …/overlay
+  const OV = /\/overlay\/?$/.test(location.pathname), BASE = location.pathname.replace(/\/$/, '').replace(/\/overlay$/, '');
+  if (OV) document.body.classList.add('ov');
 
   function uhr() {
     const d = new Date(), z = d.toLocaleTimeString(S === T.de ? 'de-DE' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -218,7 +258,7 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
     const nr = zeigen && b.kamera && entzerrung(b.kalibrierung) ? b.kamera : null;
     if (nr !== kamAlt) {
       kamAlt = nr; formAlt = '';
-      if (nr) img.src = location.pathname.replace(/\/$/, '') + '/kamera/' + nr + '?t=' + Date.now(); else img.removeAttribute('src');
+      if (nr) img.src = BASE + '/kamera/' + nr + '?t=' + Date.now(); else img.removeAttribute('src');
     }
     el.classList.toggle('kam', !!nr);
     if (!zeigen) return;
@@ -343,6 +383,45 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
     clearTimeout(effekt.z); effekt.z = setTimeout(() => { fx.innerHTML = ''; }, 2500);
   }
 
+
+  /* ---------- overlay: compact scoreboard at the bottom left ---------- */
+  function overlay(a) {
+    const ph = a.phase, sp = a.spieler || [], e = a.einstellungen || {};
+    if (!['laeuft', 'bulloff', 'beendet'].includes(ph)) return '';
+    const kopf = '<div class="oh"><i></i><b>' + esc(modusTxt(a)) + '</b>' + (ph === 'bulloff' ? '' : '<span>' + (e.sets ? '<em>' + t('sets') + '</em>' : '') + '<em>' + t('legs') + '</em><em></em></span>') + '</div>';
+    if (ph === 'bulloff') {
+      return kopf + '<div class="of"><span class="hw">' + t('bulloff') + '</span></div>' + (a.bulloff || []).map((p, i) => '<div class="or' + (i === a.am_zug && !p.dart ? ' an' : '') + (p.raus ? ' raus' : '') + '"><span class="on">' + esc(p.name) + '</span><span class="og">' + (p.dart ? ft(p.dart.f) : '–') + '</span></div>').join('');
+    }
+    const am = a.gewinner == null ? a.am_zug : -1;
+    let s = kopf + sp.map((p, i) => '<div class="or' + (i === am ? ' an' : '') + (p.raus ? ' raus' : '') + (i === a.gewinner ? ' an' : '') + '"><span class="on">' + esc(p.name) + (p.werfer ? '<small>' + esc(p.werfer) + '</small>' : '') + '</span>' +
+      (e.sets ? '<span class="os">' + (p.sets || 0) + '</span>' : '') + '<span class="ol">' + (p.legs || 0) + '</span><span class="og">' + esc(gross(a, p)) + '</span></div>').join('');
+    if (ph === 'beendet') return s + '<div class="sieg"><span>' + esc((a.turnier && a.turnier.sieger) || (sp[a.gewinner] || {}).name || '') + '</span> ' + t('wins') + '</div>';
+    const wer = sp[a.am_zug] || {}, au = a.aufnahme || { darts: [] };
+    let hw = '';
+    if (a.leg_gewinner != null) hw = '<span class="hw ok">' + t('leg') + ' ' + esc((sp[a.leg_gewinner] || {}).name) + '</span>';
+    else if (au.bust) hw = '<span class="hw bust">' + t('bust') + '</span>';
+    else if (wer.weg) hw = '<span class="co">' + wer.weg.map(f => '<span>' + ft(f) + '</span>').join('') + '</span>';
+    return s + '<div class="of">' + [0, 1, 2].map(i => '<span class="od' + (au.darts[i] ? '' : ' leer') + '">' + (au.darts[i] ? ft(au.darts[i].f) : '–') + '</span>').join('') + hw + '<span class="os2">' + (au.summe || 0) + '</span></div>';
+  }
+
+  /* ---------- instant replay of the newest highlight clip ---------- */
+  let clipAlt = null, clipZeit = null;
+  function wiederholung(c) {
+    const id = c && c.id;
+    if (clipAlt === null || erst) { clipAlt = id || ''; return; }
+    if (!id || id === clipAlt) return;
+    clipAlt = id;
+    const rp = $('rp'), v = rp.querySelector('video');
+    const zu = () => { rp.classList.remove('an'); clearTimeout(clipZeit); setTimeout(() => { if (!rp.classList.contains('an')) { v.pause(); v.removeAttribute('src'); v.load(); } }, 500); };
+    rp.querySelector('.rt').textContent = t('replay');
+    rp.querySelector('.rw').textContent = [S[c.art] || '', c.art === 'one_eighty' ? '' : (c.wert || ''), c.spieler || ''].filter(Boolean).join(' · ');
+    v.onended = zu; v.onerror = zu;
+    v.src = BASE + '/clip/' + id + '.mp4';
+    // after the 180 / leg effect
+    setTimeout(() => { rp.classList.add('an'); const p = v.play(); if (p && p.catch) p.catch(zu); }, 2600);
+    clearTimeout(clipZeit); clipZeit = setTimeout(zu, 2600 + ((c.dauer || 10) + 4) * 1000);
+  }
+
   function zeichnen() {
     if (!D) return;
     S = T[(D.sprache || 'de').slice(0, 2)] || T.en;
@@ -354,8 +433,14 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
     else if (ph === 'beendet') { html = ende(a); mitte = banner(a); }
     else { html = ruhe(); }
     document.body.classList.toggle('still', !['laeuft', 'bulloff', 'beendet'].includes(ph));
-    if (html !== altHtml) { altHtml = html; $('inhalt').innerHTML = html; }
-    brettZeichnen(a, D.brett);
+    if (OV) {
+      html = overlay(a);
+      if (html !== altHtml) { altHtml = html; $('ov').innerHTML = html; $('ov').classList.toggle('da', !!html); }
+    } else {
+      if (html !== altHtml) { altHtml = html; $('inhalt').innerHTML = html; }
+      brettZeichnen(a, D.brett);
+    }
+    wiederholung(D.clip);
     if ($('mitte').innerHTML !== mitte) $('mitte').innerHTML = mitte;
     if (ph === 'laeuft' || ph === 'beendet') effekt(a);
     erst = false;
@@ -363,7 +448,7 @@ main.mb .wurf{gap:1.2vw;padding:2vh 1.4vw}main.mb .wurf .wer{min-width:8vw}main.
   }
 
   function verbinden() {
-    const q = new EventSource(location.pathname.replace(/\/$/, '') + '/live');
+    const q = new EventSource(BASE + '/live');
     q.onmessage = e => { try { D = JSON.parse(e.data); } catch (x) { return; } document.body.classList.remove('weg'); zeichnen(); };
     q.onerror = () => { document.body.classList.add('weg'); };
   }

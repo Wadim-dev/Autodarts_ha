@@ -133,6 +133,12 @@
     },
     "tv_silk_off": {
       "message": "Der Silk-Browser ist auf {entity} ausgeschaltet. Unter Einstellungen → Anwendungen → Installierte Anwendungen verwalten → Silk-Browser → Aktivieren einschalten und nochmal versuchen."
+    },
+    "clips_off": {
+      "message": "Highlight-Clips sind ausgeschaltet. In der Karte „DartNest Highlights“ einschalten."
+    },
+    "clips_no_image": {
+      "message": "Gerade kein Kamerabild: Clips gibt es nur während eines Spiels, solange das Board Darts erkennt."
     }
   },
   "entity": {

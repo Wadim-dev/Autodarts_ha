@@ -629,6 +629,165 @@ button:disabled{opacity:.38;cursor:default;transform:none}
     plug_hint: 'Die Steckdose, an der der Board-PC hängt. Alle DartNest-Karten – auch in der Seitenleiste – zeigen dann den Ein/Aus-Knopf. Mit Leistungsmesser erkennt DartNest, wann der PC wirklich aus ist. Du hast ein Skript, das den PC erst herunterfährt? Dann wähle es bei „Herunterfahren mit“, sonst wird einfach die Steckdose ausgeschaltet.' });
   Object.assign(TEXTE.en, { d_tile: 'One compact row with the board scene behind it; tap opens a window with live darts, power, shortcuts and today', tile_tap: 'Tap for play, power and settings', today: 'Today', t_close: 'Close' });
   Object.assign(TEXTE.de, { d_tile: 'Eine kompakte Zeile mit der Board-Szene dahinter; Tippen öffnet ein Fenster mit Live-Würfen, Ein/Aus, Abkürzungen und Heute', tile_tap: 'Antippen für Spielen, Ein/Aus und Einstellungen', today: 'Heute', t_close: 'Schließen' });
+  /* ---------- sheet kit (1.31.0): windows slide up from the bottom and away downwards,
+     sub-windows (details of a value, choice lists) in the same style instead of the Home Assistant more-info dialog ---------- */
+  const FE_CSS = `
+dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-height:100%;background:transparent;color:var(--primary-text-color);overflow:hidden}
+dialog[open]{display:flex;align-items:flex-end;justify-content:center}
+dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5));animation:fe-schleier .3s ease}
+dialog.zu::backdrop{opacity:0;transition:opacity .24s ease}
+.blatt{width:min(560px,100%);max-height:92%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;border-radius:26px 26px 0 0;
+ padding:6px 8px calc(14px + env(safe-area-inset-bottom,0px));
+ background:var(--ha-bottom-sheet-surface-background,var(--ha-dialog-surface-background,var(--card-background-color,var(--primary-background-color))));
+ -webkit-backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);
+ box-shadow:var(--dialog-box-shadow,0 -8px 40px rgba(0,0,0,.35));animation:fe-rauf .34s cubic-bezier(.2,.85,.25,1)}
+dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s cubic-bezier(.4,0,1,1)!important}
+.griff{width:40px;height:4px;border-radius:9px;margin:4px auto 6px;background:color-mix(in srgb,var(--primary-text-color) 25%,transparent)}
+.fkopf{display:flex;align-items:center;gap:10px;padding:0 6px 8px 10px;font-size:17px;font-weight:700}
+.fkopf ha-icon,.fkopf ha-state-icon{--mdc-icon-size:22px;color:var(--fe-f,var(--primary-color))}
+.fkopf span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fkopf button:focus:not(:focus-visible){outline:none}
+.fkopf button{width:38px;height:38px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;color:inherit;background:color-mix(in srgb,var(--primary-text-color) 9%,transparent);-webkit-tap-highlight-color:transparent}
+@keyframes fe-rauf{from{transform:translateY(100%)}}
+@keyframes fe-rein{from{transform:translateY(60px);opacity:0}}
+@keyframes fe-schleier{from{opacity:0}}
+@media (min-width:700px){dialog[open]{align-items:center}.blatt{border-radius:26px;max-height:88%;animation-name:fe-rein}dialog.zu .blatt{transform:translateY(40px)!important;opacity:0;transition:transform .2s ease-in,opacity .2s ease-in!important}}
+@media (prefers-reduced-motion:reduce){.blatt{animation:none}dialog.zu .blatt,dialog.zu::backdrop{transition:none!important}}`;
+  // Aufklapp-Knopf im Fenster (wie „Programme & Optionen“)
+  const FE_KLAPP = `
+.klapp-k{display:flex;align-items:center;gap:8px;width:100%;margin:10px 0 0;padding:10px 12px;border:0;border-radius:14px;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:var(--secondary-text-color);background:color-mix(in srgb,var(--primary-text-color) 6%,transparent);-webkit-tap-highlight-color:transparent;transition:transform .12s ease}
+.klapp-k:active{transform:scale(.98)}
+.klapp-k span{flex:1;text-align:left}
+.klapp-k ha-icon{--mdc-icon-size:20px;transition:transform .2s}
+.klapp-k.offen ha-icon.pf{transform:rotate(180deg)}`;
+  const feRuhig = () => !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  // Fenster nach unten weggleiten lassen, dann schließen
+  const zuGleiten = d => {
+    if (!d.open || d.classList.contains('zu')) return;
+    if (feRuhig()) { d.close(); return; }
+    d.classList.add('zu');
+    setTimeout(() => { d.classList.remove('zu'); if (d.open) d.close(); }, 230);
+  };
+  // Nach unten ziehen schließt (nur ganz oben gescrollt, nicht auf Knöpfen); nach oben = normal scrollen
+  const ziehenZu = (bl, d) => {
+    let y0 = null, dy = 0, zieh = false;
+    const ende = () => {
+      if (zieh) {
+        if (dy > Math.min(140, bl.offsetHeight * 0.25)) { bl.style.transition = 'transform .2s cubic-bezier(.4,0,1,1)'; bl.style.transform = 'translateY(100%)'; setTimeout(() => d.close(), 190); }
+        else { bl.style.transition = 'transform .2s ease'; bl.style.transform = ''; }
+      }
+      y0 = null; zieh = false;
+    };
+    bl.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.composedPath().some(x => x.tagName === 'BUTTON' || x.tagName === 'INPUT' || x.tagName === 'SELECT') ? e.touches[0].clientY : null; dy = 0; zieh = false; }, { passive: true });
+    bl.addEventListener('touchmove', e => {
+      if (y0 === null) return;
+      const dd = e.touches[0].clientY - y0;
+      if (!zieh) { if (Math.abs(dd) < 8) return; if (dd < 0 || bl.scrollTop > 0) { y0 = null; return; } zieh = true; bl.style.transition = 'none'; }
+      dy = Math.max(0, dd); bl.style.transform = 'translateY(' + dy + 'px)'; e.preventDefault();
+    }, { passive: false });
+    bl.addEventListener('touchend', ende); bl.addEventListener('touchcancel', ende);
+  };
+  // Grundgerüst eines Fensters: Schleier antippen, X, Esc, Zurück-Taste (history-Merker), Ziehen
+  const fensterGeruest = (d, bl, merker, beimZu) => {
+    const f = { hist: false };
+    d.addEventListener('click', e => { if (e.target === d) zuGleiten(d); });
+    d.addEventListener('cancel', e => { e.preventDefault(); zuGleiten(d); });
+    const x = bl.querySelector('.fzu'); if (x) x.addEventListener('click', () => zuGleiten(d));
+    const pop = () => { if (!(history.state && history.state[merker])) { f.hist = false; zuGleiten(d); } };
+    // eine Abkürzung im Fenster öffnet eine andere Seite: schließen, ohne zurückzugehen
+    const weg = () => { if (d.open && !(history.state && history.state[merker])) { f.hist = false; d.close(); } };
+    d.addEventListener('close', () => {
+      window.removeEventListener('popstate', pop); window.removeEventListener('location-changed', weg);
+      bl.style.transition = ''; bl.style.transform = '';
+      if (beimZu) beimZu();
+      if (f.hist) { f.hist = false; history.back(); }
+    });
+    ziehenZu(bl, d);
+    f.auf = () => {
+      if (d.open) return false;
+      bl.style.transition = ''; bl.style.transform = '';
+      try { d.showModal(); } catch (e) { d.setAttribute('open', ''); }
+      bl.scrollTop = 0;
+      try { const s = Object.assign({}, history.state); s[merker] = 1; history.pushState(s, ''); f.hist = true; window.addEventListener('popstate', pop); window.addEventListener('location-changed', weg); } catch (e) {}
+      return true;
+    };
+    return f;
+  };
+  const U_CSS = `
+:host{display:contents}
+.uw{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;padding:2px 10px 12px}
+.uw b{font-size:28px;font-weight:700;line-height:1.15}
+.uw small{font-size:12.5px;color:var(--secondary-text-color)}
+.graf{padding:0 2px;min-height:40px;--ha-card-background:color-mix(in srgb,var(--primary-text-color) 5%,transparent);--ha-card-box-shadow:none;--ha-card-border-width:0;--ha-card-border-radius:18px}
+.liste{display:flex;flex-direction:column;gap:6px;padding:2px 4px 4px}
+.liste button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:14px;font:inherit;font-size:14px;font-weight:600;text-align:left;color:var(--primary-text-color);background:color-mix(in srgb,var(--primary-text-color) 6%,transparent);border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .12s ease,background .25s ease}
+.liste button:active{transform:scale(.97)}
+.liste button span{flex:1}
+.liste button ha-icon{--mdc-icon-size:20px;color:var(--fe-f,var(--primary-color));visibility:hidden}
+.liste button.an{background:color-mix(in srgb,var(--fe-f,var(--primary-color)) 20%,transparent)}
+.liste button.an ha-icon{visibility:visible}`;
+  const feZeit = x => { const d = new Date(x); if (isNaN(d)) return ''; const hm = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    return t('since', { t: d.toDateString() === new Date().toDateString() ? hm : d.getDate() + '.' + (d.getMonth() + 1) + '. ' + hm }); };
+  class FeUnterfenster extends HTMLElement {
+    constructor() {
+      super();
+      const r = this.attachShadow({ mode: 'open' });
+      r.innerHTML = '<style>' + FE_CSS + U_CSS + '</style><dialog><div class="blatt"><div class="griff"></div><div class="fkopf"><ha-state-icon></ha-state-icon><ha-icon class="wi"></ha-icon><span class="ft"></span>' +
+        '<button class="fzu" aria-label="' + t('t_close') + '"><ha-icon icon="mdi:close"></ha-icon></button></div><div class="koerper"></div></div></dialog>';
+      const d = this._d = r.querySelector('dialog'), bl = r.querySelector('.blatt');
+      this._f = fensterGeruest(d, bl, 'unterFenster', () => { this._id = null; this._wahl = null; this._graf = null; r.querySelector('.koerper').innerHTML = ''; });
+      // Infos aus dem Unterfenster heraus (z. B. Verlauf antippen): Wert wechseln statt noch ein Fenster
+      bl.addEventListener('hass-more-info', e => { e.stopPropagation(); const id = e.detail && e.detail.entityId; if (id && id !== this._id) this.info(id); });
+      r.querySelector('.koerper').addEventListener('click', e => {
+        const b = e.target.closest('[data-o]'); if (!b || !this._wahl) return;
+        const los = this._wahl; this._wahl = null; los(b.dataset.o); zuGleiten(d);
+      });
+    }
+    set hass(h) { this._h = h; if (this._graf) this._graf.hass = h; if (this._id) this._zeichnen(); }
+    _kopf(id, icon, titel) {
+      const r = this.shadowRoot, si = r.querySelector('ha-state-icon'), wi = r.querySelector('.wi');
+      si.style.display = id ? '' : 'none'; wi.style.display = id ? 'none' : '';
+      if (id) { si.hass = this._h; si.stateObj = this._h.states[id]; } else wi.setAttribute('icon', icon || 'mdi:format-list-bulleted');
+      r.querySelector('.ft').textContent = titel;
+    }
+    // Infos zu einem Wert: großer Wert, seit wann, Verlauf der letzten 24 Stunden
+    info(id) {
+      const h = this._h, s = h && h.states[id]; if (!s) return;
+      this._id = id; this._wahl = null;
+      const k = this.shadowRoot.querySelector('.koerper');
+      k.innerHTML = '<div class="uw"><b></b><small></small></div><div class="graf"></div>';
+      this._graf = null;
+      if (window.loadCardHelpers) window.loadCardHelpers().then(hl => {
+        if (this._id !== id) return;
+        const c = hl.createCardElement({ type: 'history-graph', hours_to_show: 24, entities: [{ entity: id, name: ' ' }] });
+        c.hass = this._h; this._graf = c; k.querySelector('.graf').appendChild(c);
+      }).catch(() => {});
+      this._zeichnen();
+      this._f.auf();
+    }
+    _zeichnen() {
+      const h = this._h, s = h.states[this._id]; if (!s) return;
+      this._kopf(this._id, null, s.attributes.friendly_name || this._id);
+      const w = h.formatEntityState ? h.formatEntityState(s) : s.state + (s.attributes.unit_of_measurement ? ' ' + s.attributes.unit_of_measurement : '');
+      const r = this.shadowRoot, b = r.querySelector('.uw b'), z = r.querySelector('.uw small'); if (!b) return;
+      if (b.textContent !== w) b.textContent = w;
+      const t = feZeit(s.last_changed); if (z.textContent !== t) z.textContent = t;
+    }
+    // Auswahlliste im Fensterstil: optionen = [[wert, text]], los(wert) beim Antippen
+    wahl(titel, icon, optionen, aktuell, los) {
+      this._id = null; this._graf = null; this._wahl = los;
+      this._kopf(null, icon, titel);
+      const esc = x => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+      this.shadowRoot.querySelector('.koerper').innerHTML = '<div class="liste">' + optionen.map(([o, t]) =>
+        '<button data-o="' + esc(o) + '" class="' + (o === aktuell ? 'an' : '') + '"><span>' + esc(t) + '</span><ha-icon icon="mdi:check"></ha-icon></button>').join('') + '</div>';
+      this._f.auf();
+    }
+  }
+  Object.assign(TEXTE.en, { since: 'since {t}' });
+  Object.assign(TEXTE.de, { since: 'seit {t} Uhr' });
+  if (!customElements.get('autodarts-info-sheet')) customElements.define('autodarts-info-sheet', FeUnterfenster);
+  const infoFenster = (host, root) => { if (!host._uf) { host._uf = document.createElement('autodarts-info-sheet'); root.appendChild(host._uf); } host._uf.hass = host._h; return host._uf; };
+
   const SZ_F = { aus: GR, startet: A, runter: A, bereit: G, ziehen: A, kalib: '#26a69a', gestoppt: B, standby: B, weg: A };
   const K_CSS = `
 ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relative;overflow:hidden;padding:14px;box-sizing:border-box}
@@ -644,26 +803,13 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
 .ak{flex:none;display:flex;gap:4px}
 .ak i{width:9px;height:9px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c)}
 .pf{--mdc-icon-size:22px;color:var(--secondary-text-color)}
-dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-height:100%;background:transparent;color:var(--primary-text-color);overflow:hidden}
-dialog[open]{display:flex;align-items:flex-end;justify-content:center}
-dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5))}
-.blatt{width:min(560px,100%);max-height:92%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;border-radius:26px 26px 0 0;padding:6px 6px calc(12px + env(safe-area-inset-bottom,0px));
- background:var(--ha-bottom-sheet-surface-background,var(--ha-dialog-surface-background,var(--card-background-color,var(--primary-background-color))));
- -webkit-backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);
- box-shadow:var(--dialog-box-shadow,0 -8px 40px rgba(0,0,0,.35));animation:ad-rauf .22s ease-out}
-.griff{width:40px;height:4px;border-radius:9px;margin:4px auto 6px;background:color-mix(in srgb,var(--primary-text-color) 25%,transparent)}
-.fkopf{display:flex;align-items:center;gap:10px;padding:0 8px 6px 12px;font-size:17px;font-weight:700}
-.fkopf ha-icon{--mdc-icon-size:22px;color:var(--f)}
-.fkopf span{flex:1}
-.fkopf button{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--primary-text-color) 9%,transparent)}
+:host{--fe-f:var(--f)}
 .inhalt>*{display:block;margin-top:8px}
 .inhalt>*:first-child{margin-top:0}
 .inhalt{--ha-card-background:transparent;--ha-card-box-shadow:none;--ha-card-border-width:0}
 .hgitter{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;padding:0 8px}
 .hgitter .w{cursor:default}
-@keyframes ad-rauf{from{transform:translateY(40px);opacity:0}}
-@media (min-width:700px){dialog[open]{align-items:center}.blatt{border-radius:26px;max-height:88%}}
-@media (prefers-reduced-motion:reduce){.blatt{animation:none}}`;
+`;
   class AutodartsTileCard extends AutodartsOverviewCard {
     static getStubConfig() { return {}; }
     getCardSize() { return 1; }
@@ -672,51 +818,31 @@ dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5))}
       if (!this._r || this._spr !== SPR) this._bauen();
       this._zeichnen();
       if (this._d && this._d.open) this._innenHass();
+      if (this._uf) this._uf.hass = h;
     }
     _bauen() {
       this._spr = SPR;
       const r = this._r = this.shadowRoot || this.attachShadow({ mode: 'open' });
-      r.innerHTML = '<style>' + BASIS + B_CSS + K_CSS + '</style><ha-card><div class="bg"><div class="szene">' + SZENE + '</div></div>' +
+      r.innerHTML = '<style>' + BASIS + B_CSS + K_CSS + FE_CSS + '</style><ha-card><div class="bg"><div class="szene">' + SZENE + '</div></div>' +
         '<div class="ic"><ha-icon></ha-icon></div><div class="tx"><b></b><span></span></div><span class="ak"></span><ha-icon class="pf" icon="mdi:chevron-right"></ha-icon></ha-card>' +
         '<dialog><div class="blatt"><div class="griff"></div><div class="fkopf"><ha-icon icon="mdi:bullseye-arrow"></ha-icon><span>' + esc(this._c.name || 'Darts') + '</span>' +
         '<button class="fzu" aria-label="' + t('t_close') + '"><ha-icon icon="mdi:close"></ha-icon></button></div><div class="inhalt"></div></div></dialog>';
       r.querySelector('ha-card').addEventListener('click', () => this._auf());
       const d = this._d = r.querySelector('dialog'), bl = this._bl = r.querySelector('.blatt');
-      d.addEventListener('click', e => { if (e.target === d) d.close(); });
-      r.querySelector('.fzu').addEventListener('click', () => d.close());
-      d.addEventListener('close', () => this._zu());
-      // more info of an entity opens above the page: close the window first, so it is not hidden behind it
-      bl.addEventListener('hass-more-info', () => { this._hist = false; d.close(); });
-      this._pop = () => { if (!(history.state && history.state.adFenster)) { this._hist = false; if (d.open) d.close(); } };
-      // a shortcut in the window goes to another page: close without going back
-      this._weg = () => { if (d.open && !(history.state && history.state.adFenster)) { this._hist = false; d.close(); } };
-      // pull down closes (only when scrolled to the top)
-      let y0 = null, dy = 0, zieh = false;
-      const ende = () => {
-        if (zieh) {
-          if (dy > Math.min(140, bl.offsetHeight * 0.25)) { bl.style.transition = 'transform .18s ease-in'; bl.style.transform = 'translateY(100%)'; setTimeout(() => d.close(), 170); }
-          else { bl.style.transition = 'transform .2s ease'; bl.style.transform = ''; }
-        }
-        y0 = null; zieh = false;
-      };
-      bl.addEventListener('touchstart', e => { y0 = e.touches.length === 1 && !e.target.closest('button,input,select') ? e.touches[0].clientY : null; dy = 0; zieh = false; }, { passive: true });
-      bl.addEventListener('touchmove', e => {
-        if (y0 === null) return;
-        const dd = e.touches[0].clientY - y0;
-        if (!zieh) { if (Math.abs(dd) < 8) return; if (dd < 0 || bl.scrollTop > 0) { y0 = null; return; } zieh = true; bl.style.transition = 'none'; }
-        dy = Math.max(0, dd); bl.style.transform = 'translateY(' + dy + 'px)'; e.preventDefault();
-      }, { passive: false });
-      bl.addEventListener('touchend', ende); bl.addEventListener('touchcancel', ende);
+      // 1.31.0: the window slides up and away downwards (X, tap outside, Esc, back button, pull down); a shortcut to another page closes it
+      this._f = fensterGeruest(d, bl, 'adFenster', () => this._zu());
+      // details of a value open a sub-window in the same style instead of the Home Assistant more-info dialog
+      bl.addEventListener('hass-more-info', e => { e.stopPropagation(); if (e.detail && e.detail.entityId) infoFenster(this, r).info(e.detail.entityId); });
       this._sicht = true;
       const still = () => this.toggleAttribute('still', document.hidden || (!this._sicht && !d.open));
       this._still = still;
       if (this._io) this._io.disconnect();
       if ('IntersectionObserver' in window) { this._io = new IntersectionObserver(e => { this._sicht = e[0].isIntersecting; still(); }); if (this.isConnected) this._io.observe(this); }
       if (!this._vis) { this._vis = () => this._still && this._still(); document.addEventListener('visibilitychange', this._vis); }
-      this._innen = null;
+      this._innen = null; this._uf = null;
     }
     connectedCallback() { if (this._io) this._io.observe(this); }
-    disconnectedCallback() { if (this._io) this._io.disconnect(); if (this._d && this._d.open) { this._hist = false; this._d.close(); } }
+    disconnectedCallback() { if (this._io) this._io.disconnect(); if (this._d && this._d.open) { this._f.hist = false; this._d.close(); } }
     // window content: the overview card with the same options, then today's values and own cards (only made when opened)
     async _inhalt() {
       if (this._innen) return;
@@ -752,17 +878,11 @@ dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5))}
       });
     }
     _auf() {
-      const d = this._d; if (d.open) return;
-      this._bl.style.transition = ''; this._bl.style.transform = '';
-      try { d.showModal(); } catch (e) { d.setAttribute('open', ''); }
-      this._bl.scrollTop = 0; this._still();
+      if (!this._f.auf()) return;
+      this._still();
       this._inhalt();
-      try { history.pushState(Object.assign({}, history.state, { adFenster: 1 }), ''); this._hist = true; window.addEventListener('popstate', this._pop); window.addEventListener('location-changed', this._weg); } catch (e) {}
     }
-    _zu() {
-      window.removeEventListener('popstate', this._pop); window.removeEventListener('location-changed', this._weg); this._still();
-      if (this._hist) { this._hist = false; history.back(); }
-    }
+    _zu() { this._still(); }
     _zeichnen() {
       const h = this._h, r = this._r, c = this._c;
       const sz = this._szene(), [name, icon] = SZ[sz];

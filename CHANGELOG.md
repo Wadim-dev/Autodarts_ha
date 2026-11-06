@@ -3,6 +3,16 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.31.0
+
+- **The tile window slides up.** Tapping the DartNest tile now lets its window slide up from the bottom, and closing it (X, back button, Esc, tapping outside, pulling down) lets it slide back down.
+- **Details in the same style.** Inside the window, tapping the board scene or a dart value no longer closes the window for the Home Assistant more-info dialog. A small sheet in the DartNest style slides up instead, with the value, since when and its last 24 hours. Back or X returns to the window.
+
+**Deutsch**
+
+- **Das Kachel-Fenster gleitet hoch.** Tippen auf die DartNest-Kachel lässt das Fenster jetzt von unten hochgleiten, beim Schließen (X, Zurück-Taste, Esc, daneben tippen, nach unten ziehen) gleitet es wieder nach unten weg.
+- **Details im selben Stil.** Im Fenster schließt das Antippen der Board-Szene oder eines Wurfs das Fenster nicht mehr für das Home-Assistant-Infofenster. Stattdessen gleitet ein kleines Fenster im DartNest-Stil hoch, mit dem Wert, seit wann und den letzten 24 Stunden. Zurück oder X führt wieder ins Fenster.
+
 ## 1.30.1
 
 - **Lighter on the board PC.** Live views no longer open their own camera stream each. DartNest now asks the board for single images only while somebody watches – a card, the TV page or the highlight recorder – at most 10 per second, and every viewer gets the same image. Before, each live view made the board prepare 30 images per second. A busy board gets more time between images.

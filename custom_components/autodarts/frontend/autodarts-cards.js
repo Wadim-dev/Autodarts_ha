@@ -632,7 +632,7 @@ button:disabled{opacity:.38;cursor:default;transform:none}
   /* ---------- sheet kit (1.31.0): windows slide up from the bottom and away downwards,
      sub-windows (details of a value, choice lists) in the same style instead of the Home Assistant more-info dialog ---------- */
   const FE_CSS = `
-dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-height:100%;background:transparent;color:var(--primary-text-color);overflow:hidden}
+dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-height:100%;background:transparent;color:var(--primary-text-color);overflow:hidden;overflow:clip;outline:none}
 dialog[open]{display:flex;align-items:flex-end;justify-content:center}
 dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5));animation:fe-schleier .3s ease}
 dialog.zu::backdrop{opacity:0;transition:opacity .24s ease}
@@ -690,6 +690,8 @@ dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s 
   // Grundgerüst eines Fensters: Schleier antippen, X, Esc, Zurück-Taste (history-Merker), Ziehen
   const fensterGeruest = (d, bl, merker, beimZu) => {
     const f = { hist: false };
+    // focus the sheet itself, otherwise the browser jumps to the close button and the slide is lost
+    d.setAttribute('autofocus', ''); d.tabIndex = -1;
     d.addEventListener('click', e => { if (e.target === d) zuGleiten(d); });
     d.addEventListener('cancel', e => { e.preventDefault(); zuGleiten(d); });
     const x = bl.querySelector('.fzu'); if (x) x.addEventListener('click', () => zuGleiten(d));
@@ -707,7 +709,7 @@ dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s 
       if (d.open) return false;
       bl.style.transition = ''; bl.style.transform = '';
       try { d.showModal(); } catch (e) { d.setAttribute('open', ''); }
-      bl.scrollTop = 0;
+      d.scrollTop = 0; bl.scrollTop = 0;
       try { const s = Object.assign({}, history.state); s[merker] = 1; history.pushState(s, ''); f.hist = true; window.addEventListener('popstate', pop); window.addEventListener('location-changed', weg); } catch (e) {}
       return true;
     };

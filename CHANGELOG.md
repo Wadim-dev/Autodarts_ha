@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.31.1
+
+- **Smoother window.** On phones the window sometimes appeared at once and then jumped, instead of sliding up. The browser moved focus to the close button and scrolled the window with it; the window now takes focus itself, so it slides up smoothly.
+
+**Deutsch**
+
+- **Flüssigeres Fenster.** Am Handy war das Fenster manchmal sofort da und ruckte dann, statt hochzugleiten. Der Browser setzte den Fokus auf den Schließen-Knopf und schob das Fenster dabei mit; jetzt nimmt das Fenster den Fokus selbst und gleitet sauber hoch.
+
 ## 1.31.0
 
 - **The tile window slides up.** Tapping the DartNest tile now lets its window slide up from the bottom, and closing it (X, back button, Esc, tapping outside, pulling down) lets it slide back down.

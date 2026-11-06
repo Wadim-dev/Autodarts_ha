@@ -110,7 +110,7 @@ Got an **AWTRIX 3** (Ulanzi TC001) or a **PixelIt** clock? Open **DartNest → P
 
 ## Board Manager inside Home Assistant
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Settings overview, Board Manager with cameras and power plug, power states and camera settings" width="900"></p>
 
 All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** pick the plug of the board PC once under *Board Manager → Board PC power plug* – every DartNest screen then has the on/off button. DartNest shows *Off* and carries on by itself when the board is back. **Light on small PCs:** live views share one image source (at most 10 images per second, only while someone watches), the camera standby is shown as *Standby* and DartNest wakes the detection by itself when a game starts.
 
@@ -118,7 +118,7 @@ All three cameras with the calibration grid, start/stop, calibrate, camera setti
 
 ## Everywhere
 
-<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/everywhere.png" alt="Sidebar on PC and phone, tile and tile window" width="900"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/everywhere.png" alt="Sidebar on PC and phone, tile and tile window with today's stats" width="900"></p>
 
 The same screens work on PC, tablet and phone, in English and German. Want them on your own dashboard? **Edit dashboard → Add card → search "DartNest"** – no resources to add.
 

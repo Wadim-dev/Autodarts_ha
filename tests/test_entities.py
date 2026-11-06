@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from unittest.mock import patch
 
@@ -22,7 +23,7 @@ def _aufrufe(aioclient_mock, methode: str, pfad: str) -> list:
 
 
 async def test_system_werte(hass: HomeAssistant, geladen) -> None:
-    assert hass.states.get("sensor.autodarts_board_cpu_load").state == "12.5"
+    assert hass.states.get("sensor.autodarts_board_cpu_load").state == "12.5"  # no core count from the board: as reported
     assert hass.states.get("sensor.autodarts_board_memory").state == "100.0"
     assert hass.states.get("sensor.autodarts_board_camera_frame_rate").state == "29"
     assert hass.states.get("sensor.autodarts_board_calibration_deviation").state == "1.25"
@@ -87,7 +88,6 @@ async def test_auswahl_ohne_geraeteliste(hass: HomeAssistant, geladen) -> None:
 async def test_kamera(hass: HomeAssistant, geladen, aioclient_mock, hass_client) -> None:
     aioclient_mock.get(f"{BASIS}/api/img/cams/0", content=b"jpeg")
     aioclient_mock.get(f"{BASIS}/api/img/live", status=404)
-    aioclient_mock.get(f"{BASIS}/api/streams/cams/0", content=b"--frame")
     from homeassistant.components.camera import async_get_image
 
     bild = await async_get_image(hass, "camera.autodarts_board_camera_1")
@@ -98,6 +98,9 @@ async def test_kamera(hass: HomeAssistant, geladen, aioclient_mock, hass_client)
     token = hass.states.get("camera.autodarts_board_camera_1").attributes["access_token"]
     antwort = await client.get(f"/api/camera_proxy_stream/camera.autodarts_board_camera_1?token={token}")
     assert antwort.status == 200
+    # the live view comes from the shared source: one image request feeds every viewer
+    assert (await asyncio.wait_for(antwort.content.readuntil(b"jpeg"), 5)).startswith(b"--dartnestbild")
+    antwort.close()
 
 
 async def test_board_update(hass: HomeAssistant, geladen, aioclient_mock) -> None:

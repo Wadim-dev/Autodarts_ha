@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import sys
 import types
@@ -230,9 +231,11 @@ async def test_dartscheibe(hass: HomeAssistant, mit_http, aioclient_mock, hass_c
     await _dienst(hass, "fernseher_setzen", ansicht="camera_1")
     brett = tv.live()["brett"]
     assert brett["kamera"] == 1 and len(brett["kalibrierung"]["ringe"]) == 4
-    aioclient_mock.get(f"{BASIS}/api/streams/cams/0", content=b"--frame")
+    aioclient_mock.get(f"{BASIS}/api/img/cams/0", content=b"jpg-0")
     r = await client.get(f"/autodarts/tv/{token}/kamera/1")
-    assert r.status == 200 and await r.read() == b"--frame"
+    assert r.status == 200 and r.headers["Content-Type"].startswith("multipart/x-mixed-replace")
+    assert (await asyncio.wait_for(r.content.readuntil(b"jpg-0"), 5)).endswith(b"Content-Length: 5\r\n\r\njpg-0")
+    r.close()
     assert (await client.get(f"/autodarts/tv/{token}/kamera/2")).status == 404  # only the chosen one
     assert (await client.get("/autodarts/tv/falsch/kamera/1")).status == 404
 

@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from .lichter import Lichtshow
     from .pixel import PixelAnzeigen
     from .spiel import Spielleiter
+    from .verteiler import Bildverteiler
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,6 +75,8 @@ class ZustandKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.board = board
         self.online = False
         self.aussetzer = 0
+        # stopped with the Stop button of DartNest; any other stop is the camera standby of the board
+        self.manuell_gestoppt = False
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
@@ -95,13 +98,23 @@ class ZustandKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.aussetzer = 0
         self.update_interval = TAKT_ONLINE
         wuerfe = [wurf_lesen(t) for t in (daten.get("throws") or []) if isinstance(t, dict)]
+        status = daten.get("status") or "unbekannt"
+        if status == "stopped" and not self.manuell_gestoppt:
+            status = "standby"
         return {
             "verbindung": "Online",
-            "status": daten.get("status") or "unbekannt",
+            "status": status,
             "ereignis": daten.get("event") or "-",
             "laeuft": bool(daten.get("running")),
             "wuerfe": wuerfe,
         }
+
+
+def _kerne(host: dict[str, Any]) -> int:
+    try:
+        return max(1, int((host.get("cpu") or {}).get("cores") or 1))
+    except (TypeError, ValueError):
+        return 1
 
 
 def _netz(daten: Any) -> dict[str, Any]:
@@ -162,7 +175,8 @@ class SystemKoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "netz": netz or {},
             "kamera_fps": [c.get("fps") for c in (s.get("camStats") or [])],
             "kameras_laufen": bool((s.get("camState") or {}).get("isRunning")),
-            "cpu": round(float(stats.get("cpuPercent") or 0), 1),
+            # the board counts every core up to 100 %: show the share of the whole PC
+            "cpu": min(100.0, round(float(stats.get("cpuPercent") or 0) / _kerne(host), 1)),
             "speicher_mb": round(float(stats.get("memoryBytes") or 0) / 1048576, 1),
             "fps": stats.get("fps"),
             "version": status.get("version") or host.get("clientVersion"),
@@ -185,6 +199,7 @@ class DartsDaten:
     fernseher: Fernseher
     clips: Clips
     pixel: PixelAnzeigen
+    bilder: Bildverteiler
 
 
 type DartsEntry = ConfigEntry[DartsDaten]

@@ -3,6 +3,18 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.30.1
+
+- **Lighter on the board PC.** Live views no longer open their own camera stream each. DartNest now asks the board for single images only while somebody watches – a card, the TV page or the highlight recorder – at most 10 per second, and every viewer gets the same image. Before, each live view made the board prepare 30 images per second. A busy board gets more time between images.
+- **Camera standby is shown as standby.** When the board stops the detection after the standby time without a throw, the cards show **Standby – wakes up with the next game** instead of "Detection stopped". During a game that is still being played (last change less than 45 minutes ago), DartNest wakes the detection by itself after a pause. A stop with the **Stop** button stays a stop.
+- **CPU as share of the whole PC.** The board counts every core up to 100 %, so a 4-core PC showed up to 400 %. The CPU sensor now shows the share of the whole PC (for example 37 % instead of 148 %).
+
+**Deutsch**
+
+- **Schonender für den Board-PC.** Livebilder öffnen nicht mehr jeweils einen eigenen Kamerastrom. DartNest holt einzelne Bilder vom Board nur, solange jemand zusieht – eine Karte, die Fernseher-Seite oder die Highlight-Aufnahme –, höchstens 10 pro Sekunde, und alle Zuschauer bekommen dasselbe Bild. Vorher musste das Board für jedes Livebild 30 Bilder pro Sekunde aufbereiten. Ein ausgelastetes Board bekommt mehr Zeit zwischen den Bildern.
+- **Kamera-Standby wird als Standby gezeigt.** Stoppt das Board die Erkennung nach der Standby-Zeit ohne Wurf, zeigen die Karten **Standby – wacht beim nächsten Spiel auf** statt „Erkennung gestoppt“. Während eines Spiels, das noch gespielt wird (letzte Änderung vor weniger als 45 Minuten), weckt DartNest die Erkennung nach einer Pause selbst. Ein Stopp mit dem Knopf **Stop** bleibt ein Stopp.
+- **CPU als Anteil am ganzen PC.** Das Board zählt jeden Kern bis 100 %, ein PC mit 4 Kernen zeigte also bis zu 400 %. Der CPU-Sensor zeigt jetzt den Anteil am ganzen PC (zum Beispiel 37 % statt 148 %).
+
 ## 1.30.0
 
 - **Score on the LED clock.** New tab **DartNest → Pixel display** for **AWTRIX 3** (Ulanzi TC001 and self-built) and **PixelIt**: tap **Add display**, type the IP address – DartNest finds out which one it is and greets with DARTNEST. While a game runs the clock shows the name and the rest of the player at the oche, live with every dart. 180 (rainbow), checkout, bust, leg and the win flash as a short effect. After the game the winner stays for a minute, then the clock goes back to its own apps. Local HTTP, no MQTT or automation needed.

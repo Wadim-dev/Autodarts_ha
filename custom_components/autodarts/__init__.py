@@ -29,6 +29,7 @@ from .lichter import Lichtshow
 from .pixel import PixelAnzeigen
 from .services import async_setup_services
 from .spiel import Spielleiter
+from .verteiler import Bildverteiler
 
 PLATFORMS = [
     Platform.SENSOR,
@@ -100,7 +101,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     spiel.tv_url = fernseher.url
     clips = Clips(hass)
     pixel = PixelAnzeigen(hass)
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher, clips, pixel)
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher, clips, pixel, Bildverteiler(hass, board))
     fernseher.daten = clips.daten = pixel.daten = entry.runtime_data
     spiel.clips_info = clips.attribute
     spiel.pixel_info = pixel.attribute
@@ -125,4 +126,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
         await entry.runtime_data.ansager.beenden()
         await entry.runtime_data.clips.beenden()
         await entry.runtime_data.pixel.beenden()
+        await entry.runtime_data.bilder.beenden()
     return ok

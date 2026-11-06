@@ -112,7 +112,7 @@ Got an **AWTRIX 3** (Ulanzi TC001) or a **PixelIt** clock? Open **DartNest → P
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/manager.png" alt="Board Manager with cameras, power states and camera settings" width="900"></p>
 
-All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** pick the plug of the board PC once under *Board Manager → Board PC power plug* – every DartNest screen then has the on/off button. DartNest shows *Off* and carries on by itself when the board is back.
+All three cameras with the calibration grid, start/stop, calibrate, camera settings and board software updates – without opening another web page. **Smart plug friendly:** pick the plug of the board PC once under *Board Manager → Board PC power plug* – every DartNest screen then has the on/off button. DartNest shows *Off* and carries on by itself when the board is back. **Light on small PCs:** live views share one image source (at most 10 images per second, only while someone watches), the camera standby is shown as *Standby* and DartNest wakes the detection by itself when a game starts.
 
 <sub>Screenshots with the German interface come from a real board at home.</sub>
 
@@ -770,7 +770,7 @@ Private project, no outside contributions. The code meets all rules of the Home 
 - **Fernseher:** Spielstand groß auf Fire TV, Google TV oder Chromecast, live mit jedem Dart, auf Wunsch mit deiner Dartscheibe live aus der Kamera daneben; zwischen den Spielen Uhr, Rangliste und letzte Spiele. *DartNest → Fernseher*, Fernseher wählen, **Auf dem Fernseher zeigen** – oder von selbst bei jedem Spielstart.
 - **Stream und Highlights:** Overlay-Link aus der Fernseher-Karte als Browser-Quelle in OBS oder Streamlabs – durchsichtiger Spielstand über deinem Kamerabild. **Highlights** speichert jede 180, jedes Finish ab 100 und den Match-Dart als kurzes, gerade gerücktes Video der Board-Kamera; ansehen, herunterladen oder löschen in der Karte *DartNest → Highlights*, auf Wunsch sofort als Wiederholung am Fernseher und im Overlay.
 - **LED-Uhr:** AWTRIX 3 (Ulanzi TC001) oder PixelIt unter *DartNest → Pixel-Anzeige* mit der IP-Adresse hinzufügen – während des Spiels zeigt sie Name und Rest des Spielers am Oche, bei 180, Checkout, Bust und Sieg einen kurzen Effekt, danach wieder ihre eigenen Apps.
-- **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf.
+- **Board Manager in HA:** Kameras mit Kalibriernetz, Start/Stopp, Kalibrieren, Updates. Board-PC darf per Steckdose aus sein: Steckdose einmal unter *Board Manager → Steckdose des Board-PCs* wählen, dann hat jede DartNest-Seite den Ein/Aus-Knopf. Schont kleine PCs: Livebilder teilen sich eine Bildquelle (höchstens 10 Bilder/s, nur wenn jemand zusieht), Kamera-Standby wird als „Standby“ gezeigt und beim Spielstart selbst geweckt.
 - **Überall:** PC, Tablet und Handy, Deutsch und Englisch, Sprachbefehle („Alex hat 140“) über Assist. Karten auch fürs eigene Dashboard: *Karte hinzufügen → „DartNest“ suchen*, z. B. die **DartNest-Kachel**: eine kompakte Zeile mit Board-Szene, Tippen öffnet ein Fenster mit allem.
 - **Updates** kommen über den Marketplace unter *Einstellungen → Updates*.
 

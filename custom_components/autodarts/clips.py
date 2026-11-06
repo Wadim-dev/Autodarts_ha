@@ -266,13 +266,11 @@ class Clips:
         self._puffer.clear()
 
     async def _aufnehmen(self) -> None:
+        # images come from the shared source: a live view on the TV or in a card costs the board nothing extra
         strom = _STROEME[KAMERAS.index(self.einst["kamera"])]
-        while True:
-            start = time.monotonic()
-            bild = await self.daten.board.image(strom)
+        async for bild in self.daten.bilder.bilder(strom, TAKT):
             jetzt = time.monotonic()
-            if bild:
-                self._puffer.append((jetzt, bild))
+            self._puffer.append((jetzt, bild))
             while self._puffer and self._puffer[0][0] < jetzt - VORHER - NACHHER - 1:
                 self._puffer.popleft()
             if self._offen is not None and jetzt >= self._offen["bis"]:
@@ -282,9 +280,6 @@ class Clips:
                     self._aufnahme = None
                     self._puffer.clear()
                     return
-            # a slow or missing answer means the board is busy: give it room instead of asking faster
-            dauer = jetzt - start
-            await asyncio.sleep(max(TAKT - dauer, dauer, 0.0) if bild else 1.0)
 
     def ereignis(self, typ: str, daten: dict[str, Any]) -> None:
         if typ not in self.einst["anlaesse"]:

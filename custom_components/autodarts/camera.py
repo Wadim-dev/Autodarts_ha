@@ -1,16 +1,16 @@
 """Kameras: die drei Board-Kameras und das Erkennungsbild.
 
-Standbild über den Board-Client, Live-Bild (nur beim Öffnen) über den MJPEG-Strom des Boards.
+Standbild und Live-Bild kommen aus dem gemeinsamen Bildverteiler: das Board wird nur gefragt,
+solange jemand zusieht, und jedes Bild geht an alle Zuschauer (schont den Board-PC).
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from aiohttp import ClientTimeout, web
+from aiohttp import web
 from homeassistant.components.camera import Camera
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_web, async_get_clientsession
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .board import Stream
@@ -49,9 +49,7 @@ class BoardKamera(DartsEntitaet, Camera):
         return {"kalibrierung": netz} if netz else None
 
     async def async_camera_image(self, width: int | None = None, height: int | None = None) -> bytes | None:
-        return await self.daten.board.image(self._strom)
+        return await self.daten.bilder.standbild(self._strom)
 
     async def handle_async_mjpeg_stream(self, request: web.Request) -> web.StreamResponse | None:
-        session = async_get_clientsession(self.hass)
-        stream = session.get(self.daten.board.stream_url(self._strom), timeout=ClientTimeout(total=None, sock_connect=5))
-        return await async_aiohttp_proxy_web(self.hass, request, stream)
+        return await self.daten.bilder.mjpeg(request, self._strom)

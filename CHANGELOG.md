@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.32.1
+
+- **No more flicker in windows.** Some Home Assistant cards finish loading a moment after a window opens, for example the 24-hour history in the info window or cards added with `cards`. They used to send a rebuild signal to the whole tile, so the window was drawn again and flickered. Now only that card is rebuilt. Cards inside windows also skip the glass blur, because the window already has one. That makes scrolling smoother and saves battery.
+
+**Deutsch**
+
+- **Kein Flackern mehr in Fenstern.** Manche Home-Assistant-Karten laden kurz nach dem Öffnen eines Fensters nach, zum Beispiel der 24-Stunden-Verlauf im Infofenster oder Karten aus `cards`. Sie haben dabei die ganze Kachel neu aufbauen lassen, das Fenster wurde neu gezeichnet und flackerte. Jetzt wird nur diese eine Karte neu gebaut. Außerdem bekommen Karten im Fenster keinen eigenen Milchglas-Effekt mehr, das Fenster hat schon einen. Das Scrollen wird flüssiger und schont den Akku.
+
 ## 1.32.0
 
 - **Pages slide up over the window.** In the tile window, **Play**, **Settings** (or Manager) and **Players** no longer leave for another page. The page slides up as a second sheet over the window. Pull it down, tap the back arrow or use the back button, and the darts window is there again. DartNest takes the card of that page from your dashboard, so nothing needs to be set up. `sheets: false` keeps the old behaviour.

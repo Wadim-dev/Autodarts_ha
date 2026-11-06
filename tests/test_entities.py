@@ -128,7 +128,13 @@ async def test_befehl_put_und_fehler(hass: HomeAssistant, geladen, aioclient_moc
 async def test_offline_und_wieder_online(hass: HomeAssistant, geladen, aioclient_mock) -> None:
     aioclient_mock.clear_requests()
     aioclient_mock.get(f"{BASIS}/api/state", exc=TimeoutError)
-    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=2))
+    # a busy board that misses one or two answers stays online (game start at full CPU)
+    for i in (2, 4):
+        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=i))
+        await hass.async_block_till_done()
+        assert hass.states.get("sensor.autodarts_board_connection").state == "Online"
+        assert hass.states.get("camera.autodarts_board_camera_1").state != STATE_UNAVAILABLE
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=6))
     await hass.async_block_till_done()
     # connection and status keep showing "Offline", everything else is unavailable
     assert hass.states.get("sensor.autodarts_board_connection").state == "Offline"

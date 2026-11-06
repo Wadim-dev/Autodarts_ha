@@ -42,7 +42,8 @@ KAMERAS = ("camera_1", "camera_2", "camera_3")
 _STROEME: tuple[Stream, ...] = ("cam0", "cam1", "cam2")
 VORHER = 8.0  # seconds before the event
 NACHHER = 1.5  # seconds after it (the dart sits, the caller speaks)
-TAKT = 1 / 6  # images per second while recording
+FREI_MIN = 1_000_000_000  # no new clip when less than 1 GB is free on the disk
+TAKT = 1 / 5  # time between images while recording (5 per second, light on the board PC)
 GROESSE = 720  # straightened clip: square, px
 RAND_MM = 225.0  # straightened clip shows ±225 mm around the bull (like the TV page)
 DATEI = re.compile(r"^[0-9a-f]{12}\.(mp4|jpg)$")
@@ -172,7 +173,7 @@ class Clips:
 
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
-        self._puffer: deque[tuple[float, bytes]] = deque()
+        self._puffer: deque[tuple[float, bytes]] = deque(maxlen=int((VORHER + NACHHER + 1) / TAKT) + 10)
         self._aufnahme: asyncio.Task[None] | None = None
         self._offen: dict[str, Any] | None = None  # highlight waiting for the seconds after it
         self._abmelden: list[Callable[[], None]] = []
@@ -217,6 +218,21 @@ class Clips:
         self._abmelden = [self.daten.spiel.hoerer(self.pruefen), self.daten.zustand.async_add_listener(self.pruefen),
                           self.daten.spiel.ereignis_hoerer(self.ereignis)]
         self.pruefen()
+        self.hass.async_create_background_task(self._waisen_weg(), "dartnest clips cleanup")
+
+    async def _waisen_weg(self) -> None:
+        """Remove files that are not in the list (left over after a crash or a manual change)."""
+        behalten = {c["id"] for c in self.einst["liste"]}
+        ordner = self.ordner
+
+        def weg() -> None:
+            if not ordner.is_dir():
+                return
+            for datei in ordner.iterdir():
+                if datei.is_file() and DATEI.match(datei.name) and datei.stem not in behalten:
+                    datei.unlink(missing_ok=True)
+
+        await self.hass.async_add_executor_job(weg)
 
     async def beenden(self) -> None:
         for ab in self._abmelden:
@@ -266,7 +282,9 @@ class Clips:
                     self._aufnahme = None
                     self._puffer.clear()
                     return
-            await asyncio.sleep(max(0.0, TAKT - (jetzt - start)))
+            # a slow or missing answer means the board is busy: give it room instead of asking faster
+            dauer = jetzt - start
+            await asyncio.sleep(max(TAKT - dauer, dauer, 0.0) if bild else 1.0)
 
     def ereignis(self, typ: str, daten: dict[str, Any]) -> None:
         if typ not in self.einst["anlaesse"]:
@@ -307,9 +325,15 @@ class Clips:
         kal = ((self.daten.system.data or {}).get("netz") or {}).get(str(nr))
         cid = secrets.token_hex(6)
         ordner = self.ordner
+        def platz() -> int:
+            ordner.mkdir(parents=True, exist_ok=True)
+            return shutil.disk_usage(ordner).free
+
+        if await self.hass.async_add_executor_job(platz) < FREI_MIN:
+            _LOGGER.warning("Clip not saved: less than 1 GB free on the disk")
+            return
         self.arbeitet = True
         try:
-            await self.hass.async_add_executor_job(lambda: ordner.mkdir(parents=True, exist_ok=True))
             ok = await self.hass.async_add_executor_job(_kodieren, self._ffmpeg(), [b for _, b in bilder], fps, ecken(kal),
                                                         ordner / f"{cid}.mp4", ordner / f"{cid}.jpg", mitte)
         finally:

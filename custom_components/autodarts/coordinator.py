@@ -31,6 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 
 TAKT_ONLINE = timedelta(seconds=1)
 TAKT_OFFLINE = timedelta(seconds=30)
+AUSSETZER = 3  # missed answers in a row before the board counts as off (a busy board answers late now and then)
 TAKT_SYSTEM = timedelta(seconds=15)
 
 
@@ -71,11 +72,17 @@ class ZustandKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         super().__init__(hass, _LOGGER, name=f"{DOMAIN} Zustand", update_interval=TAKT_ONLINE, config_entry=entry)
         self.board = board
         self.online = False
+        self.aussetzer = 0
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
             daten = await self.board.state()
         except AutodartsError:
+            self.aussetzer += 1
+            if self.online and self.aussetzer < AUSSETZER and self.data:
+                # busy board (game start, full CPU): keep the last state and ask again right away
+                self.update_interval = TAKT_ONLINE
+                return self.data
             if self.online:
                 _LOGGER.info("Autodarts Board nicht mehr erreichbar")
             self.online = False
@@ -84,6 +91,7 @@ class ZustandKoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if not self.online:
             _LOGGER.info("Autodarts Board verbunden")
         self.online = True
+        self.aussetzer = 0
         self.update_interval = TAKT_ONLINE
         wuerfe = [wurf_lesen(t) for t in (daten.get("throws") or []) if isinstance(t, dict)]
         return {

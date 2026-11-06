@@ -129,6 +129,26 @@ async def test_clip_bei_180(hass: HomeAssistant, mit_http, hass_client, hass_cli
     await _dienst(hass, "clip_loeschen", id=liste[0]["id"])
     assert attr()["liste"] == [] and not list(c.ordner.glob("*.mp4"))
 
+    # leftover files that are not in the list are removed, files of listed clips stay
+    await _dienst(hass, "clip_speichern")
+    for _ in range(50):
+        await asyncio.sleep(0.05)
+        if attr()["liste"]:
+            break
+    behalten = attr()["liste"][0]["id"]
+    (c.ordner / "0123456789ab.mp4").write_bytes(b"alt")
+    (c.ordner / "notiz.txt").write_text("fremd")
+    await c._waisen_weg()
+    assert not (c.ordner / "0123456789ab.mp4").exists() and (c.ordner / "notiz.txt").exists()
+    assert (c.ordner / f"{behalten}.mp4").exists()
+
+    # disk almost full: no new clip
+    monkeypatch.setattr(clips_modul, "FREI_MIN", 10**18)
+    anzahl = len(kodiert)
+    await _dienst(hass, "clip_speichern")
+    await asyncio.sleep(0.5)
+    assert len(kodiert) == anzahl and attr()["liste"][0]["id"] == behalten
+
     # game over: recording stops
     await _dienst(hass, "spiel_abbrechen")
     await asyncio.sleep(0.1)

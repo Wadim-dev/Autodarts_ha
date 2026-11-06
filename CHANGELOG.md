@@ -3,6 +3,18 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.29.1
+
+- A busy board no longer drops out: when the board PC is at full load (for example at the start of a game) and misses an answer, DartNest now asks again right away and only counts the board as off after three missed answers in a row. Before, a single late answer showed the board as off for 30 seconds with black cameras.
+- Highlights record with less load on the board PC (5 images per second, and slower while the board answers late).
+- Nothing fills up: no new clip when less than 1 GB is free on the disk, leftover clip files that are not in the list are removed at start, and the clip list and TV settings are no longer written into the history database.
+
+**Deutsch**
+
+- Ein ausgelastetes Board fällt nicht mehr aus: Ist der Board-PC voll ausgelastet (zum Beispiel beim Spielstart) und verpasst eine Antwort, fragt DartNest sofort nach und wertet das Board erst nach drei verpassten Antworten in Folge als aus. Vorher zeigte eine einzige späte Antwort das Board 30 Sekunden lang als aus, mit schwarzen Kameras.
+- Highlights nehmen mit weniger Last für den Board-PC auf (5 Bilder pro Sekunde, langsamer, solange das Board spät antwortet).
+- Nichts läuft voll: kein neuer Clip, wenn weniger als 1 GB frei ist; übrig gebliebene Clip-Dateien, die nicht in der Liste stehen, werden beim Start entfernt; Clip-Liste und Fernseher-Einstellungen landen nicht mehr in der Verlaufsdatenbank.
+
 ## 1.29.0
 
 - **Highlights.** New tab **DartNest → Highlights**: switch on **Record highlights** and every 180, finish of 100 or more and the match dart is saved as a short video (about 8 s before and 1.5 s after the dart) from the board camera, straightened with the calibration. Choose the camera and more occasions (leg won, nine-darter, 140+, every finish, bullseye, three in a bed). Clips appear as tiles: tap to play, download or delete; the newest 30 are kept, the files are also in **Media → dartnest/clips**.

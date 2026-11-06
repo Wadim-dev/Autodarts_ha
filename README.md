@@ -410,7 +410,7 @@ details:                                # line under the live darts
     name: Highest today
 ```
 
-**Tile** – the same as one compact row with the board scene behind it (live darts, status colour, running game). Tap opens a window with the overview card, today's values and your own cards. It takes every option of the overview card, plus:
+**Tile** – the same as one compact row with the board scene behind it (live darts, status colour, running game). Tap opens a window that slides up from the bottom with the overview card, today's values and your own cards. Tapping a value inside opens a small sheet in the same style with the value and its last 24 hours. Close with X, the back button, tapping outside or pulling it down. It takes every option of the overview card, plus:
 
 ```yaml
 type: custom:autodarts-tile-card

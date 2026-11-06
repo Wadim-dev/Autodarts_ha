@@ -29,13 +29,10 @@ jobs:
         with:
           python-version: "3.13"
       - name: Install ffmpeg
-        timeout-minutes: 4
+        # static build from PyPI: the Ubuntu package mirror is often slow and timed out the job
         run: |
-          for i in 1 2 3; do
-            sudo timeout 70 apt-get -o Acquire::Retries=2 -o Acquire::http::Timeout=20 update -q && \
-            sudo timeout 90 apt-get install -y -q --no-install-recommends ffmpeg && break
-            sleep 5
-          done
+          pip install -q imageio-ffmpeg
+          sudo ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" /usr/local/bin/ffmpeg
           ffmpeg -version | head -1
       - run: pip install -r requirements_test.txt
       - run: pytest --cov=custom_components.autodarts --cov-report=term-missing

@@ -21,6 +21,7 @@ from homeassistant.loader import async_get_integration
 from .ansager import Ansager
 from .api import board_erstellen
 from .assist import async_setup_assist
+from .clips import Clips, async_setup_clips
 from .const import CONF_HOST, CONF_PORT, DOMAIN, GERAETENAME, STANDARD_PORT
 from .coordinator import DartsDaten, DartsEntry, SystemKoordinator, ZustandKoordinator
 from .fernseher import Fernseher, async_setup_tv
@@ -49,6 +50,7 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     async_setup_services(hass)
     await _karten_anmelden(hass)
     await async_setup_tv(hass)
+    await async_setup_clips(hass)
     return True
 
 
@@ -95,8 +97,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
     await ansager.laden()
     fernseher = Fernseher(hass, spiel)
     spiel.tv_url = fernseher.url
-    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher)
-    fernseher.daten = entry.runtime_data
+    clips = Clips(hass)
+    entry.runtime_data = DartsDaten(board, zustand, system, geraet, spiel, lichter, ansager, fernseher, clips)
+    fernseher.daten = clips.daten = entry.runtime_data
+    spiel.clips_info = clips.attribute
+    clips.starten()
     entry.async_on_unload(spiel.ereignis_hoerer(fernseher.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(lichter.ereignis))
     entry.async_on_unload(spiel.ereignis_hoerer(ansager.ereignis))
@@ -114,4 +119,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: DartsEntry) -> bool:
         await entry.runtime_data.spiel.beenden()
         await entry.runtime_data.lichter.beenden()
         await entry.runtime_data.ansager.beenden()
+        await entry.runtime_data.clips.beenden()
     return ok

@@ -1757,6 +1757,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         '<button class="ik' + (ansage ? ' an' : '') + '" data-act="ansage" title="' + t('caller') + '"><ha-icon icon="' + (ansage ? 'mdi:volume-high' : 'mdi:volume-off') + '"></ha-icon></button>' +
         ((tvInfo(h).geraete || []).length ? '<button class="ik" data-act="tv" title="' + t('tv_show') + '"><ha-icon icon="mdi:television-play"></ha-icon></button>' +
           '<button class="ik' + (tvInfo(h).brett ? ' an' : '') + '" data-act="tvbrett" title="' + t('tv_board_on') + '"><ha-icon icon="mdi:bullseye-arrow"></ha-icon></button>' : '') +
+        (clipsInfo(h).an && ph === 'running' ? '<button class="ik" data-act="clip" title="' + t('clips_save') + '"><ha-icon icon="mdi:movie-open-plus-outline"></ha-icon></button>' : '') +
         '<button class="ik" data-act="vollbild" title="' + t('fullscreen') + '"><ha-icon icon="' + (vb ? 'mdi:fullscreen-exit' : 'mdi:fullscreen') + '"></ha-icon></button>');
       if (ph !== this._phAlt) {
         if (ph === 'idle') this._lobbyStart();
@@ -2196,6 +2197,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     }
     _klick(act, b, e) {
       if (act === 'tv') { tvZeigen(this, this._h); return; }
+      if (act === 'clip') { this._h.callService('autodarts', 'clip_speichern', {}).then(() => meldung(this, t('clips_saved')), e => meldung(this, (e && e.message) || String(e))); return; }
       if (act === 'tvbrett') { const an = !tvInfo(this._h).brett; this._h.callService('autodarts', 'fernseher_setzen', { brett: an }).then(() => meldung(this, t('tv_board_on') + ': ' + t(an ? 'tv_on_state' : 'tv_off')), e => meldung(this, (e && e.message) || String(e))); return; }
       const h = this._h, L = this._lob, a = att(h, this._spiel);
       const neu = () => { this._alt = null; this._zeichnen(); };
@@ -3017,7 +3019,10 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
         '<div class="titel"><ha-icon icon="mdi:link-variant"></ha-icon>' + t('tv_link') + '</div>' +
         '<div class="link feld"><code>' + esc(tv.url) + '</code><button class="feld" data-act="kopie"><ha-icon icon="mdi:content-copy"></ha-icon>' + t('tv_copy') + '</button></div>' +
         '<button class="neuer feld" data-act="neu" data-lbl="' + t('tv_new') + '"><ha-icon icon="mdi:link-variant-off" style="--mdc-icon-size:16px"></ha-icon><span class="lbl">' + t('tv_new') + '</span></button>' +
-        '<div class="klein">' + t('tv_hint') + '</div>';
+        '<div class="klein">' + t('tv_hint') + '</div>' +
+        '<div class="titel"><ha-icon icon="mdi:broadcast"></ha-icon>' + t('ov_title') + '</div>' +
+        '<div class="link feld"><code>' + esc(tv.url ? tv.url + '/overlay' : '') + '</code><button class="feld" data-act="kopie" data-ov="1"><ha-icon icon="mdi:content-copy"></ha-icon>' + t('tv_copy') + '</button></div>' +
+        '<div class="klein">' + t('ov_hint') + '</div>';
       this._setze(s);
       const f = this._r.querySelector('.tvbild iframe'), b = this._r.querySelector('.tvbild');
       if (f && b) { const w = b.clientWidth || 400; f.style.transform = 'scale(' + (w / 1280) + ')'; if (!this._ro && 'ResizeObserver' in window) { this._ro = new ResizeObserver(() => { const i = this._r.querySelector('.tvbild iframe'), bb = this._r.querySelector('.tvbild'); if (i && bb) i.style.transform = 'scale(' + (bb.clientWidth / 1280) + ')'; }); this._ro.observe(b); } }
@@ -3033,9 +3038,9 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       if (act === 'ansicht') { this._tvAns = b.dataset.v; this._alt = null; this._zeichnen(); this._setzen({ ansicht: this._tvAns }); return; }
       if (act === 'oeffnen') { if (tv.url) window.open(new URL(tv.url).pathname, '_blank', 'noopener'); return; }
       if (act === 'kopie') {
-        const fertig = () => meldung(this, t('tv_copied'));
-        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(tv.url).then(fertig, () => window.prompt('', tv.url));
-        else window.prompt('', tv.url);
+        const fertig = () => meldung(this, t('tv_copied')), url = tv.url + (b.dataset.ov ? '/overlay' : '');
+        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(url).then(fertig, () => window.prompt('', url));
+        else window.prompt('', url);
         return;
       }
       if (act === 'neu') zweimal(this, b, t('tv_new_q'), () => { this._setzen({ neuer_link: true }); });
@@ -3043,12 +3048,115 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
   }
   customElements.define('autodarts-tv-card', AutodartsTvCard);
 
+  /* ---------- Highlights card: clips of 180, high finish, match dart ---------- */
+  Object.assign(TEXTE.en, { clips_title: 'Highlights', d_clips: 'Short videos of your 180s, high finishes and match darts from the board camera', clips_on: 'Record highlights', clips_on_s: 'At a highlight the last seconds of the board camera are saved as a short video',
+    clips_cam: 'Camera', clips_when: 'When', clips_replay: 'Replay on the TV and the overlay', clips_replay_s: 'Right after the highlight, once', clips_none: 'No clips yet – throw a 180!', clips_off_s: 'off', n_clips: '{n} clips',
+    clips_del: 'Delete', clips_del_q: 'Really delete?', clips_all: 'Delete all clips', clips_all_q: 'Delete all clips – sure?', clips_dl: 'Download', clips_save: 'Save clip', clips_saved: 'Clip is being saved',
+    clips_hint: 'Clips are recorded while a game runs and the board detects darts. They are straightened with the calibration and kept in Media → dartnest/clips; the oldest go when there are more than {n}.',
+    a_one_eighty: '180', a_high_finish: 'Finish 100+', a_match_won: 'Match dart', a_leg_won: 'Leg won', a_nine_darter: 'Nine-darter', a_ton_forty: '140+', a_checkout: 'Every finish', a_bullseye: 'Bullseye', a_three_in_a_bed: 'Three in a bed', a_manual: 'Saved by hand',
+    today: 'today', yesterday: 'yesterday', m_clips_s: '180, high finishes, match darts as video', ov_title: 'Stream overlay (OBS, Streamlabs)', ov_hint: 'In OBS or Streamlabs add a source → Browser, paste the link, size 1920 × 1080. The background is see-through: only the score at the bottom left and the replays show.' });
+  Object.assign(TEXTE.de, { clips_title: 'Highlights', d_clips: 'Kurze Videos deiner 180er, hohen Finishes und Matchdarts aus der Board-Kamera', clips_on: 'Highlights aufnehmen', clips_on_s: 'Bei einem Highlight werden die letzten Sekunden der Board-Kamera als kurzes Video gespeichert',
+    clips_cam: 'Kamera', clips_when: 'Wann', clips_replay: 'Wiederholung auf Fernseher und Overlay', clips_replay_s: 'Direkt nach dem Highlight, einmal', clips_none: 'Noch keine Clips – wirf eine 180!', clips_off_s: 'aus', n_clips: '{n} Clips',
+    clips_del: 'Löschen', clips_del_q: 'Wirklich löschen?', clips_all: 'Alle Clips löschen', clips_all_q: 'Alle Clips löschen – sicher?', clips_dl: 'Herunterladen', clips_save: 'Clip speichern', clips_saved: 'Clip wird gespeichert',
+    clips_hint: 'Aufgenommen wird während eines Spiels, solange das Board Darts erkennt. Die Clips sind mit der Kalibrierung gerade gerückt und liegen unter Medien → dartnest/clips; über {n} Stück gehen die ältesten.',
+    a_one_eighty: '180', a_high_finish: 'Finish ab 100', a_match_won: 'Matchdart', a_leg_won: 'Leg gewonnen', a_nine_darter: '9-Darter', a_ton_forty: 'Ab 140', a_checkout: 'Jedes Finish', a_bullseye: 'Bullseye', a_three_in_a_bed: 'Drei in einem Feld', a_manual: 'Von Hand gespeichert',
+    today: 'heute', yesterday: 'gestern', m_clips_s: '180er, hohe Finishes, Matchdarts als Video', ov_title: 'Stream-Overlay (OBS, Streamlabs)', ov_hint: 'In OBS oder Streamlabs eine Quelle → Browser hinzufügen, Link einfügen, Größe 1920 × 1080. Der Hintergrund ist durchsichtig: zu sehen sind nur der Spielstand unten links und die Wiederholungen.' });
+  const CLIP_ANLAESSE = ['one_eighty', 'high_finish', 'match_won', 'leg_won', 'nine_darter', 'ton_forty', 'checkout', 'bullseye', 'three_in_a_bed'];
+  const clipsInfo = h => att(h, E(h, 'sensor.players')).clips || { an: false, kamera: 'camera_1', anlaesse: [], anzahl: 30, wiederholung: true, liste: [] };
+  // signed links for <img>/<video> (they cannot send the login)
+  const signiert = {};
+  const signieren = (h, pfad, fertig) => {
+    if (signiert[pfad]) return signiert[pfad] === 1 ? '' : signiert[pfad];
+    signiert[pfad] = 1;
+    h.callWS({ type: 'auth/sign_path', path: pfad, expires: 86400 }).then(r => { signiert[pfad] = r.path; fertig(); }, () => { delete signiert[pfad]; });
+    return '';
+  };
+  const clipZeit = z => {
+    const d = new Date(z); if (isNaN(d)) return '';
+    const heute = new Date(), gestern = new Date(Date.now() - 864e5), uhr = d.toLocaleTimeString(SPR === 'de' ? 'de-DE' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
+    if (d.toDateString() === heute.toDateString()) return t('today') + ' ' + uhr;
+    if (d.toDateString() === gestern.toDateString()) return t('yesterday') + ' ' + uhr;
+    return d.toLocaleDateString(SPR === 'de' ? 'de-DE' : 'en-GB', { day: 'numeric', month: 'short' }) + ' ' + uhr;
+  };
+  const clipName = c => t('a_' + c.art) + (c.wert && c.art !== 'one_eighty' ? ' · ' + c.wert : '');
+  const CLIPS_CSS = `
+.clips{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:4px}
+.clip{position:relative;display:block;padding:0;border-radius:16px;overflow:hidden;aspect-ratio:1;background:#111;border:0;cursor:pointer;text-align:left}
+.clip img{width:100%;height:100%;object-fit:cover;display:block}
+.clip .cl{position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff}
+.clip .cl b{display:block;font-size:14px}.clip .cl small{font-size:11.5px;opacity:.8}
+.clip .ab{position:absolute;left:8px;top:8px;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:800;background:linear-gradient(90deg,#ff8a3d,#ff4d5e);color:#fff}
+.clip .pl{position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;color:#fff}.clip .pl ha-icon{--mdc-icon-size:18px}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border-radius:14px;padding:10px 4px;font-size:13px;font-weight:700}
+.seg button.an,.chips button.an{border-color:var(--primary-color);background:color-mix(in srgb,var(--primary-color) 16%,transparent)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border-radius:999px;padding:8px 13px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px}.chips button ha-icon{--mdc-icon-size:16px}
+.spieler video{display:block;width:100%;max-height:70vh;aspect-ratio:1;object-fit:contain;background:#000;border-radius:16px}
+.spieler .zl{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.spieler .zl>*{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:9px 13px;font-size:13.5px;font-weight:700;text-decoration:none;color:inherit}
+.neuer{display:inline-flex;align-items:center;gap:6px;border-radius:12px;padding:8px 12px;margin-top:12px;font-size:13px;font-weight:600}
+.spieler h3{margin:0 0 8px;font-size:17px}.spieler h3 small{display:block;font-size:12.5px;color:var(--secondary-text-color);font-weight:500;margin-top:2px}`;
+  class AutodartsClipsCard extends DartsSeite {
+    static get CSS() { return CLIPS_CSS + '.schalter{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 16px;width:100%;box-sizing:border-box;text-align:left;margin-top:8px}.schalter>ha-icon{--mdc-icon-size:28px;flex:none}.schalter.an{background:color-mix(in srgb,var(--primary-color) 22%,transparent);border-color:var(--primary-color)}.schalter.an>ha-icon{color:var(--primary-color)}.schalter span{flex:1}.schalter b{display:block;font-size:15px}.schalter small{display:block;font-size:12.5px;color:var(--secondary-text-color);font-weight:500;margin-top:2px}'; }
+    getCardSize() { return 8; }
+    _w() { return Object.assign({}, clipsInfo(this._h), this._neu || {}); }
+    _zeichnen() {
+      if (this._fehlt()) return;
+      const h = this._h, c = this._w(), echt = clipsInfo(h);
+      if (this._neu && Object.keys(this._neu).every(k => JSON.stringify(this._neu[k]) === JSON.stringify(echt[k]))) this._neu = null;
+      const liste = c.liste || [];
+      this._kopf(t('clips_title'), c.an ? t('n_clips', { n: liste.length }) : t('clips_off_s'));
+      const neu = () => { this._alt = null; this._zeichnen(); };
+      let s = '<button class="schalter feld' + (c.an ? ' an' : '') + '" data-act="an"><ha-icon icon="' + (c.an ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon><span><b>' + t('clips_on') + '</b><small>' + t('clips_on_s') + '</small></span></button>';
+      if (c.an) {
+        s += '<div class="titel"><ha-icon icon="mdi:cctv"></ha-icon>' + t('clips_cam') + '</div><div class="seg">' + ['camera_1', 'camera_2', 'camera_3'].map((k, i) => '<button class="feld' + (c.kamera === k ? ' an' : '') + '" data-act="kamera" data-v="' + k + '">' + t('tv_v_c', { n: i + 1 }) + '</button>').join('') + '</div>' +
+          '<div class="titel"><ha-icon icon="mdi:star-outline"></ha-icon>' + t('clips_when') + '</div><div class="chips">' + CLIP_ANLAESSE.map(a => { const an = (c.anlaesse || []).includes(a); return '<button class="feld' + (an ? ' an' : '') + '" data-act="anlass" data-v="' + a + '"><ha-icon icon="' + (an ? 'mdi:check' : 'mdi:plus') + '"></ha-icon>' + t('a_' + a) + '</button>'; }).join('') + '</div>' +
+          '<button class="schalter feld' + (c.wiederholung ? ' an' : '') + '" data-act="wdh"><ha-icon icon="' + (c.wiederholung ? 'mdi:toggle-switch' : 'mdi:toggle-switch-off-outline') + '"></ha-icon><span><b>' + t('clips_replay') + '</b><small>' + t('clips_replay_s') + '</small></span></button>';
+      }
+      s += '<div class="titel"><ha-icon icon="mdi:movie-star-outline"></ha-icon>' + t('clips_title') + '</div>';
+      if (!liste.length) s += '<div class="leer">' + t('clips_none') + '</div>';
+      else s += '<div class="clips">' + liste.map(x => {
+        const bild = signieren(h, '/api/autodarts/clip/' + x.id + '.jpg', neu);
+        return '<button class="clip" data-act="zeigen" data-id="' + x.id + '">' + (bild ? '<img loading="lazy" alt="" src="' + esc(bild) + '">' : '') +
+          '<span class="ab">' + esc(t('a_' + x.art)) + '</span><span class="pl"><ha-icon icon="mdi:play"></ha-icon></span><span class="cl"><b>' + esc(x.spieler || clipName(x)) + '</b><small>' + esc((x.spieler ? clipName(x) + ' · ' : '') + clipZeit(x.zeit)) + '</small></span></button>';
+      }).join('') + '</div>' +
+        '<button class="neuer feld" data-act="alle" data-lbl="' + t('clips_all') + '" style="--sr-f:var(--red-color,#e53935)"><ha-icon icon="mdi:delete-sweep-outline" style="--mdc-icon-size:16px"></ha-icon><span class="lbl">' + t('clips_all') + '</span></button>';
+      s += '<div class="klein">' + t('clips_hint', { n: c.anzahl || 30 }) + '</div>';
+      this._setze(s);
+    }
+    _setzen(daten) {
+      this._neu = Object.assign(this._neu || {}, daten); this._alt = null; this._zeichnen();
+      this._h.callService('autodarts', 'clips_setzen', daten).catch(e => { this._neu = null; meldung(this, (e && e.message) || String(e)); this._alt = null; this._zeichnen(); });
+    }
+    _klick(act, b) {
+      const h = this._h, c = this._w();
+      if (act === 'an') return this._setzen({ an: !c.an });
+      if (act === 'wdh') return this._setzen({ wiederholung: !c.wiederholung });
+      if (act === 'kamera') return this._setzen({ kamera: b.dataset.v });
+      if (act === 'anlass') { const v = b.dataset.v, l = c.anlaesse || []; return this._setzen({ anlaesse: l.includes(v) ? l.filter(x => x !== v) : CLIP_ANLAESSE.filter(x => x === v || l.includes(x)) }); }
+      if (act === 'alle') { zweimal(this, b, t('clips_all_q'), () => h.callService('autodarts', 'clip_loeschen', { alle: true })); return; }
+      if (act === 'zeigen') {
+        const x = (c.liste || []).find(y => y.id === b.dataset.id); if (!x) return;
+        h.callWS({ type: 'auth/sign_path', path: '/api/autodarts/clip/' + x.id + '.mp4', expires: 3600 }).then(r => {
+          this._modal('<div class="spieler"><h3>' + esc(x.spieler || clipName(x)) + '<small>' + esc((x.spieler ? clipName(x) + ' · ' : '') + clipZeit(x.zeit)) + '</small></h3><video controls autoplay playsinline muted src="' + esc(r.path) + '"></video>' +
+            '<div class="zl"><a class="feld" href="' + esc(r.path) + '" download="dartnest-' + x.id + '.mp4"><ha-icon icon="mdi:download"></ha-icon>' + t('clips_dl') + '</a>' +
+            '<button class="feld" data-act="weg" data-id="' + x.id + '" data-lbl="' + t('clips_del') + '"><ha-icon icon="mdi:delete-outline"></ha-icon><span class="lbl">' + t('clips_del') + '</span></button>' +
+            '<button class="feld" data-act="mzu"><ha-icon icon="mdi:close"></ha-icon>' + t('close') + '</button></div></div>');
+        }, e => meldung(this, (e && e.message) || String(e)));
+        return;
+      }
+      if (act === 'weg') { zweimal(this, b, t('clips_del_q'), () => { h.callService('autodarts', 'clip_loeschen', { id: b.dataset.id }); this._modal(null); }); }
+    }
+  }
+  customElements.define('autodarts-clips-card', AutodartsClipsCard);
+
   /* ---------- Settings card: one menu with big buttons, each opens the matching card ---------- */
   const MENUE = [
     ['board', 'autodarts-manager-card', 'mdi:camera-iris', 'm_board', 'm_board_s', '#26a69a'],
     ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title', 'm_lights_s', '#ffb300'],
     ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title', 'm_caller_s', '#7e57c2'],
-    ['tv', 'autodarts-tv-card', 'mdi:television-play', 'tv_title', 'm_tv_s', '#ef5350']
+    ['tv', 'autodarts-tv-card', 'mdi:television-play', 'tv_title', 'm_tv_s', '#ef5350'],
+    ['clips', 'autodarts-clips-card', 'mdi:movie-star-outline', 'clips_title', 'm_clips_s', '#ec407a']
   ];
   const MENUE_CSS = `
 .menue{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
@@ -3067,6 +3175,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
       const h = this._h;
       if (k === 'board') { const on = boardOnline(h); return ['<i class="st' + (on ? ' gut' : '') + '">' + t(on ? 'online' : 'offline') + '</i>', on]; }
       if (k === 'tv') { const n = (tvInfo(h).geraete || []).length; return n ? ['<i class="st gut">' + t('n_tv', { n }) + '</i>', true] : ['', false]; }
+      if (k === 'clips') { const c = clipsInfo(h); return c.an ? ['<i class="st gut">' + t('n_clips', { n: (c.liste || []).length }) + '</i>', true] : ['<i class="st">' + t('clips_off_s') + '</i>', false]; }
       return ['', false];
     }
     _zeichnen() {
@@ -3103,6 +3212,7 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     ['licht', 'autodarts-lights-card', 'mdi:lightbulb-auto-outline', 'lights_title'],
     ['ansager', 'autodarts-caller-card', 'mdi:account-voice', 'caller_title'],
     ['fernseher', 'autodarts-tv-card', 'mdi:television-play', 'tv_title'],
+    ['highlights', 'autodarts-clips-card', 'mdi:movie-star-outline', 'clips_title'],
     ['manager', 'autodarts-manager-card', 'mdi:camera-iris', 'manager']
   ];
   const PANEL_CSS = `
@@ -3169,7 +3279,8 @@ ha-card.fx-stoss{animation:fx-stoss .45s ease-out}
     { type: 'autodarts-lights-card', name: 'DartNest Light effects', description: t('d_lights') },
     { type: 'autodarts-caller-card', name: 'DartNest Caller', description: t('d_caller') },
     { type: 'autodarts-tv-card', name: 'DartNest TV', description: t('d_tv') },
-    { type: 'autodarts-settings-card', name: 'DartNest Settings', description: t('d_settings') }
+    { type: 'autodarts-settings-card', name: 'DartNest Settings', description: t('d_settings') },
+    { type: 'autodarts-clips-card', name: 'DartNest Highlights', description: t('d_clips') }
   );
   console.info('%c AUTODARTS CARDS %c loaded ', 'color:#fff;background:#00a37a;font-weight:700', 'color:#00a37a');
 })();

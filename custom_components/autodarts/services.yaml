@@ -389,6 +389,74 @@ ansager_pack_loeschen:
       example: Meisterschaft Fenrir
       selector:
         text:
+clips_setzen:
+  name: Highlight-Clips einstellen
+  description: Bei Highlights (180, Finish ab 100, Matchdart …) die letzten Sekunden der Board-Kamera als kurzes Video speichern (Medien → dartnest/clips). Die Karte „DartNest Highlights“ macht das per Klick.
+  fields:
+    an:
+      name: Clips aufnehmen
+      selector:
+        boolean:
+    kamera:
+      name: Kamera
+      selector:
+        select:
+          options:
+            - label: Kamera 1
+              value: camera_1
+            - label: Kamera 2
+              value: camera_2
+            - label: Kamera 3
+              value: camera_3
+    anlaesse:
+      name: Anlässe
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: 180
+              value: one_eighty
+            - label: Finish ab 100
+              value: high_finish
+            - label: Matchdart
+              value: match_won
+            - label: Leg gewonnen
+              value: leg_won
+            - label: 9-Darter
+              value: nine_darter
+            - label: 140 und mehr
+              value: ton_forty
+            - label: Jedes Finish
+              value: checkout
+            - label: Bullseye
+              value: bullseye
+            - label: Drei in einem Feld
+              value: three_in_a_bed
+    anzahl:
+      name: Höchstens behalten
+      description: Ältere Clips werden gelöscht.
+      selector:
+        number:
+          min: 1
+          max: 200
+    wiederholung:
+      name: Wiederholung auf Fernseher und Overlay
+      selector:
+        boolean:
+clip_speichern:
+  name: Clip speichern
+  description: Die letzten Sekunden der Kamera jetzt als Clip speichern (nur während eines Spiels mit eingeschalteten Clips).
+clip_loeschen:
+  name: Clip löschen
+  fields:
+    id:
+      name: Clip
+      selector:
+        text:
+    alle:
+      name: Alle Clips löschen
+      selector:
+        boolean:
 aufnahme_eintragen:
   name: Aufnahme eintragen
   description: >-

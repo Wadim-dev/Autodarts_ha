@@ -201,6 +201,15 @@
     },
     "aufnahme_eintragen": {
       "service": "mdi:numeric"
+    },
+    "clips_setzen": {
+      "service": "mdi:movie-cog"
+    },
+    "clip_speichern": {
+      "service": "mdi:movie-open-plus"
+    },
+    "clip_loeschen": {
+      "service": "mdi:movie-remove"
     }
   }
 }

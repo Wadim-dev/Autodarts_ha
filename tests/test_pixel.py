@@ -27,6 +27,16 @@ def _posts(aioclient_mock, basis: str, pfad: str) -> list:
             for c in aioclient_mock.mock_calls if c[0] == "POST" and str(c[1]).startswith(f"{basis}/api/{pfad}")]
 
 
+async def _bis(hass: HomeAssistant, bedingung, zeit: float = 5.0) -> None:
+    """Wait until the displays got what the test expects (timers and the 0.3 s grouping run in the background)."""
+    for _ in range(int(zeit / 0.05)):
+        await hass.async_block_till_done()
+        if bedingung():
+            return
+        await asyncio.sleep(0.05)
+    assert bedingung()
+
+
 def test_host_pruefen() -> None:
     assert pixel_modul.host_pruefen(" http://192.168.1.5/ ") == "192.168.1.5"
     assert pixel_modul.host_pruefen("awtrix.local:8080") == "awtrix.local:8080"
@@ -79,8 +89,7 @@ async def test_pixel_anzeigen(hass: HomeAssistant, geladen, aioclient_mock, monk
     # game: score of the player at the oche, DartNest app switched to
     anna, ben = [(await _dienst(hass, "spieler_anlegen", name=n))["id"] for n in ("Anna", "Ben")]
     await _dienst(hass, "spiel_starten", spieler=[anna, ben], startwert=501)
-    await asyncio.sleep(0.5)
-    await hass.async_block_till_done()
+    await _bis(hass, lambda: _posts(aioclient_mock, AWTRIX, "switch") and _posts(aioclient_mock, PIXELIT, "screen")[-1].get("text", {}).get("textString") == "ANNA 501")
     app = _posts(aioclient_mock, AWTRIX, "custom")
     assert app[-1]["text"] == [{"t": "ANNA ", "c": "#FFFFFF"}, {"t": "501", "c": "#FF8A4C"}] and app[-1]["lifetime"] == 900
     assert _posts(aioclient_mock, AWTRIX, "switch") == [{"name": "dartnest"}]
@@ -91,8 +100,8 @@ async def test_pixel_anzeigen(hass: HomeAssistant, geladen, aioclient_mock, monk
     for i in range(3):
         await _dienst(hass, "wurf_aendern", dart=i, feld="T20")
     await _dienst(hass, "weiter")
-    await asyncio.sleep(0.6)
-    await hass.async_block_till_done()
+    await _bis(hass, lambda: [s.get("text", {}).get("textString") for s in _posts(aioclient_mock, PIXELIT, "screen")][-1] == "BEN 501"
+               and _posts(aioclient_mock, AWTRIX, "custom")[-1]["text"][0]["t"] == "BEN ")
     effekte = [n for n in _posts(aioclient_mock, AWTRIX, "notify") if n["text"][0]["t"] == "180!"]
     assert len(effekte) == 1 and effekte[0]["rainbow"] is True
     assert _posts(aioclient_mock, AWTRIX, "custom")[-1]["text"][0]["t"] == "BEN "
@@ -102,7 +111,7 @@ async def test_pixel_anzeigen(hass: HomeAssistant, geladen, aioclient_mock, monk
 
     # switched off: the displays are given back (AWTRIX app removed, PixelIt clock)
     await _dienst(hass, "pixel_setzen", an=False)
-    await hass.async_block_till_done()
+    await _bis(hass, lambda: _posts(aioclient_mock, AWTRIX, "custom")[-1] is None)
     assert _posts(aioclient_mock, AWTRIX, "custom")[-1] is None
     assert "clock" in _posts(aioclient_mock, PIXELIT, "screen")[-1]
     assert attr()["vorschau"] is None
@@ -122,11 +131,10 @@ async def test_sieger_dann_freigeben(hass: HomeAssistant, geladen, aioclient_moc
     await _dienst(hass, "spiel_starten", spieler=[anna], startwert=101)
     for i, feld in enumerate(("T20", "T7", "D10")):
         await _dienst(hass, "wurf_aendern", dart=i, feld=feld)
-    await asyncio.sleep(0.4)
-    await hass.async_block_till_done()
+    await _bis(hass, lambda: any(n["text"][0]["t"] == "ANNA WINS" for n in _posts(aioclient_mock, AWTRIX, "notify"))
+               and _posts(aioclient_mock, AWTRIX, "custom")[-1] is not None and _posts(aioclient_mock, AWTRIX, "custom")[-1]["text"][0]["t"] == "ANNA")
     assert _posts(aioclient_mock, AWTRIX, "custom")[-1]["text"][0]["t"] == "ANNA"
     assert any(n["text"][0]["t"] == "ANNA WINS" and n["rainbow"] for n in _posts(aioclient_mock, AWTRIX, "notify"))
     # a moment later the display is given back
-    await asyncio.sleep(1.2)
-    await hass.async_block_till_done()
+    await _bis(hass, lambda: _posts(aioclient_mock, AWTRIX, "custom")[-1] is None)
     assert _posts(aioclient_mock, AWTRIX, "custom")[-1] is None

@@ -251,6 +251,25 @@ fernseher_setzen:
       description: Der alte Link der Fernseher-Seite funktioniert dann nicht mehr.
       selector:
         boolean:
+    brett:
+      name: Dartscheibe zeigen
+      description: Neben dem Spielstand die Dartscheibe mit den Darts der Aufnahme zeigen.
+      selector:
+        boolean:
+    ansicht:
+      name: Ansicht der Dartscheibe
+      description: Gezeichnete Scheibe oder das gerade gerückte Bild einer Board-Kamera (solange die Erkennung läuft, sonst die gezeichnete).
+      selector:
+        select:
+          options:
+            - label: Gezeichnete Scheibe
+              value: graphic
+            - label: Kamera 1
+              value: camera_1
+            - label: Kamera 2
+              value: camera_2
+            - label: Kamera 3
+              value: camera_3
 lichteffekte_setzen:
   name: Lichteffekte speichern
   description: >-

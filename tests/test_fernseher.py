@@ -13,6 +13,7 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.setup import async_setup_component
 import pytest
 from pytest_homeassistant_custom_component.common import async_mock_service
+import voluptuous as vol
 
 from custom_components.autodarts.const import DOMAIN
 
@@ -210,3 +211,38 @@ async def test_von_selbst_beim_spielstart(hass: HomeAssistant, geladen) -> None:
     await _dienst(hass, "spiel_starten", spieler=[anna], startwert=101)
     await hass.async_block_till_done()
     assert hass.states.get("sensor.autodarts_board_game").attributes["phase"] == "laeuft"
+
+
+async def test_dartscheibe(hass: HomeAssistant, mit_http, aioclient_mock, hass_client_no_auth) -> None:
+    """Dartboard next to the score: drawn, or the straightened camera image while the board detects."""
+    from .conftest import BASIS
+
+    client = await hass_client_no_auth()
+    token = _token(hass)
+    tv = hass.config_entries.async_entries(DOMAIN)[0].runtime_data.fernseher
+    assert _tv(hass)["brett"] is False and _tv(hass)["ansicht"] == "camera_1" and tv.live()["brett"] is None
+    assert (await client.get(f"/autodarts/tv/{token}/kamera/1")).status == 404  # off: no image
+
+    await _dienst(hass, "fernseher_setzen", brett=True, ansicht="graphic")
+    assert _tv(hass)["brett"] is True and tv.live()["brett"] == {"ansicht": "graphic", "kamera": None, "kalibrierung": None}
+    assert (await client.get(f"/autodarts/tv/{token}/kamera/1")).status == 404
+
+    await _dienst(hass, "fernseher_setzen", ansicht="camera_1")
+    brett = tv.live()["brett"]
+    assert brett["kamera"] == 1 and len(brett["kalibrierung"]["ringe"]) == 4
+    aioclient_mock.get(f"{BASIS}/api/streams/cams/0", content=b"--frame")
+    r = await client.get(f"/autodarts/tv/{token}/kamera/1")
+    assert r.status == 200 and await r.read() == b"--frame"
+    assert (await client.get(f"/autodarts/tv/{token}/kamera/2")).status == 404  # only the chosen one
+    assert (await client.get("/autodarts/tv/falsch/kamera/1")).status == 404
+
+    # detection stopped: cameras are black, the page draws the board
+    d = hass.config_entries.async_entries(DOMAIN)[0].runtime_data
+    d.zustand.async_set_updated_data({**d.zustand.data, "laeuft": False})
+    assert tv.live()["brett"]["kamera"] is None
+    assert (await client.get(f"/autodarts/tv/{token}/kamera/1")).status == 404
+
+    with pytest.raises(vol.Invalid):
+        await _dienst(hass, "fernseher_setzen", ansicht="camera_9")
+    await _dienst(hass, "fernseher_setzen", brett=False)
+    assert tv.live()["brett"] is None and _tv(hass)["ansicht"] == "camera_1"

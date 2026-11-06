@@ -15,6 +15,7 @@ import voluptuous as vol
 
 from .const import DOMAIN, EREIGNISSE
 from .coordinator import DartsEntry
+from .fernseher import ANSICHTEN
 from .lichter import EFFEKTE, REGEL, wled_uebersicht
 from .spiel import EINSTELLUNGEN, Spielleiter
 from .spielarten import GRUPPEN
@@ -73,6 +74,8 @@ DIENSTE = {
         vol.Optional("geraete"): vol.Any(cv.entity_ids, []),
         vol.Optional("auto"): cv.boolean,
         vol.Optional("neuer_link", default=False): cv.boolean,
+        vol.Optional("brett"): cv.boolean,
+        vol.Optional("ansicht"): vol.In(ANSICHTEN),
     }),
     "aufnahme_eintragen": vol.Schema({
         vol.Optional("spieler"): cv.string,
@@ -233,7 +236,7 @@ def async_setup_services(hass: HomeAssistant) -> None:
             elif name == "fernseher_beenden":
                 await tv.beenden(d.get("geraete"))
             else:
-                await tv.setzen(d.get("geraete"), d.get("auto"), d["neuer_link"])
+                await tv.setzen(d.get("geraete"), d.get("auto"), d["neuer_link"], d.get("brett"), d.get("ansicht"))
         elif name in ("lichteffekte_setzen", "lichteffekt_testen"):
             await _lichter(hass, name, d)
         elif name in ("ansager_setzen", "ansager_testen", "ansager_pack_erzeugen", "ansager_pack_loeschen", "ansager_pack_pruefen", "ansager_pack_anhalten"):

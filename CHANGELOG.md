@@ -3,6 +3,16 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.28.0
+
+- **Your dartboard on the TV.** Switch on **Show the dartboard** in the TV card: the TV shows the board next to the score, with the darts of the current visit marked. Choose **Camera 1–3** for the live camera image, straightened like in the game card (rings mark the darts, so you still see the real ones), or **Drawn** for the drawn board. While the board does not detect (off, detection stopped) the TV shows the drawn board by itself and switches back to the camera when it runs again.
+- New button at the top of the game card: dartboard on the TV on or off. `autodarts.fernseher_setzen` has the new fields `brett` and `ansicht`.
+
+**Deutsch**
+
+- **Deine Dartscheibe auf dem Fernseher.** In der Fernseher-Karte **Dartscheibe zeigen** einschalten: Der Fernseher zeigt die Scheibe neben dem Spielstand, die Darts der aktuellen Aufnahme sind markiert. **Kamera 1–3** zeigt das Live-Bild der Kamera, gerade gerückt wie in der Spielkarte (Ringe markieren die Darts, die echten bleiben sichtbar), **Gezeichnet** die gezeichnete Scheibe. Solange das Board nicht erkennt (aus, Erkennung gestoppt), zeigt der Fernseher von selbst die gezeichnete Scheibe und schaltet zurück auf die Kamera, sobald es wieder läuft.
+- Neuer Knopf oben in der Spielkarte: Dartscheibe am Fernseher an oder aus. `autodarts.fernseher_setzen` hat die neuen Felder `brett` und `ansicht`.
+
 ## 1.27.1
 
 - Fire TV: when the Silk browser is switched off, **Show on TV** now says so and how to switch it on, instead of doing nothing. Other start problems of the TV are shown as a message too.

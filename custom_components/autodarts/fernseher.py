@@ -13,18 +13,23 @@ import json
 import logging
 from pathlib import Path
 import secrets
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from aiohttp import web
+from aiohttp import ClientTimeout, web
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.aiohttp_client import async_aiohttp_proxy_web, async_get_clientsession
 from homeassistant.helpers.http import HomeAssistantView
 from homeassistant.helpers.network import NoURLAvailableError, get_url
 
 from . import auswertung
+from .board import Stream
 from .const import DOMAIN
 from .spiel import Spielleiter
+
+if TYPE_CHECKING:
+    from .coordinator import DartsDaten
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,6 +38,9 @@ TV_URL = f"/{DOMAIN}/tv"
 PLATTFORMEN = ("androidtv", "androidtv_remote", "cast")
 SILK = "com.amazon.cloud9"
 PING = 20.0
+# dartboard next to the scoreboard: drawn board or the straightened image of a board camera
+ANSICHTEN = ("graphic", "camera_1", "camera_2", "camera_3")
+_STROEME: tuple[Stream, ...] = ("cam0", "cam1", "cam2")
 SILK_AUS = "DARTNEST_SILK_OFF"  # printed by the ADB command when Silk is switched off
 
 
@@ -50,9 +58,10 @@ def _fehler(schluessel: str, **platzhalter: str) -> ServiceValidationError:
 class Fernseher:
     """Settings of the TV page and starting it on the TVs."""
 
-    def __init__(self, hass: HomeAssistant, spiel: Spielleiter) -> None:
+    def __init__(self, hass: HomeAssistant, spiel: Spielleiter, daten: DartsDaten | None = None) -> None:
         self.hass = hass
         self.spiel = spiel
+        self.daten = daten  # board, cameras and calibration (set once the integration is ready)
 
     @property
     def einst(self) -> dict[str, Any]:
@@ -61,6 +70,9 @@ class Fernseher:
             e["token"] = secrets.token_hex(16)
         e.setdefault("geraete", [])
         e.setdefault("auto", False)
+        e.setdefault("brett", False)
+        if e.get("ansicht") not in ANSICHTEN:
+            e["ansicht"] = "camera_1"
         return e
 
     def token_passt(self, token: str) -> bool:
@@ -79,14 +91,19 @@ class Fernseher:
 
     def attribute(self) -> dict[str, Any]:
         e = self.einst
-        return {"geraete": list(e["geraete"]), "auto": bool(e["auto"]), "url": self.url()}
+        return {"geraete": list(e["geraete"]), "auto": bool(e["auto"]), "url": self.url(), "brett": bool(e["brett"]), "ansicht": e["ansicht"]}
 
-    async def setzen(self, geraete: list[str] | None, auto: bool | None, neuer_link: bool) -> None:
+    async def setzen(self, geraete: list[str] | None, auto: bool | None, neuer_link: bool,
+                     brett: bool | None = None, ansicht: str | None = None) -> None:
         e = self.einst
         if geraete is not None:
             e["geraete"] = [g for g in dict.fromkeys(geraete) if g]
         if auto is not None:
             e["auto"] = bool(auto)
+        if brett is not None:
+            e["brett"] = bool(brett)
+        if ansicht in ANSICHTEN:
+            e["ansicht"] = ansicht
         if neuer_link:
             e["token"] = secrets.token_hex(16)
         self.spiel.einstellung_gespeichert()
@@ -192,6 +209,30 @@ class Fernseher:
 
     # ---------- data for the page ----------
 
+    def kamera(self) -> int | None:
+        """Index of the board camera the page may show now (0–2), or None (drawn board).
+
+        Only while the board detects: with the detection stopped the cameras are black."""
+        e, d = self.einst, self.daten
+        if not e["brett"] or not e["ansicht"].startswith("camera_") or d is None:
+            return None
+        nr = int(e["ansicht"][-1]) - 1
+        laeuft = d.zustand.online and bool((d.zustand.data or {}).get("laeuft"))
+        return nr if laeuft and self._kalibrierung(nr) else None
+
+    def _kalibrierung(self, nr: int) -> dict[str, Any] | None:
+        if self.daten is None:
+            return None
+        netz: dict[str, Any] | None = ((self.daten.system.data or {}).get("netz") or {}).get(str(nr))
+        return netz
+
+    def _brett(self) -> dict[str, Any] | None:
+        e = self.einst
+        if not e["brett"]:
+            return None
+        nr = self.kamera()
+        return {"ansicht": e["ansicht"], "kamera": None if nr is None else nr + 1, "kalibrierung": None if nr is None else self._kalibrierung(nr)}
+
     def live(self) -> dict[str, Any]:
         sp = self.spiel
         rang = []
@@ -216,6 +257,7 @@ class Fernseher:
                 for v in (sp.daten.get("verlauf") or [])[:5]
             ],
             "sprache": self.hass.config.language,
+            "brett": self._brett(),
         }
 
 
@@ -258,7 +300,10 @@ class TvLive(HomeAssistantView):
         antwort = web.StreamResponse(headers={"Content-Type": "text/event-stream", "Cache-Control": "no-store", "X-Accel-Buffering": "no"})
         await antwort.prepare(request)
         neu = asyncio.Event()
-        abmelden: Callable[[], None] = f.spiel.hoerer(neu.set)
+        abmelden: list[Callable[[], None]] = [f.spiel.hoerer(neu.set)]
+        if f.daten is not None:
+            # the camera on the page follows the board (online, detection running, calibration)
+            abmelden += [f.daten.zustand.async_add_listener(neu.set), f.daten.system.async_add_listener(neu.set)]
         alt = ""
         try:
             while True:
@@ -266,19 +311,37 @@ class TvLive(HomeAssistantView):
                 if text != alt:
                     alt = text
                     await antwort.write(f"data: {text}\n\n".encode())
-                else:
-                    await antwort.write(b": ping\n\n")
                 neu.clear()
                 try:
                     await asyncio.wait_for(neu.wait(), PING)
                 except TimeoutError:
-                    pass
+                    await antwort.write(b": ping\n\n")
+                    continue
                 await asyncio.sleep(0.12)  # several changes of one dart in one message
         except (ConnectionResetError, ConnectionError):
             pass
         finally:
-            abmelden()
+            for ab in abmelden:
+                ab()
         return antwort
+
+
+class TvKamera(HomeAssistantView):
+    """Live image of the chosen board camera for the page (only while the page may show it)."""
+
+    url = TV_URL + "/{token}/kamera/{nr}"
+    name = "autodarts:tv:kamera"
+    requires_auth = False
+
+    async def get(self, request: web.Request, token: str, nr: str) -> web.StreamResponse | None:
+        hass: HomeAssistant = request.app["hass"]
+        f = _fernseher_fuer(hass, token)
+        kamera = f.kamera() if f is not None else None
+        if f is None or f.daten is None or kamera is None or nr != str(kamera + 1):
+            return web.Response(status=404)
+        session = async_get_clientsession(hass)
+        strom = session.get(f.daten.board.stream_url(_STROEME[int(nr) - 1]), timeout=ClientTimeout(total=None, sock_connect=5))
+        return await async_aiohttp_proxy_web(hass, request, strom)
 
 
 async def async_setup_tv(hass: HomeAssistant) -> None:
@@ -289,3 +352,4 @@ async def async_setup_tv(hass: HomeAssistant) -> None:
     html = await hass.async_add_executor_job(datei.read_text, "utf-8")
     hass.http.register_view(TvSeite(html))
     hass.http.register_view(TvLive())
+    hass.http.register_view(TvKamera())

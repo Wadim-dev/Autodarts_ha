@@ -42,7 +42,7 @@ KAMERAS = ("camera_1", "camera_2", "camera_3")
 _STROEME: tuple[Stream, ...] = ("cam0", "cam1", "cam2")
 VORHER = 8.0  # seconds before the event
 NACHHER = 1.5  # seconds after it (the dart sits, the caller speaks)
-TAKT = 1 / 6  # images per second while recording
+TAKT = 1 / 5  # time between images while recording (5 per second, light on the board PC)
 GROESSE = 720  # straightened clip: square, px
 RAND_MM = 225.0  # straightened clip shows ±225 mm around the bull (like the TV page)
 DATEI = re.compile(r"^[0-9a-f]{12}\.(mp4|jpg)$")
@@ -266,7 +266,9 @@ class Clips:
                     self._aufnahme = None
                     self._puffer.clear()
                     return
-            await asyncio.sleep(max(0.0, TAKT - (jetzt - start)))
+            # a slow or missing answer means the board is busy: give it room instead of asking faster
+            dauer = jetzt - start
+            await asyncio.sleep(max(TAKT - dauer, dauer, 0.0) if bild else 1.0)
 
     def ereignis(self, typ: str, daten: dict[str, Any]) -> None:
         if typ not in self.einst["anlaesse"]:

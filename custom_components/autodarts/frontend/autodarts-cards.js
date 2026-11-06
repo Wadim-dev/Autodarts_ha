@@ -641,7 +641,7 @@ dialog{padding:0;border:0;margin:0;width:100%;max-width:100%;height:100%;max-hei
 dialog[open]{display:flex;align-items:flex-end;justify-content:center}
 dialog::backdrop{background:var(--mdc-dialog-scrim-color,rgba(0,0,0,.5));animation:fe-schleier .3s ease}
 dialog.zu::backdrop{opacity:0;transition:opacity .24s ease}
-.blatt{width:min(560px,100%);max-height:92%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;border-radius:26px 26px 0 0;
+.blatt{--ha-card-backdrop-filter:none;width:min(560px,100%);max-height:92%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;border-radius:26px 26px 0 0;
  padding:6px 8px calc(14px + env(safe-area-inset-bottom,0px));
  background:var(--ha-bottom-sheet-surface-background,var(--ha-dialog-surface-background,var(--card-background-color,var(--primary-background-color))));
  -webkit-backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);backdrop-filter:var(--ha-bottom-sheet-surface-backdrop-filter,none);
@@ -693,6 +693,20 @@ dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s 
     bl.addEventListener('touchend', ende); bl.addEventListener('touchcancel', ende);
   };
   // Grundgerüst eines Fensters: Schleier antippen, X, Esc, Zurück-Taste (history-Merker), Ziehen
+  // Standardkarte von Home Assistant in einen Rahmen setzen. Lädt eine Karte nach (ll-rebuild/ll-upgrade), wird nur sie hier neu gebaut.
+  // Sonst landet das Ereignis bei der eigenen Kachel, Home Assistant baut die ganze Kachel samt Fenster neu und es flackert.
+  const huiKarte = (hl, kc, rahmen, liste, hass) => {
+    let el = null;
+    const bau = () => {
+      const neu = hl.createCardElement(kc); if (hass()) neu.hass = hass();
+      const i = liste.indexOf(el); if (i >= 0) liste[i] = neu; else liste.push(neu);
+      if (el && el.parentNode === rahmen) rahmen.replaceChild(neu, el); else rahmen.appendChild(neu);
+      el = neu;
+    };
+    const neuBauen = e => { e.stopPropagation(); bau(); };
+    rahmen.addEventListener('ll-rebuild', neuBauen); rahmen.addEventListener('ll-upgrade', neuBauen);
+    bau();
+  };
   const fensterGeruest = (d, bl, merker, beimZu) => {
     const f = { hist: false };
     // focus the sheet itself, otherwise the browser jumps to the close button and the slide is lost
@@ -750,7 +764,7 @@ dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s 
         const los = this._wahl; this._wahl = null; los(b.dataset.o); zuGleiten(d);
       });
     }
-    set hass(h) { this._h = h; if (this._graf) this._graf.hass = h; if (this._id) this._zeichnen(); }
+    set hass(h) { this._h = h; if (this._graf) this._graf.forEach(g => { g.hass = h; }); if (this._id) this._zeichnen(); }
     _kopf(id, icon, titel) {
       const r = this.shadowRoot, si = r.querySelector('ha-state-icon'), wi = r.querySelector('.wi');
       si.style.display = id ? '' : 'none'; wi.style.display = id ? 'none' : '';
@@ -766,8 +780,7 @@ dialog.zu .blatt{transform:translateY(100%)!important;transition:transform .24s 
       this._graf = null;
       if (window.loadCardHelpers) window.loadCardHelpers().then(hl => {
         if (this._id !== id) return;
-        const c = hl.createCardElement({ type: 'history-graph', hours_to_show: 24, entities: [{ entity: id, name: ' ' }] });
-        c.hass = this._h; this._graf = c; k.querySelector('.graf').appendChild(c);
+        this._graf = []; huiKarte(hl, { type: 'history-graph', hours_to_show: 24, entities: [{ entity: id, name: ' ' }] }, k.querySelector('.graf'), this._graf, () => this._h);
       }).catch(() => {});
       this._zeichnen();
       this._f.auf();
@@ -878,7 +891,7 @@ dialog.seite .blatt{width:min(720px,100%)}
       if (c.cards && c.cards.length && window.loadCardHelpers) {
         try {
           const hilfe = await window.loadCardHelpers();
-          c.cards.forEach(cc => { const el = hilfe.createCardElement(cc); this._innen.push(el); box.appendChild(el); });
+          c.cards.forEach(cc => { const w = document.createElement('div'); w.style.display = 'contents'; box.appendChild(w); huiKarte(hilfe, cc, w, this._innen, () => this._h); });
         } catch (e) {}
       }
       this._innenHass();

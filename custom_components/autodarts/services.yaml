@@ -414,7 +414,7 @@ clips_setzen:
         select:
           multiple: true
           options:
-            - label: 180
+            - label: "180"
               value: one_eighty
             - label: Finish ab 100
               value: high_finish

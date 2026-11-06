@@ -3,6 +3,14 @@
 Each version lists the changes in English and German. The release notes on GitHub
 and in the Home Assistant update dialog are taken from this file automatically.
 
+## 1.32.0
+
+- **Pages slide up over the window.** In the tile window, **Play**, **Settings** (or Manager) and **Players** no longer leave for another page. The page slides up as a second sheet over the window. Pull it down, tap the back arrow or use the back button, and the darts window is there again. DartNest takes the card of that page from your dashboard, so nothing needs to be set up. `sheets: false` keeps the old behaviour.
+
+**Deutsch**
+
+- **Seiten gleiten über das Fenster.** Im Kachel-Fenster wechseln **Spielen**, **Einstellungen** (bzw. Manager) und **Spieler** nicht mehr auf eine andere Seite. Die Seite gleitet als zweites Fenster über das Darts-Fenster. Nach unten ziehen, Zurück-Pfeil oder Zurück-Taste, und das Darts-Fenster ist wieder zu sehen. DartNest nimmt die Karte dieser Seite aus dem Dashboard, einrichten muss man nichts. `sheets: false` behält das alte Verhalten.
+
 ## 1.31.1
 
 - **Smoother window.** On phones the window sometimes appeared at once and then jumped, instead of sliding up. The browser moved focus to the close button and scrolled the window with it; the window now takes focus itself, so it slides up smoothly.

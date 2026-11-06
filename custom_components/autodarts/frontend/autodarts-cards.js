@@ -534,11 +534,16 @@ button:disabled{opacity:.38;cursor:default;transform:none}
         if (id === 'ein') {
           if (b.dataset.modus === 'aus') zweimal(this, b, t('off_q'), () => { this._runterBis = Date.now() + 180000; this._startBis = 0; ausloesen(h, c.power_off || c.power_on, true); this._zeichnen(); });
           else { this._startBis = Date.now() + 180000; this._runterBis = 0; ausloesen(h, c.power_on, false); this._zeichnen(); }
-        } else if (id === 'mgr') gehe(c.manager_path);
-        else if (id === 'spielen') gehe(c.game_path);
-        else if (id === 'spieler') gehe(c.players_path);
+        } else if (id === 'mgr') this._gehe(c.manager_path);
+        else if (id === 'spielen') this._gehe(c.game_path);
+        else if (id === 'spieler') this._gehe(c.players_path);
       });
-      this._r.querySelector('.laeuft').addEventListener('click', () => c.game_path && gehe(c.game_path));
+      this._r.querySelector('.laeuft').addEventListener('click', () => c.game_path && this._gehe(c.game_path));
+    }
+    // inside the tile window the page slides up as a sheet over it (see AutodartsTileCard._seite); elsewhere it opens the page
+    _gehe(pfad) {
+      if (!pfad) return;
+      if (this._seite) this._seite(pfad); else gehe(pfad);
     }
     _szene() {
       const h = this._h, c = this._c, jetzt = Date.now();
@@ -811,6 +816,9 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
 .inhalt{--ha-card-background:transparent;--ha-card-box-shadow:none;--ha-card-border-width:0}
 .hgitter{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px;padding:0 8px}
 .hgitter .w{cursor:default}
+dialog.seite .blatt{width:min(720px,100%)}
+.sinhalt{--ha-card-background:transparent;--ha-card-box-shadow:none;--ha-card-border-width:0}
+.sinhalt>*{display:block}
 `;
   class AutodartsTileCard extends AutodartsOverviewCard {
     static getStubConfig() { return {}; }
@@ -820,6 +828,7 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
       if (!this._r || this._spr !== SPR) this._bauen();
       this._zeichnen();
       if (this._d && this._d.open) this._innenHass();
+      if (this._sk) this._sk.hass = h;
       if (this._uf) this._uf.hass = h;
     }
     _bauen() {
@@ -828,8 +837,13 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
       r.innerHTML = '<style>' + BASIS + B_CSS + K_CSS + FE_CSS + '</style><ha-card><div class="bg"><div class="szene">' + SZENE + '</div></div>' +
         '<div class="ic"><ha-icon></ha-icon></div><div class="tx"><b></b><span></span></div><span class="ak"></span><ha-icon class="pf" icon="mdi:chevron-right"></ha-icon></ha-card>' +
         '<dialog><div class="blatt"><div class="griff"></div><div class="fkopf"><ha-icon icon="mdi:bullseye-arrow"></ha-icon><span>' + esc(this._c.name || 'Darts') + '</span>' +
-        '<button class="fzu" aria-label="' + t('t_close') + '"><ha-icon icon="mdi:close"></ha-icon></button></div><div class="inhalt"></div></div></dialog>';
+        '<button class="fzu" aria-label="' + t('t_close') + '"><ha-icon icon="mdi:close"></ha-icon></button></div><div class="inhalt"></div></div></dialog>' +
+        '<dialog class="seite"><div class="blatt"><div class="griff"></div><div class="sinhalt"></div></div></dialog>';
       r.querySelector('ha-card').addEventListener('click', () => this._auf());
+      // 1.32.0: pages (play, settings, players) slide up as a second sheet over the window; pull down or back = back to the window
+      const d2 = this._d2 = r.querySelector('dialog.seite'), bl2 = d2.querySelector('.blatt');
+      this._f2 = fensterGeruest(d2, bl2, 'adSeite', () => { if (this._sk) { this._sk.remove(); this._sk = null; } });
+      bl2.addEventListener('hass-more-info', e => { e.stopPropagation(); if (e.detail && e.detail.entityId) infoFenster(this, r).info(e.detail.entityId); });
       const d = this._d = r.querySelector('dialog'), bl = this._bl = r.querySelector('.blatt');
       // 1.31.0: the window slides up and away downwards (X, tap outside, Esc, back button, pull down); a shortcut to another page closes it
       this._f = fensterGeruest(d, bl, 'adFenster', () => this._zu());
@@ -852,6 +866,7 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
       const ov = document.createElement('autodarts-overview-card');
       const oc = Object.assign({}, c); delete oc.type; delete oc.cards; delete oc.today; delete oc.name;
       ov.setConfig(oc);
+      if (c.sheets !== false) ov._seite = pfad => this._seite(pfad);
       this._innen = [ov];
       box.appendChild(ov);
       if (c.today && c.today.length) {
@@ -884,7 +899,37 @@ ha-card{display:flex;align-items:center;gap:12px;cursor:pointer;position:relativ
       this._still();
       this._inhalt();
     }
-    _zu() { this._still(); }
+    _zu() { this._still(); if (this._d2 && this._d2.open) { this._f2.hist = false; this._d2.close(); } }
+    // card of the page behind a path, read from the dashboard (first DartNest card of that view); null = open the page as before
+    async _seitenKarte(pfad) {
+      this._seiten = this._seiten || {};
+      if (pfad in this._seiten) return this._seiten[pfad];
+      let karte = null;
+      try {
+        const teile = pfad.split('?')[0].split('/').filter(Boolean);
+        if (teile.length === 2) {
+          const cfg = await this._h.connection.sendMessagePromise({ type: 'lovelace/config', url_path: teile[0] === 'lovelace' ? null : teile[0] });
+          const v = (cfg.views || []).find((x, i) => (x.path || String(i)) === teile[1]);
+          const alle = v ? [].concat(v.cards || [], ...(v.sections || []).map(s => s.cards || [])) : [];
+          karte = alle.find(k => /^custom:autodarts-(game|manager|players|settings|lights|caller|tv|clips|pixel)-card$/.test(k.type || '')) || null;
+        }
+      } catch (e) { karte = null; }
+      this._seiten[pfad] = karte;
+      return karte;
+    }
+    async _seite(pfad) {
+      if (this._d2.open) return;
+      const kc = await this._seitenKarte(pfad);
+      if (!kc || !customElements.get(kc.type.slice(7))) { gehe(pfad); return; }
+      const k = document.createElement(kc.type.slice(7));
+      const cfg = Object.assign({}, kc); delete cfg.type; delete cfg.grid_options; delete cfg.back_path; delete cfg.visibility;
+      k.setConfig(cfg);
+      k._zurueck = () => zuGleiten(this._d2);
+      this._sk = k;
+      this._d2.querySelector('.sinhalt').appendChild(k);
+      k.hass = this._h;
+      this._f2.auf();
+    }
     _zeichnen() {
       const h = this._h, r = this._r, c = this._c;
       const sz = this._szene(), [name, icon] = SZ[sz];

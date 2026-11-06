@@ -410,7 +410,7 @@ details:                                # line under the live darts
     name: Highest today
 ```
 
-**Tile** – the same as one compact row with the board scene behind it (live darts, status colour, running game). Tap opens a window that slides up from the bottom with the overview card, today's values and your own cards. Tapping a value inside opens a small sheet in the same style with the value and its last 24 hours. Close with X, the back button, tapping outside or pulling it down. It takes every option of the overview card, plus:
+**Tile** – the same as one compact row with the board scene behind it (live darts, status colour, running game). Tap opens a window that slides up from the bottom with the overview card, today's values and your own cards. Tapping a value inside opens a small sheet in the same style with the value and its last 24 hours. Close with X, the back button, tapping outside or pulling it down. The shortcut buttons (play, manager or settings, players) open their page as a second sheet over the window: DartNest reads the DartNest card of that view from your dashboard and shows it in the sheet. Pull it down, tap the back arrow or use the back button to return to the window. It takes every option of the overview card, plus:
 
 ```yaml
 type: custom:autodarts-tile-card
@@ -422,6 +422,7 @@ today:                                  # values in the window under "Today"
 cards:                                  # any cards below, e.g. a statistics graph
   - type: statistics-graph
     entities: [sensor.darts_average_today]
+sheets: false                           # open the pages as before instead of as sheets
 ```
 
 <p align="center"><img src="https://raw.githubusercontent.com/Wadim-dev/DartNest_ha/main/docs/images/everywhere.png" alt="Tile and tile window" width="700"></p>
